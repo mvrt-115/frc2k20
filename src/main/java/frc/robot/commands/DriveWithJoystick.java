@@ -32,7 +32,8 @@ public class DriveWithJoystick extends CommandBase
   @Override
   public void execute() 
   {
-    Robot.drivetrain.cheesyIshDrive(Robot.oi.getThrottle(), Robot.oi.getWheel(), Robot.oi.getQuickTurn());
+   // Robot.drivetrain.cheesyDriveWithJoystick(Robot.oi.getThrottle(), Robot.oi.getWheel(), Robot.oi.getQuickTurn());
+   Robot.drivetrain.cheesyIshDrive(Robot.oi.getThrottle(), Robot.oi.getWheel(), Robot.oi.getQuickTurn());
   }
 
   // Called once the command ends or is interrupted.

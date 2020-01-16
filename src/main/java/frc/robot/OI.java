@@ -5,9 +5,10 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.utilities;
+package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Robot;
 import frc.robot.commands.AutoAlign;
@@ -31,7 +32,6 @@ public class OI {
         operatorJoystick = new Joystick(1);
         align = new JoystickButton(driverJoystick, 1);
         quickTurnButton = new JoystickButton(driverJoystick, 5);
-
         align.whileHeld(new AutoAlign());
         
         
@@ -41,15 +41,16 @@ public class OI {
     public double getWheel()
     {
         double wheel = driverJoystick.getRawAxis(0);
-        if(Math.abs(wheel) >= wheelDeadband) return (wheel - wheelDeadband * Math.abs(wheel) / wheel) / (1 - wheelDeadband);
-        return 0;
+      //  if(Math.abs(wheel) >= wheelDeadband) return (wheel - wheelDeadband * Math.abs(wheel) / wheel) / (1 - wheelDeadband);
+        return wheel;
     }
 
     public double getThrottle()
     {
-        double throttle = driverJoystick.getRawAxis(5);
-        if(Math.abs(throttle) >= 0.1) return (throttle - throttleDeadband * Math.abs(throttle) / throttle) / (1 - throttleDeadband);
-        return 0;
+       double throttle = driverJoystick.getRawAxis(5);
+       SmartDashboard.putNumber("Throttle", throttle);
+   //     if(Math.abs(throttle) >= 0.1) return (throttle - throttleDeadband * Math.abs(throttle) / throttle) / (1 - throttleDeadband);
+        return -throttle;
     }
 
     public boolean getAlign() {
