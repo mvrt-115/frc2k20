@@ -8,6 +8,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Hardware;
 import frc.robot.Robot;
 import frc.robot.utilities.Limelight.LED_MODE;
 import frc.robot.utilities.Limelight.PIPELINE_STATE;
@@ -26,15 +27,15 @@ public class AutoAlign extends CommandBase
   @Override
   public void initialize() 
   {
-    Robot.limelight.setPipeline(PIPELINE_STATE.VISION);
-    Robot.limelight.setLED(LED_MODE.ON);
+    Hardware.limelight.setPipeline(PIPELINE_STATE.VISION);
+    Hardware.limelight.setLED(LED_MODE.ON);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() 
   {
-    double angle = Robot.limelight.getHorizontalAngle();
+    double angle = Hardware.limelight.getHorizontalAngle();
     Robot.drivetrain.driveWithTarget(angle);
   }
 

@@ -18,4 +18,12 @@ package frc.robot;
 public final class Constants {
 
 	public static final double kTrackScrubFactor = 1.0469745223;
+
+
+	public static final double kWheelDeadband = 0.04;
+	public static final double kThrottleDeadband = 0.04;
+
+	public static final double kTrackWidthInches = 29;
+
+
 }

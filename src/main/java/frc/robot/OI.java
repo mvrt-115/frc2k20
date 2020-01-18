@@ -24,8 +24,6 @@ public class OI {
     JoystickButton align;
     JoystickButton quickTurnButton;
 
-    private double wheelDeadband = 0.03;
-	private double throttleDeadband = 0.02;
 
     public OI() {
         driverJoystick = new Joystick(0);
@@ -48,7 +46,6 @@ public class OI {
     public double getThrottle()
     {
        double throttle = driverJoystick.getRawAxis(5);
-       SmartDashboard.putNumber("Throttle", throttle);
    //     if(Math.abs(throttle) >= 0.1) return (throttle - throttleDeadband * Math.abs(throttle) / throttle) / (1 - throttleDeadband);
         return -throttle;
     }
