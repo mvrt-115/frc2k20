@@ -10,6 +10,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.Flywheel;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -19,7 +20,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
-
+  public static Flywheel flywheel;
+  public static OI oi;
   private RobotContainer m_robotContainer;
 
   /**
@@ -28,6 +30,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    flywheel =  new Flywheel();
+    oi = new OI();
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
@@ -42,6 +46,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    flywheel.log();
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
