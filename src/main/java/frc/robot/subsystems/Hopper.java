@@ -18,6 +18,7 @@ import frc.robot.Hardware;
 public class Hopper extends SubsystemBase 
 {
   public boolean canIntake;
+  public boolean lastEnter;
   public int balls;
   /**
    * Creates a new Hopper.
@@ -33,6 +34,7 @@ public class Hopper extends SubsystemBase
     Hardware.breakbeamExit = new DigitalInput(1);
     balls = 0;
     canIntake = true;
+    lastEnter = false;
   }
 
   public void intake()
@@ -40,17 +42,20 @@ public class Hopper extends SubsystemBase
     if(canIntake)
     {
       Hardware.intake.set(ControlMode.PercentOutput, 1);
-
+      
       Hardware.hopper1.set(ControlMode.PercentOutput, 1);
       Hardware.hopper2.set(ControlMode.PercentOutput, 1);
       Hardware.hopper3.set(ControlMode.PercentOutput, 1);
       Hardware.hopper4.set(ControlMode.PercentOutput, 1);
     }
-    if(Hardware.breakbeamEnter.get()) 
+
+    if(lastEnter && !Hardware.breakbeamEnter.get()) 
     {
       balls++;
       Timer.delay(0.5);
     }
+
+    lastEnter = Hardware.breakbeamEnter.get();
     if(balls == 5) canIntake = false;
     else canIntake = true;
   }
