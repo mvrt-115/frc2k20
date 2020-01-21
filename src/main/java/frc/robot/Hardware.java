@@ -18,10 +18,10 @@ import frc.robot.utilities.Limelight;
  */
 public class Hardware {
 
-    public static TalonFX frontLeft;
-    public static TalonFX backLeft;
-    public static TalonFX backRight;
-    public static TalonFX frontRight;
+    public static TalonFX leftMaster;
+    public static TalonFX leftFollower;
+    public static TalonFX rightMaster;
+    public static TalonFX rightFollower;
 
     public static AHRS gyro;
 

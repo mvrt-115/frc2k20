@@ -7,13 +7,18 @@
 
 package frc.robot;
 
+import java.util.Arrays;
+
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.utilities.Limelight;
-import frc.robot.OI;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -26,6 +31,13 @@ public class Robot extends TimedRobot
   public static Drivetrain drivetrain;
   public static OI oi;
   private Command m_autonomousCommand;
+
+  public enum RobotState{
+    DISABLED, TELEOP, AUTON
+  };
+
+  private RobotState currState;
+  RamseteCommand autoCommand;
   
 
   /**
@@ -40,8 +52,9 @@ public class Robot extends TimedRobot
     drivetrain = new Drivetrain();
     Hardware.limelight = new Limelight();
     oi = new OI();
+    setRobotState(RobotState.DISABLED);
  
-  
+
     //read values periodically
   }
 
@@ -67,9 +80,8 @@ public class Robot extends TimedRobot
    * This function is called once each time the robot enters Disabled mode.
    */
   @Override
-  public void disabledInit() 
-  {
-
+  public void disabledInit() {
+    setRobotState(RobotState.DISABLED);
   }
 
   @Override
@@ -84,13 +96,17 @@ public class Robot extends TimedRobot
   @Override
   public void autonomousInit() 
   {
-    m_autonomousCommand = null;
+
+    
+    drivetrain.resetOdometry();
+    m_autonomousCommand = getAutonomousCommand();
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) 
     {
       m_autonomousCommand.schedule();
     }
+    setRobotState(RobotState.AUTON);
   }
 
   /**
@@ -99,18 +115,18 @@ public class Robot extends TimedRobot
   @Override
   public void autonomousPeriodic() 
   {
+    CommandScheduler.getInstance().run();
   }
 
   @Override
   public void teleopInit() 
   {
-    Hardware.frontLeft.setSelectedSensorPosition(0);
-		Hardware.frontRight.setSelectedSensorPosition(0);
-
+  
     if (m_autonomousCommand != null) 
     {
       m_autonomousCommand.cancel();
     }
+    setRobotState(RobotState.TELEOP);
   }
 
   /**
@@ -135,5 +151,37 @@ public class Robot extends TimedRobot
   public void testPeriodic() 
   {
     
+  }
+
+  public void setRobotState(final RobotState newState) {
+    currState = newState;
+  }
+
+  public Command getAutonomousCommand() {
+   
+    var waypoints = Arrays.asList(
+      new Pose2d(0,0, Rotation2d.fromDegrees(0)),
+      new Pose2d(2,0, Rotation2d.fromDegrees(0))
+      
+    );
+
+    Trajectory trajectory = TrajectoryGenerator.generateTrajectory(waypoints, drivetrain.getTrajectoryConfig());
+
+     autoCommand = new RamseteCommand(
+      trajectory,
+      drivetrain::getPose,
+      drivetrain.getRamseteController(),
+      drivetrain.getFeedForward(),
+      drivetrain.getDriveKinematics(),
+      drivetrain::getWheelSpeeds,
+      drivetrain.getLeftDriveController(),
+      drivetrain.getRightDriveController(),
+      drivetrain::setOutputVolts,
+      drivetrain
+    );
+
+    
+
+    return autoCommand.andThen(() -> drivetrain.setLeftRightMotorOutputs(0, 0));
   }
 }

@@ -23,7 +23,24 @@ public final class Constants {
 	public static final double kWheelDeadband = 0.04;
 	public static final double kThrottleDeadband = 0.04;
 
-	public static final double kTrackWidthInches = 29;
+	public static final double kTrackWidthInches = 24.2;
+	public static final double kTrackWidthMeters = .6159;
+	public static final double kWheelRadiusMeters = .0762;
+	public static final double kMaxVelocityMetersPerSecond = 1;
+	public static final double kMaxAccelerationMetersPerSecondSq = 2;
+	public static final double kDriveGearRatio = 11.24;
+	public static final int kTicksPerRotation = 2048;
+	
 
+	public static final double kDriveS = .327;  
+	public static final double kDriveV = 2.53;  
+	public static final double kDriveA =  0;  //0.168;  
+	public static final double kDriveP = 0; 
+	public static final double kDriveI = 0;
+	public static final double kDriveD = 0;
+
+
+	public static final int kPIDIdx = 0;
+	public static final int kTimeoutMs = 10;
 
 }

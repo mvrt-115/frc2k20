@@ -7,6 +7,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 
@@ -33,6 +34,8 @@ public class DriveWithJoystick extends CommandBase
   public void execute() 
   {
    // Robot.drivetrain.cheesyDriveWithJoystick(Robot.oi.getThrottle(), Robot.oi.getWheel(), Robot.oi.getQuickTurn());
+   SmartDashboard.putNumber("Throttle", Robot.oi.getThrottle());
+   SmartDashboard.putNumber("Whjeel", Robot.oi.getWheel());
    Robot.drivetrain.cheesyIshDrive(Robot.oi.getThrottle(), Robot.oi.getWheel(), Robot.oi.getQuickTurn());
   }
 
