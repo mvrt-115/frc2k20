@@ -19,6 +19,7 @@ public class Hopper extends SubsystemBase
 {
   public boolean canIntake;
   public boolean lastEnter;
+  public boolean lastExit;
   public int balls;
   /**
    * Creates a new Hopper.
@@ -35,29 +36,56 @@ public class Hopper extends SubsystemBase
     balls = 0;
     canIntake = true;
     lastEnter = false;
+    lastExit = false;
   }
 
   public void intake()
   {
+    Hardware.intake.set(ControlMode.PercentOutput, 1);
+  }
+
+  public void moveOne()
+  {
+    boolean curr = Hardware.breakbeamEnter.get();
+
     if(canIntake)
     {
-      Hardware.intake.set(ControlMode.PercentOutput, 1);
-      
-      Hardware.hopper1.set(ControlMode.PercentOutput, 1);
-      Hardware.hopper2.set(ControlMode.PercentOutput, 1);
-      Hardware.hopper3.set(ControlMode.PercentOutput, 1);
-      Hardware.hopper4.set(ControlMode.PercentOutput, 1);
+      runHopper();
+
+      if(lastEnter && !curr)
+      {
+        canIntake = false;
+        balls++;
+        stop();
+      }
     }
 
-    if(lastEnter && !Hardware.breakbeamEnter.get()) 
+    lastEnter = curr;
+  }
+
+  public void outtake()
+  {
+    boolean curr = Hardware.breakbeamExit.get();
+    if(balls > 0)
     {
-      balls++;
-      Timer.delay(0.5);
+      runHopper();
+
+      if(lastExit && !curr) 
+      {
+        balls--;
+        stop();
+      }
     }
 
-    lastEnter = Hardware.breakbeamEnter.get();
-    if(balls == 5) canIntake = false;
-    else canIntake = true;
+    lastExit = curr;
+  }
+
+  public void runHopper()
+  {
+    Hardware.hopper1.set(ControlMode.PercentOutput, 1);
+    Hardware.hopper2.set(ControlMode.PercentOutput, 1);
+    Hardware.hopper3.set(ControlMode.PercentOutput, 1);
+    Hardware.hopper4.set(ControlMode.PercentOutput, 1);
   }
 
   public void stop()
