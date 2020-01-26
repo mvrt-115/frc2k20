@@ -19,21 +19,21 @@ import frc.robot.commands.DriveWithJoystick;
  */
 public class OI {
 
-    Joystick driverJoystick;
-    Joystick operatorJoystick;
-    JoystickButton align;
-    JoystickButton quickTurnButton;
+    private Joystick driverJoystick;
+    private Joystick operatorJoystick;
+    private JoystickButton align;
+    private JoystickButton quickTurnButton;
 
 
     public OI() {
         driverJoystick = new Joystick(0);
         operatorJoystick = new Joystick(1);
-        align = new JoystickButton(driverJoystick, 1);
+        align = new JoystickButton(driverJoystick, 8);
         quickTurnButton = new JoystickButton(driverJoystick, 5);
-        align.whileHeld(new AutoAlign());
-        
+        align.whenPressed(new AutoAlign());
         
         Robot.drivetrain.setDefaultCommand(new DriveWithJoystick());
+
     }
 
     public double getWheel()

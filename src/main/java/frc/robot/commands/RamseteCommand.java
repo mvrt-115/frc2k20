@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.Robot;
 
 import static edu.wpi.first.wpilibj.util.ErrorMessages.requireNonNullParam;
 
@@ -100,7 +101,7 @@ public class RamseteCommand extends CommandBase {
 
     m_usePID = true;
 
-    addRequirements(requirements);
+    addRequirements(Robot.drivetrain);
   }
 
   /**
@@ -136,7 +137,7 @@ public class RamseteCommand extends CommandBase {
 
     m_usePID = false;
 
-    addRequirements(requirements);
+    addRequirements(Robot.drivetrain);
   }
 
   @Override

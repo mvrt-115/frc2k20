@@ -10,6 +10,8 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Hardware;
+import frc.robot.commands.DriveWithJoystick;
+
 import java.util.function.DoubleFunction;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -31,6 +33,7 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
+import edu.wpi.first.wpilibj.util.Units;
 
 /**
  * Add your docs here.
@@ -38,7 +41,6 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 public class Drivetrain extends SubsystemBase {
 
 	private double quickStopAccumulator = 0.0;
-	private static final double SENSITIVITY = 0.90;
 	private DoubleFunction<Double> limiter = limiter(-0.9, 0.9);
 	private SupplyCurrentLimitConfiguration driveMotorCurrentConfig;
 
@@ -71,18 +73,22 @@ public class Drivetrain extends SubsystemBase {
 		Hardware.leftFollower.follow(Hardware.leftMaster);
 		Hardware.rightFollower.follow(Hardware.rightMaster);
 
-		driveMotorCurrentConfig = new SupplyCurrentLimitConfiguration(true, 40, 80, .75);
+		driveMotorCurrentConfig = new SupplyCurrentLimitConfiguration(true, 40, 50, 3.8);
 
 		Hardware.leftMaster.configSupplyCurrentLimit(driveMotorCurrentConfig);
 		Hardware.leftFollower.configSupplyCurrentLimit(driveMotorCurrentConfig);
 		Hardware.rightMaster.configSupplyCurrentLimit(driveMotorCurrentConfig);
 		Hardware.rightFollower.configSupplyCurrentLimit(driveMotorCurrentConfig);
 
-		Hardware.leftMaster.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, Constants.kPIDIdx, Constants.kTimeoutMs);
-		Hardware.rightMaster.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, Constants.kPIDIdx, Constants.kTimeoutMs);
-		Hardware.leftFollower.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, Constants.kPIDIdx, Constants.kTimeoutMs);
-		Hardware.rightFollower.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, Constants.kPIDIdx, Constants.kTimeoutMs);
-		
+		Hardware.leftMaster.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, Constants.kPIDIdx,
+				Constants.kTimeoutMs);
+		Hardware.rightMaster.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, Constants.kPIDIdx,
+				Constants.kTimeoutMs);
+		Hardware.leftFollower.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, Constants.kPIDIdx,
+				Constants.kTimeoutMs);
+		Hardware.rightFollower.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, Constants.kPIDIdx,
+				Constants.kTimeoutMs);
+
 		resetEncoder();
 		configNeutralMode(NeutralMode.Coast);
 		Hardware.gyro.reset();
@@ -90,14 +96,16 @@ public class Drivetrain extends SubsystemBase {
 		driveKinematics = new DifferentialDriveKinematics(Constants.kTrackWidthMeters);
 		driveOdometry = new DifferentialDriveOdometry(getGyroRotation());
 		driveFeedforward = new SimpleMotorFeedforward(Constants.kDriveS, Constants.kDriveV, Constants.kDriveA);
-		leftDriveController = new PIDController(0, Constants.kDriveI, Constants.kDriveD);
-		rightDriveController = new PIDController(0, Constants.kDriveI, Constants.kDriveD);
+		leftDriveController = new PIDController(Constants.kDriveP, Constants.kDriveI, Constants.kDriveD);
+		rightDriveController = new PIDController(Constants.kDriveP, Constants.kDriveI, Constants.kDriveD);
 		currPosition = new Pose2d();
 
-		trajectoryConfig = new TrajectoryConfig(Constants.kMaxVelocityMetersPerSecond, Constants.kMaxAccelerationMetersPerSecondSq);
+		trajectoryConfig = new TrajectoryConfig(Constants.kMaxVelocityMetersPerSecond,
+				Constants.kMaxAccelerationMetersPerSecondSq);
 		trajectoryConfig.setReversed(false);
 
 		ramseteController = new RamseteController();
+
 	}
 
 	@Override
@@ -107,31 +115,42 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	public void resetOdometry() {
-		currPosition = new Pose2d();
+		setOdometry(new Pose2d());
+	}
+
+	public void setOdometry(Pose2d newPose) {
+		currPosition = newPose;
 		resetEncoder();
 		Hardware.gyro.reset();
-		driveOdometry.resetPosition(currPosition, getGyroRotation());
+		driveOdometry.resetPosition(newPose, getGyroRotation());
 	}
 
 	public double getLeftEncoderDistance() {
-		return Hardware.leftMaster.getSelectedSensorPosition() / Constants.kTicksPerRotation / Constants.kDriveGearRatio
-				* 2 * Math.PI * Constants.kWheelRadiusMeters;
+
+		double motorTicks = (Hardware.leftMaster.getSelectedSensorPosition()
+				+ Hardware.leftFollower.getSelectedSensorPosition()) / 2;
+		return motorTicks / Constants.kTicksPerRotation / Constants.kDriveGearRatio  * Math.PI
+				* Constants.kWheelDiameterMeters;
 	}
 
 	public double getRightEncoderDistance() {
-		return Hardware.rightMaster.getSelectedSensorPosition() / Constants.kTicksPerRotation
-				/ Constants.kDriveGearRatio * 2 * Math.PI * Constants.kWheelRadiusMeters;
+		double motorTicks = (Hardware.rightMaster.getSelectedSensorPosition()
+				+ Hardware.rightFollower.getSelectedSensorPosition()) / 2;
+
+		return motorTicks / Constants.kTicksPerRotation / Constants.kDriveGearRatio  * Math.PI
+				* Constants.kWheelDiameterMeters;
 	}
 
-	public DifferentialDriveWheelSpeeds getWheelSpeeds(){
+	public DifferentialDriveWheelSpeeds getWheelSpeeds() {
 		return new DifferentialDriveWheelSpeeds(
-			Hardware.leftMaster.getSelectedSensorVelocity() / Constants.kTicksPerRotation / Constants.kDriveGearRatio * 2 * Math.PI * Constants.kWheelRadiusMeters * 10,
-			Hardware.leftMaster.getSelectedSensorVelocity() / Constants.kTicksPerRotation / Constants.kDriveGearRatio * 2 * Math.PI * Constants.kWheelRadiusMeters * 10
-		);
+				Hardware.leftMaster.getSelectedSensorVelocity() / Constants.kTicksPerRotation
+						/ Constants.kDriveGearRatio * Math.PI * Constants.kWheelDiameterMeters * 10,
+				Hardware.leftMaster.getSelectedSensorVelocity() / Constants.kTicksPerRotation
+						/ Constants.kDriveGearRatio * Math.PI * Constants.kWheelDiameterMeters * 10);
 	}
 
-	public void setOutputVolts(double leftVolts, double rightVolts){
-		setLeftRightMotorOutputs(leftVolts/12, rightVolts/12);
+	public void setOutputVolts(double leftVolts, double rightVolts) {
+		setLeftRightMotorOutputs(leftVolts / 12, rightVolts / 12);
 	}
 
 	public Rotation2d getGyroRotation() {
@@ -173,7 +192,7 @@ public class Drivetrain extends SubsystemBase {
 			angularPower *= 0.45;
 		} else {
 			overPower = 0.0;
-			angularPower = Math.abs(throttle) * wheel * SENSITIVITY - quickStopAccumulator;
+			angularPower = Math.abs(throttle) * wheel * Constants.kSensitivity - quickStopAccumulator;
 			angularPower *= 0.8;
 			if (quickStopAccumulator > 1) {
 				quickStopAccumulator -= 1;
@@ -237,8 +256,8 @@ public class Drivetrain extends SubsystemBase {
 
 	public void cheesyIshDrive(double throttle, double wheel, boolean quickTurn) {
 
-		// throttle = handleDeadband(throttle, Constants.kThrottleDeadband);
-		// wheel = handleDeadband(wheel, Constants.kWheelDeadband);
+		throttle = handleDeadband(throttle, Constants.kThrottleDeadband);
+		wheel = handleDeadband(wheel, Constants.kWheelDeadband);
 
 		double left = 0, right = 0;
 
@@ -270,17 +289,23 @@ public class Drivetrain extends SubsystemBase {
 
 	public void setLeftRightMotorOutputs(double left, double right) {
 		Hardware.leftMaster.set(ControlMode.PercentOutput, left);
-		Hardware.leftFollower.set(ControlMode.PercentOutput, left);
 		Hardware.rightMaster.set(ControlMode.PercentOutput, right);
-		Hardware.rightFollower.set(ControlMode.PercentOutput, right);
+
 	}
 
-	public void driveWithTarget(double angle) {
-		cheesyIshDrive(0, angle / 30, true);
-		/*
-		 * double left = 0, right = 0; if(angle != 0) { left = -angle / 30; right =
-		 * angle / 30; } setLeftRightMotorOutputs(left, right);
-		 */
+	public void alignToTarget(double error) {
+		double kFF = 0.05;
+		double kP = .018;
+		double output;
+		if (Math.abs(error) > .15) {
+			output = error * kP + Math.copySign(kFF, error);
+		} else {
+			output = error * kP;
+		}
+
+		SmartDashboard.putNumber("Speed", output);
+		SmartDashboard.putNumber("Offset", error);
+		setLeftRightMotorOutputs(output, -output);
 	}
 
 	public void stop() {
@@ -296,31 +321,35 @@ public class Drivetrain extends SubsystemBase {
 		SmartDashboard.putNumber("NavX", Hardware.gyro.getAngle());
 	}
 
-	public PIDController getLeftDriveController(){
+	public void setPathDirection(boolean reversed){
+		trajectoryConfig.setReversed(reversed);
+	}
+
+	public PIDController getLeftDriveController() {
 		return leftDriveController;
 	}
 
-	public PIDController getRightDriveController(){
+	public PIDController getRightDriveController() {
 		return rightDriveController;
 	}
 
-	public RamseteController getRamseteController(){
+	public RamseteController getRamseteController() {
 		return ramseteController;
 	}
 
-	public TrajectoryConfig getTrajectoryConfig(){
+	public TrajectoryConfig getTrajectoryConfig() {
 		return trajectoryConfig;
 	}
 
-	public Pose2d getPose(){
+	public Pose2d getPose() {
 		return currPosition;
 	}
 
-	public SimpleMotorFeedforward getFeedForward(){
+	public SimpleMotorFeedforward getFeedForward() {
 		return driveFeedforward;
 	}
 
-	public DifferentialDriveKinematics getDriveKinematics(){
+	public DifferentialDriveKinematics getDriveKinematics() {
 		return driveKinematics;
 	}
 }

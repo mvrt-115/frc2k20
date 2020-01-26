@@ -7,16 +7,27 @@
 
 package frc.robot;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.command.WaitCommand;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator.ControlVectorList;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.AutoAlign;
+import frc.robot.commands.AutonRoutine;
+import frc.robot.commands.FlashLimelight;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.utilities.Limelight;
 
@@ -37,8 +48,8 @@ public class Robot extends TimedRobot
   };
 
   private RobotState currState;
-  RamseteCommand autoCommand;
-  
+  private RamseteCommand autoCommand;
+  private double startDisabledTime;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -82,40 +93,51 @@ public class Robot extends TimedRobot
   @Override
   public void disabledInit() {
     setRobotState(RobotState.DISABLED);
+    startDisabledTime = Timer.getFPGATimestamp();
+    drivetrain.configNeutralMode(NeutralMode.Brake);
   }
 
   @Override
-  public void disabledPeriodic() 
-  {
+  public void disabledPeriodic() {
 
+    if(Timer.getFPGATimestamp() - startDisabledTime > 2)
+      drivetrain.configNeutralMode(NeutralMode.Coast);
   }
 
   /**
    * This autonomous runs the autonomous command selected by your {@link RobotContainer} class.
    */
   @Override
-  public void autonomousInit() 
-  {
-
+  public void autonomousInit() {
     
-    drivetrain.resetOdometry();
-    m_autonomousCommand = getAutonomousCommand();
+    drivetrain.setPathDirection(false);
+    Trajectory traj1 = TrajectoryGenerator.generateTrajectory(List.of(
+      new Pose2d(),
+      new Pose2d(5.3,1, new Rotation2d())
 
-    // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) 
-    {
-      m_autonomousCommand.schedule();
-    }
+    ), drivetrain.getTrajectoryConfig());
+   
+    drivetrain.setPathDirection(true);
+
+    Trajectory traj2 = TrajectoryGenerator.generateTrajectory(List.of(
+    new Pose2d(2, 1, new Rotation2d()),
+    new Pose2d()
+
+    ),drivetrain.getTrajectoryConfig());
+    
+  
+    drivetrain.resetOdometry();
+    m_autonomousCommand = new AutonRoutine(generatePath(traj1), generatePath(traj2));
     setRobotState(RobotState.AUTON);
+    drivetrain.configNeutralMode(NeutralMode.Brake);
+    m_autonomousCommand.schedule();
   }
 
   /**
    * This function is called periodically during autonomous.
    */
   @Override
-  public void autonomousPeriodic() 
-  {
-    CommandScheduler.getInstance().run();
+  public void autonomousPeriodic() {
   }
 
   @Override
@@ -127,6 +149,8 @@ public class Robot extends TimedRobot
       m_autonomousCommand.cancel();
     }
     setRobotState(RobotState.TELEOP);
+    drivetrain.configNeutralMode(NeutralMode.Coast);
+
   }
 
   /**
@@ -157,16 +181,9 @@ public class Robot extends TimedRobot
     currState = newState;
   }
 
-  public Command getAutonomousCommand() {
-   
-    var waypoints = Arrays.asList(
-      new Pose2d(0,0, Rotation2d.fromDegrees(0)),
-      new Pose2d(2,0, Rotation2d.fromDegrees(0))
-      
-    );
-
-    Trajectory trajectory = TrajectoryGenerator.generateTrajectory(waypoints, drivetrain.getTrajectoryConfig());
-
+  
+  public Command generatePath(Trajectory trajectory){
+    
      autoCommand = new RamseteCommand(
       trajectory,
       drivetrain::getPose,
@@ -180,8 +197,8 @@ public class Robot extends TimedRobot
       drivetrain
     );
 
-    
-
+  
     return autoCommand.andThen(() -> drivetrain.setLeftRightMotorOutputs(0, 0));
   }
+
 }

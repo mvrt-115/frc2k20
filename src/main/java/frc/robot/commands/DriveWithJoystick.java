@@ -33,9 +33,6 @@ public class DriveWithJoystick extends CommandBase
   @Override
   public void execute() 
   {
-   // Robot.drivetrain.cheesyDriveWithJoystick(Robot.oi.getThrottle(), Robot.oi.getWheel(), Robot.oi.getQuickTurn());
-   SmartDashboard.putNumber("Throttle", Robot.oi.getThrottle());
-   SmartDashboard.putNumber("Whjeel", Robot.oi.getWheel());
    Robot.drivetrain.cheesyIshDrive(Robot.oi.getThrottle(), Robot.oi.getWheel(), Robot.oi.getQuickTurn());
   }
 
@@ -48,8 +45,7 @@ public class DriveWithJoystick extends CommandBase
 
   // Returns true when the command should end.
   @Override
-  public boolean isFinished() 
-  {
+  public boolean isFinished() {
     return false;
   }
 }
