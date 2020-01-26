@@ -27,6 +27,7 @@ public class Hopper extends SubsystemBase
   public Hopper() 
   {
     Hardware.intake = new TalonSRX(0);
+    Hardware.funnel = new TalonSRX(5);
     Hardware.hopper1 = new TalonSRX(1);
     Hardware.hopper2 = new TalonSRX(2);
     Hardware.hopper3 = new TalonSRX(3);
@@ -42,6 +43,7 @@ public class Hopper extends SubsystemBase
   public void intake()
   {
     Hardware.intake.set(ControlMode.PercentOutput, 1);
+    Hardware.funnel.set(ControlMode.PercentOutput, 1);
   }
 
   public void moveOne()

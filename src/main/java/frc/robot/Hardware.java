@@ -29,6 +29,7 @@ public class Hardware {
     
     //hopper
     public static TalonSRX intake;
+    public static TalonSRX funnel;
     public static TalonSRX hopper1;
     public static TalonSRX hopper2;
     public static TalonSRX hopper3;
