@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Robot;
 import frc.robot.commands.AutoAlign;
 import frc.robot.commands.DriveWithJoystick;
-import frc.robot.commands.Intake;
 
 /**
  * Add your docs here.
@@ -35,11 +34,9 @@ public class OI {
         align = new JoystickButton(driverJoystick, 1);
         quickTurnButton = new JoystickButton(driverJoystick, 5);
 
-        intake = new JoystickButton(driverJoystick, 2);
+        //intake = new JoystickButton(driverJoystick, 2);
 
         align.whileHeld(new AutoAlign());
-
-        intake.whileHeld(new Intake());
         
         Robot.drivetrain.setDefaultCommand(new DriveWithJoystick());
     }

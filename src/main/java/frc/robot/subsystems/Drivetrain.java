@@ -59,7 +59,7 @@ public class Drivetrain extends SubsystemBase
 		Hardware.backRight.configSupplyCurrentLimit(driveMotorCurrentConfig);
 
 		resetEncoder();
-		configNeutralMode(NeutralMode.Coast);
+		configNeutralMode(NeutralMode.Brake);
 
 		Hardware.frontLeft.setSensorPhase(false);
 		Hardware.backLeft.setSensorPhase(false);
@@ -234,8 +234,8 @@ public class Drivetrain extends SubsystemBase
 	{
 		Hardware.frontLeft.set(ControlMode.PercentOutput, left);
 		Hardware.backLeft.set(ControlMode.PercentOutput, left);
-		Hardware.frontRight.set(ControlMode.PercentOutput, right);
-		Hardware.backRight.set(ControlMode.PercentOutput, right);
+		Hardware.frontRight.set(ControlMode.PercentOutput, -right);
+		Hardware.backRight.set(ControlMode.PercentOutput, -right);
 	}
 
 	public void driveWithTarget(double angle)

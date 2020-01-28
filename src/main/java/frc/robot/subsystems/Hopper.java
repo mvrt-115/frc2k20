@@ -26,8 +26,6 @@ public class Hopper extends SubsystemBase
    */
   public Hopper() 
   {
-    Hardware.intake = new TalonSRX(0);
-    Hardware.funnel = new TalonSRX(5);
     Hardware.hopper1 = new TalonSRX(1);
     Hardware.hopper2 = new TalonSRX(2);
     Hardware.hopper3 = new TalonSRX(3);
@@ -38,12 +36,6 @@ public class Hopper extends SubsystemBase
     canIntake = true;
     lastEnter = false;
     lastExit = false;
-  }
-
-  public void intake()
-  {
-    Hardware.intake.set(ControlMode.PercentOutput, 1);
-    Hardware.funnel.set(ControlMode.PercentOutput, 1);
   }
 
   public void moveOne()
@@ -92,7 +84,6 @@ public class Hopper extends SubsystemBase
 
   public void stop()
   {
-    Hardware.intake.set(ControlMode.PercentOutput, 0);
     Hardware.hopper1.set(ControlMode.PercentOutput, 0);
     Hardware.hopper2.set(ControlMode.PercentOutput, 0);
     Hardware.hopper3.set(ControlMode.PercentOutput, 0);

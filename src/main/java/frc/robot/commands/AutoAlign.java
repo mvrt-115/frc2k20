@@ -45,6 +45,7 @@ public class AutoAlign extends CommandBase
   {
     new DriveWithJoystick().initialize();;     
     Robot.drivetrain.stop();
+    Hardware.limelight.setLED(LED_MODE.OFF);
   }
 
   // Returns true when the command should end.
