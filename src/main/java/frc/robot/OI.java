@@ -8,11 +8,8 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.Robot;
-import frc.robot.commands.AutoAlign;
-import frc.robot.commands.DriveWithJoystick;
+import frc.robot.commands.HopperCommand;
 
 /**
  * Add your docs here.
@@ -22,23 +19,14 @@ public class OI {
     Joystick driverJoystick;
     Joystick operatorJoystick;
 
-    JoystickButton align;
-    JoystickButton quickTurnButton;
-
-    JoystickButton intake;
+    JoystickButton hopperButton;
 
     public OI() {
         driverJoystick = new Joystick(0);
         operatorJoystick = new Joystick(1);
 
-        align = new JoystickButton(driverJoystick, 1);
-        quickTurnButton = new JoystickButton(driverJoystick, 5);
-
-        //intake = new JoystickButton(driverJoystick, 2);
-
-        align.whileHeld(new AutoAlign());
-        
-        Robot.drivetrain.setDefaultCommand(new DriveWithJoystick());
+        hopperButton = new JoystickButton(driverJoystick, 2);
+        hopperButton.whenPressed(new HopperCommand());
     }
 
     public double getWheel()
@@ -55,18 +43,9 @@ public class OI {
         return -throttle;
     }
 
-    public boolean getAlign() 
-    {
-        return align.get();
-    }
 
-    public boolean getQuickTurn()
+    public boolean getHopperButton()
     {
-        return quickTurnButton.get();
-    }
-
-    public boolean getIntake()
-    {
-        return intake.get();
+        return hopperButton.get();
     }
 }

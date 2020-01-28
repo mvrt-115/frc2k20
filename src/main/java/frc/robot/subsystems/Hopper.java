@@ -28,10 +28,16 @@ public class Hopper extends SubsystemBase
   {
     Hardware.hopper1 = new TalonSRX(1);
     Hardware.hopper2 = new TalonSRX(2);
-    Hardware.hopper3 = new TalonSRX(3);
-    Hardware.hopper4 = new TalonSRX(4);
+
+    Hardware.hopper1.configFactoryDefault();
+    Hardware.hopper2.configFactoryDefault();
+
+    Hardware.hopper1.setInverted(false);
+    Hardware.hopper2.setInverted(false);
+
     Hardware.breakbeamEnter = new DigitalInput(0);
     Hardware.breakbeamExit = new DigitalInput(1);
+    
     balls = 0;
     canIntake = true;
     lastEnter = false;
@@ -78,16 +84,12 @@ public class Hopper extends SubsystemBase
   {
     Hardware.hopper1.set(ControlMode.PercentOutput, 1);
     Hardware.hopper2.set(ControlMode.PercentOutput, 1);
-    Hardware.hopper3.set(ControlMode.PercentOutput, 1);
-    Hardware.hopper4.set(ControlMode.PercentOutput, 1);
   }
 
   public void stop()
   {
     Hardware.hopper1.set(ControlMode.PercentOutput, 0);
     Hardware.hopper2.set(ControlMode.PercentOutput, 0);
-    Hardware.hopper3.set(ControlMode.PercentOutput, 0);
-    Hardware.hopper4.set(ControlMode.PercentOutput, 0);
   }
 
   @Override

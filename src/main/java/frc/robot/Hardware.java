@@ -30,8 +30,6 @@ public class Hardware {
     //hopper
     public static TalonSRX hopper1;
     public static TalonSRX hopper2;
-    public static TalonSRX hopper3;
-    public static TalonSRX hopper4;
     public static DigitalInput breakbeamEnter;
     public static DigitalInput breakbeamExit;
 

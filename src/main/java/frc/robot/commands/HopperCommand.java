@@ -8,45 +8,37 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Hardware;
 import frc.robot.Robot;
 
-public class DriveWithJoystick extends CommandBase 
-{
+public class HopperCommand extends CommandBase {
   /**
-   * Creates a new DriveWithJoystick.
+   * Creates a new HopperCommand.
    */
-  public DriveWithJoystick() 
-  {
-    addRequirements(Robot.drivetrain);
+  public HopperCommand() {
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() 
-  {
-
+  public void initialize() {
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() 
-  {
-   // Robot.drivetrain.cheesyDriveWithJoystick(Robot.oi.getThrottle(), Robot.oi.getWheel(), Robot.oi.getQuickTurn());
-   Robot.drivetrain.cheesyIshDrive(Robot.oi.getThrottle(), Robot.oi.getWheel(), Robot.oi.getQuickTurn());
+  public void execute() {
+    Robot.hopper.runHopper();
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) 
-  {
-    Robot.drivetrain.stop();
+  public void end(boolean interrupted) {
+    Robot.hopper.stop();
   }
 
   // Returns true when the command should end.
   @Override
-  public boolean isFinished() 
-  {
-    return false;
+  public boolean isFinished() {
+    return Hardware.breakbeamExit.get();
   }
 }
