@@ -7,11 +7,9 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.CANEncoder;
-import com.revrobotics.CANPIDController;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.ControlType;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -29,30 +27,30 @@ public class Flywheel extends SubsystemBase {
   }
 
   private FlywheelState currState;
-  private CANPIDController velocityController;
-  private CANEncoder flyWheelEncoder;
   private double targetVelocity;
   private RollingAverage flywheelRPM;
 
   double time1, time2;
 
   public Flywheel() {
-    Hardware.flywheelMaster = new CANSparkMax(7, MotorType.kBrushless);
-    Hardware.flywheelFollower = new CANSparkMax(4, MotorType.kBrushless);
+    Hardware.flywheelMaster = new TalonFX(9);
+    Hardware.flywheelFollower = new TalonFX(4);
 
-    Hardware.flywheelMaster.restoreFactoryDefaults();
-    Hardware.flywheelFollower.restoreFactoryDefaults();
+    Hardware.flywheelMaster.configFactoryDefault();
+    Hardware.flywheelFollower.configFactoryDefault();
+    
+    Hardware.flywheelFollower.follow(Hardware.flywheelMaster);
 
     Hardware.flywheelMaster.setInverted(false);
-    Hardware.flywheelFollower.follow(Hardware.flywheelMaster, true);
+    Hardware.flywheelFollower.setInverted(false);
 
-    flyWheelEncoder = Hardware.flywheelMaster.getEncoder();
-    velocityController = Hardware.flywheelMaster.getPIDController();
+    Hardware.flywheelMaster.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, Constants.kPIDIdx, Constants.kTimeoutMs);
+    Hardware.flywheelFollower.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, Constants.kPIDIdx, Constants.kTimeoutMs);
 
-    velocityController.setP(Constants.kFlywheelP);
-    velocityController.setD(Constants.kFlywheelD);
-    velocityController.setFF(Constants.kFlywheelFF);
-    velocityController.setOutputRange(-1, 1);
+    Hardware.flywheelMaster.config_kF(Constants.kPIDIdx, Constants.kFlywheelFF);
+    Hardware.flywheelMaster.config_kP(Constants.kPIDIdx, Constants.kFlywheelP);
+    Hardware.flywheelMaster.config_kD(Constants.kPIDIdx, Constants.kFlywheelD);
+
 
     targetVelocity = 0;
     currState = FlywheelState.OFF;
@@ -70,14 +68,14 @@ public class Flywheel extends SubsystemBase {
 
   public void log() {
     SmartDashboard.putNumber("Motor RPM", getMotorRPM());
-    SmartDashboard.putNumber("Motor Output", Hardware.flywheelMaster.getAppliedOutput());
+    SmartDashboard.putNumber("Motor Output", Hardware.flywheelMaster.getMotorOutputPercent());
     SmartDashboard.putNumber("Target Velocity", targetVelocity);
-    // SmartDashboard.putString("STATE", currState.toString());
-
+ //   SmartDashboard.putNumber("Current", Hardware.flywheelMaster.getStatorCurrent());
+  
   }
 
   public double getMotorRPM() {
-    return flyWheelEncoder.getVelocity();
+    return Hardware.flywheelMaster.getSelectedSensorVelocity() *600 / 2048;
   }
 
   public void setFlywheelState(FlywheelState newState){
@@ -92,13 +90,14 @@ public class Flywheel extends SubsystemBase {
 
     case OFF:
       SmartDashboard.putString("STATE", "OFF");
-      Hardware.flywheelMaster.set(0);
+      Hardware.flywheelMaster.set(ControlMode.PercentOutput, 0);
 
       break;
     case SPINNINGUP:
       SmartDashboard.putString("STATE", "Spinning UP");
-      velocityController.setReference(targetVelocity, ControlType.kVelocity);
-
+      Hardware.flywheelMaster.set(ControlMode.Velocity, targetVelocity/600 * 2048);
+      SmartDashboard.putNumber("ERROR" ,Hardware.flywheelMaster.getClosedLoopError());
+     
       if(flywheelRPM.withinError(targetVelocity, Constants.kFlywheelAcceptableError)){
         time1 = Timer.getFPGATimestamp();
         setFlywheelState(FlywheelState.ATSPEED);
@@ -106,7 +105,9 @@ public class Flywheel extends SubsystemBase {
       break;
     case ATSPEED:
       SmartDashboard.putString("STATE", "AT SPEED");
-      velocityController.setReference(targetVelocity, ControlType.kVelocity);
+      Hardware.flywheelMaster.set(ControlMode.Velocity, targetVelocity/ 600  * 2048);
+      SmartDashboard.putNumber("ERROR" ,Hardware.flywheelMaster.getClosedLoopError());
+
    
       if(!flywheelRPM.withinError(targetVelocity, Constants.kFlywheelAcceptableError)){
         time2 = Timer.getFPGATimestamp();

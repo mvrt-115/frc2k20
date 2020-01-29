@@ -25,9 +25,9 @@ public class OI {
         shootBall = new JoystickButton(driverJoystick, 1);
         stopFlywheel = new JoystickButton(driverJoystick, 2);
 
-
-        shootBall.whenPressed(new SetFlywheelRPM(5700));
+        shootBall.whenPressed(new SetFlywheelRPM(3250));
         stopFlywheel.whenPressed(new SetFlywheelRPM(0));
     }
+
 
 }

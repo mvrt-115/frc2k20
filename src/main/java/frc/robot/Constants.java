@@ -17,10 +17,14 @@ package frc.robot;
  */
 public final class Constants {
 
-    public static double kFlywheelP = .00025;
+    public static double kFlywheelP = 0.07;
     public static double kFlywheelD = 0;
-    public static double kFlywheelFF = .00017618;
+    public static double kFlywheelFF = .0465;
 
     public static double kFlywheelAcceptableError = 100;
+
+    public static final int kPIDIdx = 0;
+    public static final int kTimeoutMs = 10;
+	public static final int kFlywheelGearRatio = 20/34;
 
 }

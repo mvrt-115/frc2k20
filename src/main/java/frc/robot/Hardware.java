@@ -7,13 +7,13 @@
 
 package frc.robot;
 
-import com.revrobotics.CANSparkMax;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 /**
  * Add your docs here.
  */
 public class Hardware {
 
-    public static CANSparkMax flywheelMaster;
-    public static CANSparkMax flywheelFollower;
+    public static TalonFX flywheelMaster;
+    public static TalonFX flywheelFollower;
 }
