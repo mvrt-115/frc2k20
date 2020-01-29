@@ -16,7 +16,8 @@ import frc.robot.Hardware;
 public class Intake extends SubsystemBase 
 {
 
-  public int position = 1;
+  public enum IntakeState {RETRACTED, DEPLOYED};
+  public IntakeState currState = IntakeState.RETRACTED;
   /**
    * Creates a new Intake.
    */
@@ -40,6 +41,18 @@ public class Intake extends SubsystemBase
   public void setFunnel(double rate)
   {
     Hardware.intakeFunnel.set(ControlMode.PercentOutput, rate); 
+  }
+
+  public double getDirection()
+  {
+    if(currState == IntakeState.RETRACTED) return 1;
+    return -1;
+  }
+
+  public void changePosition()
+  {
+    if(currState == IntakeState.RETRACTED) currState = IntakeState.DEPLOYED;
+    else currState = IntakeState.RETRACTED;
   }
 
   @Override

@@ -10,6 +10,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Hardware;
 import frc.robot.Robot;
+import frc.robot.subsystems.Intake;
 
 public class PivotIntake extends CommandBase {
   /**
@@ -24,7 +25,7 @@ public class PivotIntake extends CommandBase {
   @Override
   public void initialize() 
   {
-    Robot.intake.setPivot(Robot.intake.position);
+    Robot.intake.setPivot(Robot.intake.getDirection());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -39,7 +40,7 @@ public class PivotIntake extends CommandBase {
   public void end(boolean interrupted) 
   {
     Robot.intake.setPivot(0);
-    Robot.intake.position *= -1;
+    Robot.intake.changePosition();
   }
 
   // Returns true when the command should end.
