@@ -5,20 +5,18 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.subsystems;
+package frc.robot;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-public class ExampleSubsystem extends SubsystemBase {
-  /**
-   * Creates a new ExampleSubsystem.
-   */
-  public ExampleSubsystem() {
+/**
+ * Add your docs here.
+ */
+public class Hardware {
 
-  }
+    public static TalonFX elevatorMaster;
+    public static TalonSRX levelMotor;
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
+
 }
