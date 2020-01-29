@@ -32,7 +32,7 @@ public class PivotIntake extends CommandBase {
   @Override
   public void execute() 
   {
-    if(Hardware.limitDown.get() || Hardware.limitUp.get()) end(true);
+    
   }
 
   // Called once the command ends or is interrupted.
@@ -47,6 +47,7 @@ public class PivotIntake extends CommandBase {
   @Override
   public boolean isFinished() 
   {
+    if(Hardware.limitDown.get() || Hardware.limitUp.get()) return true;
     return false;
   }
 }

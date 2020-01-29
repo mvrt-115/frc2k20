@@ -16,7 +16,7 @@ import frc.robot.Hardware;
 public class Intake extends SubsystemBase 
 {
 
-  public enum IntakeState {RETRACTED, DEPLOYED};
+  public enum IntakeState {RETRACTED, DEPLOYED, RETRACTING, DEPLOYING, INTAKING};
   public IntakeState currState = IntakeState.RETRACTED;
   /**
    * Creates a new Intake.
@@ -26,6 +26,14 @@ public class Intake extends SubsystemBase
     Hardware.intakeRoller = new TalonSRX(0);
     Hardware.intakePivot = new TalonSRX(1);
     Hardware.intakeFunnel = new TalonSRX(2);
+
+    Hardware.intakeRoller.configFactoryDefault();
+    Hardware.intakePivot.configFactoryDefault();
+    Hardware.intakeFunnel.configFactoryDefault();
+
+    Hardware.intakeRoller.setInverted(false);
+		Hardware.intakePivot.setInverted(false);
+		Hardware.intakeFunnel.setInverted(true);
   }
 
   public void setRoller(double rate)
