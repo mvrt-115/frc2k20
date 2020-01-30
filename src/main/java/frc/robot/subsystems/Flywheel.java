@@ -33,8 +33,8 @@ public class Flywheel extends SubsystemBase {
   double time1, time2;
 
   public Flywheel() {
-    Hardware.flywheelMaster = new TalonFX(9);
-    Hardware.flywheelFollower = new TalonFX(4);
+    Hardware.flywheelMaster = new TalonFX(11);
+    Hardware.flywheelFollower = new TalonFX(12);
 
     Hardware.flywheelMaster.configFactoryDefault();
     Hardware.flywheelFollower.configFactoryDefault();
@@ -67,10 +67,11 @@ public class Flywheel extends SubsystemBase {
   }
 
   public void log() {
+    SmartDashboard.putNumber("Wheel RPM", getMotorRPM()/ Constants.kFlywheelGearRatio);
     SmartDashboard.putNumber("Motor RPM", getMotorRPM());
-    SmartDashboard.putNumber("Motor Output", Hardware.flywheelMaster.getMotorOutputPercent());
+   // SmartDashboard.putNumber("Motor Output", Hardware.flywheelMaster.getMotorOutputPercent());
     SmartDashboard.putNumber("Target Velocity", targetVelocity);
- //   SmartDashboard.putNumber("Current", Hardware.flywheelMaster.getStatorCurrent());
+    SmartDashboard.putNumber("Current Draw", Hardware.flywheelMaster.getStatorCurrent());
   
   }
 
@@ -95,7 +96,7 @@ public class Flywheel extends SubsystemBase {
       break;
     case SPINNINGUP:
       SmartDashboard.putString("STATE", "Spinning UP");
-      Hardware.flywheelMaster.set(ControlMode.Velocity, targetVelocity/600 * 2048);
+      Hardware.flywheelMaster.set(ControlMode.Velocity, targetVelocity/600 * 2048 * Constants.kFlywheelGearRatio);
       SmartDashboard.putNumber("ERROR" ,Hardware.flywheelMaster.getClosedLoopError());
      
       if(flywheelRPM.withinError(targetVelocity, Constants.kFlywheelAcceptableError)){
@@ -105,7 +106,7 @@ public class Flywheel extends SubsystemBase {
       break;
     case ATSPEED:
       SmartDashboard.putString("STATE", "AT SPEED");
-      Hardware.flywheelMaster.set(ControlMode.Velocity, targetVelocity/ 600  * 2048);
+      Hardware.flywheelMaster.set(ControlMode.Velocity, targetVelocity/ 600  * 2048 * Constants.kFlywheelGearRatio);
       SmartDashboard.putNumber("ERROR" ,Hardware.flywheelMaster.getClosedLoopError());
 
    
