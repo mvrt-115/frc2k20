@@ -8,6 +8,9 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.kauailabs.navx.frc.AHRS;
+
+import frc.robot.util.Limelight;
 
 /**
  * Add your docs here.
@@ -16,4 +19,13 @@ public class Hardware {
 
     public static TalonFX flywheelMaster;
     public static TalonFX flywheelFollower;
+
+    public static TalonFX leftMaster;
+    public static TalonFX leftFollower;
+    public static TalonFX rightMaster;
+    public static TalonFX rightFollower;
+
+    public static AHRS gyro;
+
+    public static Limelight limelight;
 }

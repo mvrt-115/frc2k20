@@ -17,14 +17,34 @@ package frc.robot;
  */
 public final class Constants {
 
-    public static double kFlywheelP = 0.076;
-    public static double kFlywheelD = 0;
-    public static double kFlywheelFF = .0465;
+    public static final double kFlywheelP = 0.076;
+    public static final double kFlywheelD = 0;
+    public static final double kFlywheelFF = .0465;
+    public static final double kFlywheelGearRatio = 20.0/34;
+    public static final double kFlywheelAcceptableError = 100;
 
-    public static double kFlywheelAcceptableError = 100;
+    public static final double kSensitivity = 0.90;
+	public static final double kWheelDeadband = 0.04;
+	public static final double kThrottleDeadband = 0.04;
 
-    public static final int kPIDIdx = 0;
-    public static final int kTimeoutMs = 10;
-	public static final double kFlywheelGearRatio = 20.0/34;
+    public static final double kTrackScrubFactor = 1.0469745223;
+	public static final double kTrackWidthInches = 24.2;
+	public static final double kTrackWidthMeters = .617432;
+    public static final double kWheelDiameterMeters = .1450848;
+    
+	public static final double kMaxVelocityMetersPerSecond = 1;
+	public static final double kMaxAccelerationMetersPerSecondSq = 2;
+	public static final double kDriveGearRatio = (46.0/9) * (44.0/20);
+	public static final int kFalconTicksPerRotation = 2048;
+	
+	public static final double kDriveS = 0.327; 
+	public static final double kDriveV = 2.53; 
+	public static final double kDriveA = 0.168;  
 
+	public static final double kDriveP = 1; 
+	public static final double kDriveI = 0;
+	public static final double kDriveD = 0;
+
+	public static final int kPIDIdx = 0;
+	public static final int kTimeoutMs = 10;
 }
