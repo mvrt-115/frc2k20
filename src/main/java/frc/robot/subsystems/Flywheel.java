@@ -98,7 +98,7 @@ public class Flywheel extends SubsystemBase {
       Hardware.flywheelMaster.set(ControlMode.Velocity, targetVelocity/600 * 2048);
       SmartDashboard.putNumber("ERROR" ,Hardware.flywheelMaster.getClosedLoopError());
      
-      if(flywheelRPM.withinError(targetVelocity, Constants.kFlywheelAcceptableError)){
+      if(flywheelRPM.allWithinError(targetVelocity, Constants.kFlywheelAcceptableError)){
         time1 = Timer.getFPGATimestamp();
         setFlywheelState(FlywheelState.ATSPEED);
       }
@@ -109,7 +109,7 @@ public class Flywheel extends SubsystemBase {
       SmartDashboard.putNumber("ERROR" ,Hardware.flywheelMaster.getClosedLoopError());
 
    
-      if(!flywheelRPM.withinError(targetVelocity, Constants.kFlywheelAcceptableError)){
+      if(!flywheelRPM.allWithinError(targetVelocity, Constants.kFlywheelAcceptableError)){
         time2 = Timer.getFPGATimestamp();
         setFlywheelState(FlywheelState.SPINNINGUP);
       }
