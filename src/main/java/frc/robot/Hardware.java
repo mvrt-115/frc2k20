@@ -5,20 +5,15 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.subsystems;
+package frc.robot;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
-public class ExampleSubsystem extends SubsystemBase {
-  /**
-   * Creates a new ExampleSubsystem.
-   */
-  public ExampleSubsystem() {
+/**
+ * Add your docs here.
+ */
+public class Hardware {
 
-  }
-
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
+    public static TalonFX flywheelMaster;
+    public static TalonFX flywheelFollower;
 }
