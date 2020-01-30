@@ -7,8 +7,6 @@
 
 package frc.robot.util;
 
-import java.util.ArrayList;
-
 /**
  * Add your docs here.
  */
@@ -44,7 +42,7 @@ public class RollingAverage {
         sum = 0;
     }
 
-    public boolean withinError(double target, double acceptableError){
+    public boolean allWithinError(double target, double acceptableError){
         for(int i = 0; i < size; i ++){
             if(Math.abs(arr[i]- target) > acceptableError)
                 return false; 
@@ -52,4 +50,6 @@ public class RollingAverage {
 
         return true;
     }
+
+    
 }
