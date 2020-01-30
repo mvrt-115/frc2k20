@@ -8,16 +8,21 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Hardware;
 
 public class Intake extends SubsystemBase 
 {
 
-  public enum IntakeState {RETRACTED, DEPLOYED, RETRACTING, DEPLOYING, INTAKING};
-  public IntakeState currState = IntakeState.RETRACTED;
+  public enum IntakeState {
+    STOWED, DEPLOYED, STOWING, DEPLOYING, INTAKING
+  };
+
+  private IntakeState currState;
   /**
    * Creates a new Intake.
    */
@@ -34,38 +39,64 @@ public class Intake extends SubsystemBase
     Hardware.intakeRoller.setInverted(false);
 		Hardware.intakePivot.setInverted(false);
 		Hardware.intakeFunnel.setInverted(true);
+  
+
+    Hardware.intakePivot.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Constants.kPIDIdx, Constants.kTimeoutMs);
+    Hardware.intakePivot.setSelectedSensorPosition(0);
+
+    Hardware.intakePivot.config_kP(Constants.kPIDIdx, Constants.kIntakeP);
+    Hardware.intakePivot.config_kD(Constants.kPIDIdx, Constants.kIntakeD);
+    currState = IntakeState.STOWED;
   }
 
-  public void setRoller(double rate)
-  {
-    Hardware.intakeRoller.set(ControlMode.PercentOutput, rate); 
+  public void runIntake(){
+    Hardware.intakeFunnel.set(ControlMode.PercentOutput, 0.3);
+    Hardware.intakeRoller.set(ControlMode.PercentOutput, 0.4);
   }
 
-  public void setPivot(double rate)
-  {
-    Hardware.intakePivot.set(ControlMode.PercentOutput, rate); 
+  public void setIntakeState(IntakeState desiredState){
+    currState = desiredState; 
   }
 
-  public void setFunnel(double rate)
-  {
-    Hardware.intakeFunnel.set(ControlMode.PercentOutput, rate); 
+  public IntakeState getIntakeState(){
+    return currState;
   }
 
-  public double getDirection()
-  {
-    if(currState == IntakeState.RETRACTED) return 1;
-    return -1;
+  public int getPivotTicks(){
+    return Hardware.intakePivot.getSelectedSensorPosition();
   }
 
-  public void changePosition()
-  {
-    if(currState == IntakeState.RETRACTED) currState = IntakeState.DEPLOYED;
-    else currState = IntakeState.RETRACTED;
-  }
-
-  @Override
+  
   public void periodic() 
   {
-    // This method will be called once per scheduler run
+    switch(currState){
+      
+      case STOWED:
+          Hardware.intakePivot.set(ControlMode.PercentOutput, 0);
+
+      break;
+      case DEPLOYED:
+         Hardware.intakePivot.set(ControlMode.PercentOutput, 0);
+      break;
+      case DEPLOYING:
+        Hardware.intakePivot.set(ControlMode.MotionMagic, Constants.kIntakeDeployTicks);
+
+        if(getPivotTicks() > Constants.kIntakeDeployTicks)
+          currState = IntakeState.DEPLOYED;
+
+      break;
+      case STOWING:
+        Hardware.intakePivot.set(ControlMode.MotionMagic, Constants.kIntakeStowedTicks);
+
+        if(getPivotTicks() < Constants.kIntakeStowedTicks)
+        currState = IntakeState.DEPLOYED;
+
+      break;
+      case INTAKING:
+        Hardware.intakePivot.set(ControlMode.PercentOutput, 0);
+        runIntake();
+
+      break;
+    }
   }
 }

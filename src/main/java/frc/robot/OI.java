@@ -10,7 +10,6 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.OuttakeCommand;
 
 /**
  * Add your docs here.
@@ -27,15 +26,11 @@ public class OI {
         outtakeButton = new JoystickButton(joystick, 2);
 
         intakeButton.whenPressed(new IntakeCommand());
-        outtakeButton.whenPressed(new OuttakeCommand());
     }
 
-    public boolean isIntakePressed(){
+    public boolean isIntakeButtonPressed(){
         return intakeButton.get();
     }
 
-    public boolean isOuttakePressed(){
-        return outtakeButton.get();
-    }
 
 }

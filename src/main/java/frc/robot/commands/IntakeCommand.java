@@ -9,6 +9,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
+import frc.robot.subsystems.Intake.IntakeState;
 
 public class IntakeCommand extends CommandBase 
 {
@@ -22,16 +23,16 @@ public class IntakeCommand extends CommandBase
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() 
-  {
-    Robot.intake.setRoller(1);
-    Robot.intake.setFunnel(1);
+  public void initialize(){
+    Robot.intake.setIntakeState(IntakeState.DEPLOYING);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() 
-  {
+  public void execute() {
+
+    if(Robot.intake.getIntakeState() == IntakeState.DEPLOYED)
+      Robot.intake.setIntakeState(IntakeState.INTAKING);
 
   }
 
@@ -39,14 +40,13 @@ public class IntakeCommand extends CommandBase
   @Override
   public void end(boolean interrupted) 
   {
-    Robot.intake.setRoller(0);
-    Robot.intake.setFunnel(0);
+    Robot.intake.setIntakeState(IntakeState.STOWING);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() 
   {
-    return !Robot.oi.isIntakePressed();
+    return Robot.oi.isIntakeButtonPressed();
   }
 }

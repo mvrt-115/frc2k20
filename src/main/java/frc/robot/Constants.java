@@ -16,4 +16,11 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
+    public static final int kPIDIdx = 0;
+    public static final int kTimeoutMs = 10;
+	public static final double kIntakeD = 0;
+	public static final double kIntakeP = 0;
+	public static final double kIntakeStowedTicks = 0;
+	public static final double kIntakeDeployTicks = 0;
 }
