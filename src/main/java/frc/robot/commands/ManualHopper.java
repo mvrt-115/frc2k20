@@ -7,15 +7,17 @@
 
 package frc.robot.commands;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Hardware;
 import frc.robot.Robot;
 
-public class HopperCommand extends CommandBase {
+public class ManualHopper extends CommandBase {
   /**
-   * Creates a new HopperCommand.
+   * Creates a new ManualHopper.
    */
-  public HopperCommand() {
+  public ManualHopper() {
+    addRequirements(Robot.hopper);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -33,12 +35,12 @@ public class HopperCommand extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    Robot.hopper.stop();
+    Robot.hopper.stopMotors();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Hardware.breakbeamExit.get();
+    return !Robot.oi.getHopperButton();
   }
 }

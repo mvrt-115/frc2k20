@@ -6,92 +6,59 @@
 /*----------------------------------------------------------------------------*/
 
 package frc.robot.subsystems;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
 
 public class Hopper extends SubsystemBase 
 {
-  public boolean canIntake;
-  public boolean lastEnter;
-  public boolean lastExit;
-  public int balls;
+ 
   /**
    * Creates a new Hopper.
    */
   public Hopper() 
   {
-    Hardware.hopper1 = new TalonSRX(1);
-    Hardware.hopper2 = new TalonSRX(2);
+    Hardware.bottomHopper = new TalonSRX(1);
+    Hardware.topHopper = new TalonSRX(2);
 
-    Hardware.hopper1.configFactoryDefault();
-    Hardware.hopper2.configFactoryDefault();
+    Hardware.bottomHopper.configFactoryDefault();
+    Hardware.topHopper.configFactoryDefault();
 
-    Hardware.hopper1.setInverted(false);
-    Hardware.hopper2.setInverted(false);
+    Hardware.bottomHopper.setInverted(false);
+    Hardware.topHopper.setInverted(false);
 
-    Hardware.breakbeamEnter = new DigitalInput(0);
-    Hardware.breakbeamExit = new DigitalInput(1);
-    
-    balls = 0;
-    canIntake = true;
-    lastEnter = false;
-    lastExit = false;
+    Hardware.topHopper.setNeutralMode(NeutralMode.Brake);
+    Hardware.bottomHopper.setNeutralMode(NeutralMode.Brake);
+
+    Hardware.bottomHopperBreakbeam = new DigitalInput(0);
+    Hardware.TopHopperBreakbeam = new DigitalInput(1);
+
   }
 
-  public void moveOne()
-  {
-    boolean curr = Hardware.breakbeamEnter.get();
-
-    if(canIntake)
-    {
-      runHopper();
-
-      if(lastEnter && !curr)
-      {
-        canIntake = false;
-        balls++;
-        stop();
-      }
-    }
-
-    lastEnter = curr;
+  public void runHopper() {
+    Hardware.bottomHopper.set(ControlMode.PercentOutput, 0.3);
+    Hardware.topHopper.set(ControlMode.PercentOutput, 0.3);
   }
 
-  public void outtake()
-  {
-    boolean curr = Hardware.breakbeamExit.get();
-    if(balls > 0)
-    {
-      runHopper();
-
-      if(lastExit && !curr) 
-      {
-        balls--;
-        stop();
-      }
-    }
-
-    lastExit = curr;
+  public void runBottom(){
+    Hardware.bottomHopper.set(ControlMode.PercentOutput, 0.3);
   }
 
-  public void runHopper()
-  {
-    Hardware.hopper1.set(ControlMode.PercentOutput, 1);
-    Hardware.hopper2.set(ControlMode.PercentOutput, 1);
+  public boolean getBottomBreakbeam() {
+    return Hardware.bottomHopperBreakbeam.get();
   }
 
-  public void stop()
-  {
-    Hardware.hopper1.set(ControlMode.PercentOutput, 0);
-    Hardware.hopper2.set(ControlMode.PercentOutput, 0);
-  }
+  public boolean getTopBreakbeam(){
+     return Hardware.TopHopperBreakbeam.get();
+   }
 
+  public void stopMotors(){
+    Hardware.topHopper.set(ControlMode.PercentOutput, 0);
+    Hardware.bottomHopper.set(ControlMode.PercentOutput,0);
+  }
   @Override
   public void periodic() 
   {

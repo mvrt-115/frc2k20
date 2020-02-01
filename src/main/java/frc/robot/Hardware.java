@@ -21,17 +21,12 @@ import frc.robot.utilities.Limelight;
  */
 public class Hardware {
 
-    //drivetrain
-    public static TalonFX frontLeft;
-    public static TalonFX backLeft;
-    public static TalonFX backRight;
-    public static TalonFX frontRight;
     
     //hopper
-    public static TalonSRX hopper1;
-    public static TalonSRX hopper2;
-    public static DigitalInput breakbeamEnter;
-    public static DigitalInput breakbeamExit;
+    public static TalonSRX bottomHopper;
+    public static TalonSRX topHopper;
+    public static DigitalInput bottomHopperBreakbeam;
+    public static DigitalInput TopHopperBreakbeam;
 
     public static AHRS gyro;
 

@@ -9,40 +9,25 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.HopperCommand;
+import frc.robot.commands.AutoHopper;
 
 /**
  * Add your docs here.
  */
 public class OI {
 
-    Joystick driverJoystick;
     Joystick operatorJoystick;
-
     JoystickButton hopperButton;
 
     public OI() {
-        driverJoystick = new Joystick(0);
         operatorJoystick = new Joystick(1);
 
-        hopperButton = new JoystickButton(driverJoystick, 2);
-        hopperButton.whenPressed(new HopperCommand());
-    }
+        hopperButton = new JoystickButton(operatorJoystick, 2);
 
-    public double getWheel()
-    {
-        double wheel = driverJoystick.getRawAxis(0);
-      //  if(Math.abs(wheel) >= wheelDeadband) return (wheel - wheelDeadband * Math.abs(wheel) / wheel) / (1 - wheelDeadband);
-        return wheel;
-    }
 
-    public double getThrottle()
-    {
-       double throttle = driverJoystick.getRawAxis(5);
-   //     if(Math.abs(throttle) >= 0.1) return (throttle - throttleDeadband * Math.abs(throttle) / throttle) / (1 - throttleDeadband);
-        return -throttle;
-    }
+        Robot.hopper.setDefaultCommand(new AutoHopper());
 
+    }
 
     public boolean getHopperButton()
     {
