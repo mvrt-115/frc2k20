@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 {
   "java.configuration.updateBuildConfiguration": "automatic",
   "files.exclude": {
@@ -15,6 +16,8 @@
   }
 }
 =======
+=======
+>>>>>>> d81c55ca7cbe603fb23af07b4763f816fc18dcd4
 {
   "java.configuration.updateBuildConfiguration": "automatic",
   "files.exclude": {
@@ -30,4 +33,7 @@
     "**/.factorypath": true
   }
 }
+<<<<<<< HEAD
 >>>>>>> 260bcf44f71e14237afe8796c459415f717e4d51
+=======
+>>>>>>> d81c55ca7cbe603fb23af07b4763f816fc18dcd4

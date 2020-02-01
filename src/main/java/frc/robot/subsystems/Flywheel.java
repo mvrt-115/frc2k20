@@ -94,12 +94,12 @@ public class Flywheel extends SubsystemBase {
     switch (currState) {
 
     case OFF:
-      SmartDashboard.putString("STATE", "OFF");
+      SmartDashboard.putString("FLYWHEEL STATE", "OFF");
       Hardware.flywheelMaster.set(ControlMode.PercentOutput, 0);
 
       break;
     case SPINNINGUP:
-      SmartDashboard.putString("STATE", "Spinning UP");
+      SmartDashboard.putString("FLYWHEEL STATE", "Spinning UP");
       Hardware.flywheelMaster.set(ControlMode.Velocity, targetVelocity/600 * 2048 * Constants.kFlywheelGearRatio);
       SmartDashboard.putNumber("Talon ERROR" ,Hardware.flywheelMaster.getClosedLoopError());
      
@@ -109,7 +109,7 @@ public class Flywheel extends SubsystemBase {
       }
       break;
     case ATSPEED:
-      SmartDashboard.putString("STATE", "AT SPEED");
+      SmartDashboard.putString("FLYWHEEL STATE", "AT SPEED");
       Hardware.flywheelMaster.set(ControlMode.Velocity, targetVelocity/ 600  * 2048 * Constants.kFlywheelGearRatio);
       SmartDashboard.putNumber("Talon ERROR" ,Hardware.flywheelMaster.getClosedLoopError());
 

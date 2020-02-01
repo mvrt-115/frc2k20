@@ -11,10 +11,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Flywheel;
-
-import java.util.ArrayList;
+import frc.robot.subsystems.Hopper;
 import java.util.List;
-
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
@@ -37,10 +35,10 @@ import frc.robot.subsystems.Intake.IntakeState;
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   public static Flywheel flywheel;
-  public static OI oi;
   public static Drivetrain drivetrain;
   public static Intake intake;
-  
+  public static Hopper hopper;
+  public static OI oi;
   //private RobotContainer m_robotContainer;
 
   public enum RobotState{
@@ -60,6 +58,7 @@ public class Robot extends TimedRobot {
     flywheel =  new Flywheel();
     drivetrain = new Drivetrain();
     intake = new Intake();
+    hopper = new Hopper();
     Hardware.limelight = new Limelight();
     oi = new OI();
 

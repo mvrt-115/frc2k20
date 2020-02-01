@@ -25,16 +25,16 @@ public class AutoShoot extends CommandBase {
   private double timeout;
   private double startTime;
   private RollingAverage horizontalOffset;
-  
 
   public AutoShoot(double timeoutSeconds) {
     timeout = timeoutSeconds;
     horizontalOffset = new RollingAverage(5);
+    startTime = 0;
+
     addRequirements(Robot.drivetrain);
     addRequirements(Robot.flywheel);
-    startTime = 0;
-    
-    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(Robot.hopper);
+
   }
 
   // Called when the command is initially scheduled.
@@ -42,10 +42,12 @@ public class AutoShoot extends CommandBase {
   public void initialize() {
     startTime = Timer.getFPGATimestamp();
     horizontalOffset.reset();
+
     Hardware.limelight.setPipeline(PIPELINE_STATE.VISION_ZOOM);
     Hardware.limelight.setLED(LED_MODE.ON);
+    
     Robot.flywheel.setTargetVelocity(3000);
-  
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -54,13 +56,18 @@ public class AutoShoot extends CommandBase {
 
     horizontalOffset.add(Hardware.limelight.getHorizontalAngle());
     Robot.drivetrain.alignToTarget(horizontalOffset.getAverage());
-    
+
     Robot.flywheel.setTargetVelocity(0);
-    
-    if(Hardware.limelight.hasTarget() && Robot.flywheel.getFlywheelState() == FlywheelState.ATSPEED && horizontalOffset.allWithinError(0 , .5)){
-      // Run Hopper Motor 
+
+
+    if (Hardware.limelight.hasTarget() && Robot.flywheel.getFlywheelState() == FlywheelState.ATSPEED
+        && horizontalOffset.allWithinError(0, .5)) {
+      Robot.hopper.runHopper();
+    }else{
+      if(!Robot.hopper.getTopBreakbeam()){
+          Robot.hopper.runHopper();
+      }
     }
-    
 
   }
 
@@ -75,18 +82,18 @@ public class AutoShoot extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    
-    if (Robot.getRobotState() == RobotState.TELEOP){
-      if(!Robot.oi.getAlignButton()){
+
+    if (Robot.getRobotState() == RobotState.TELEOP) {
+      if (!Robot.oi.getAlignButton()) {
         return true;
       }
-      return false;      
-    }else{
-      if(Timer.getFPGATimestamp() - startTime < timeout){
+      return false;
+    } else {
+      if (Timer.getFPGATimestamp() - startTime < timeout) {
         return true;
       }
       return false;
     }
-    
+
   }
 }

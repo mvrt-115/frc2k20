@@ -10,11 +10,12 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.SetFlywheelRPM;
-import frc.robot.commands.AutoAlign;
+import frc.robot.commands.AutoHopper;
 import frc.robot.commands.AutoShoot;
 import frc.robot.commands.DriveWithJoystick;
 import frc.robot.Robot;
 import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.ManualHopper;
 
 /**
  * Add your docs here.
@@ -30,6 +31,7 @@ public class OI {
 
     private Joystick operatorJoystick;
     private JoystickButton intakeButton;
+    private JoystickButton hopperButton;
 
     public OI(){
         driverJoystick = new Joystick(0);
@@ -41,13 +43,16 @@ public class OI {
         quickTurnButton = new JoystickButton(driverJoystick, 5);
 
         intakeButton = new JoystickButton(operatorJoystick, 1);
+        hopperButton = new JoystickButton(operatorJoystick, 2);
 
         
         intakeButton.whenPressed(new IntakeCommand());
         shootBall.whenPressed(new SetFlywheelRPM(4320));
         stopFlywheel.whenPressed(new SetFlywheelRPM(0));
         alignButton.whenPressed(new AutoShoot(0));
+        hopperButton.whenPressed(new ManualHopper());
 
+        Robot.hopper.setDefaultCommand(new AutoHopper());
         Robot.drivetrain.setDefaultCommand(new DriveWithJoystick());
     }
 
@@ -77,5 +82,8 @@ public class OI {
         return intakeButton.get();
     }
 
-
+    public boolean getHopperButton()
+    {
+        return hopperButton.get();
+    }
 }

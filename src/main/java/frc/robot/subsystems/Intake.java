@@ -10,8 +10,10 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Hardware;
@@ -39,6 +41,10 @@ public class Intake extends SubsystemBase {
     Hardware.intakeRoller.setInverted(false);
     Hardware.intakePivot.setInverted(false);
     Hardware.intakeFunnel.setInverted(true);
+
+    Hardware.intakeRoller.setNeutralMode(NeutralMode.Coast);
+    Hardware.intakePivot.setNeutralMode(NeutralMode.Brake);
+    Hardware.intakeFunnel.setNeutralMode(NeutralMode.Coast);
 
     Hardware.intakePivot.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Constants.kPIDIdx,
         Constants.kTimeoutMs);
@@ -78,13 +84,16 @@ public class Intake extends SubsystemBase {
     switch (currState) {
 
     case STOWED:
+      SmartDashboard.putString("INTAKE STATE", "Stowed");
       Hardware.intakePivot.set(ControlMode.PercentOutput, 0);
 
       break;
     case DEPLOYED:
+      SmartDashboard.putString("INTAKE STATE", "Deployed");
       Hardware.intakePivot.set(ControlMode.PercentOutput, 0);
       break;
     case DEPLOYING:
+      SmartDashboard.putString("INTAKE STATE", "Deploying");
       Hardware.intakePivot.set(ControlMode.MotionMagic, Constants.kIntakeDeployTicks, DemandType.ArbitraryFeedForward,
           Constants.kIntakeFF * getIntakePivotAngle());
 
@@ -93,6 +102,7 @@ public class Intake extends SubsystemBase {
 
       break;
     case STOWING:
+      SmartDashboard.putString("INTAKE STATE", "Stowing");
       Hardware.intakePivot.set(ControlMode.MotionMagic, Constants.kIntakeStowedTicks, DemandType.ArbitraryFeedForward,
           Constants.kIntakeFF * getIntakePivotAngle());
 
@@ -101,6 +111,7 @@ public class Intake extends SubsystemBase {
 
       break;
     case INTAKING:
+      SmartDashboard.putString("INTAKE STATE", "Intaking");
       Hardware.intakePivot.set(ControlMode.PercentOutput, 0);
       runIntake();
 
