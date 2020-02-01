@@ -204,6 +204,7 @@ public class RamseteCommand extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     m_timer.stop();
+    Robot.drivetrain.setLeftRightMotorOutputs(0, 0);
   }
 
   @Override

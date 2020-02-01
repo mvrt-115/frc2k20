@@ -16,24 +16,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.command.WaitCommand;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator.ControlVectorList;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.AutoAlign;
 import frc.robot.commands.AutonRoutine;
-import frc.robot.commands.FlashLimelight;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.util.Limelight;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Intake.IntakeState;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -46,6 +39,7 @@ public class Robot extends TimedRobot {
   public static Flywheel flywheel;
   public static OI oi;
   public static Drivetrain drivetrain;
+  public static Intake intake;
   
   //private RobotContainer m_robotContainer;
 
@@ -53,7 +47,7 @@ public class Robot extends TimedRobot {
     DISABLED, TELEOP, AUTON
   };
 
-  private RobotState currState;
+  private static RobotState currState = RobotState.DISABLED;
   private RamseteCommand autoCommand;
   private double startDisabledTime;
 
@@ -65,14 +59,12 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     flywheel =  new Flywheel();
     drivetrain = new Drivetrain();
+    intake = new Intake();
     Hardware.limelight = new Limelight();
     oi = new OI();
 
     setRobotState(RobotState.DISABLED);
-
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-    // autonomous chooser on the dashboard.
-    //m_robotContainer = new RobotContainer();
+    
   }
 
   /**
@@ -137,6 +129,9 @@ public class Robot extends TimedRobot {
     setRobotState(RobotState.AUTON);
     drivetrain.configNeutralMode(NeutralMode.Brake);
     m_autonomousCommand.schedule();
+    intake.resetPivotEncoder();
+    intake.setIntakeState(IntakeState.STOWED);
+
   }
 
   /**
@@ -182,6 +177,10 @@ public class Robot extends TimedRobot {
     currState = newState;
   }
 
+  public static RobotState getRobotState(){
+    return currState;
+  }
+
   
   public Command generatePath(Trajectory trajectory){
     
@@ -199,7 +198,7 @@ public class Robot extends TimedRobot {
     );
 
   
-    return autoCommand.andThen(() -> drivetrain.setLeftRightMotorOutputs(0, 0));
+    return autoCommand;
   }
 
 }

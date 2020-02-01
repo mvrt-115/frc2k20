@@ -11,8 +11,10 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.SetFlywheelRPM;
 import frc.robot.commands.AutoAlign;
+import frc.robot.commands.AutoShoot;
 import frc.robot.commands.DriveWithJoystick;
 import frc.robot.Robot;
+import frc.robot.commands.IntakeCommand;
 
 /**
  * Add your docs here.
@@ -22,26 +24,31 @@ public class OI {
     private Joystick driverJoystick;
     private JoystickButton shootBall;
     private JoystickButton stopFlywheel;
+    private JoystickButton alignButton;
+    private JoystickButton quickTurnButton;
+
 
     private Joystick operatorJoystick;
-    private JoystickButton align;
-    private JoystickButton quickTurnButton;
+    private JoystickButton intakeButton;
 
     public OI(){
         driverJoystick = new Joystick(0);
+        operatorJoystick = new Joystick(1);
+
         shootBall = new JoystickButton(driverJoystick, 1);
         stopFlywheel = new JoystickButton(driverJoystick, 2);
-
-      
-        operatorJoystick = new Joystick(1);
-        align = new JoystickButton(driverJoystick, 8);
+        alignButton = new JoystickButton(driverJoystick, 8);
         quickTurnButton = new JoystickButton(driverJoystick, 5);
-        align.whenPressed(new AutoAlign());
+
+        intakeButton = new JoystickButton(operatorJoystick, 1);
+
+        
+        intakeButton.whenPressed(new IntakeCommand());
+        shootBall.whenPressed(new SetFlywheelRPM(4320));
+        stopFlywheel.whenPressed(new SetFlywheelRPM(0));
+        alignButton.whenPressed(new AutoShoot(0));
 
         Robot.drivetrain.setDefaultCommand(new DriveWithJoystick());
-
-        shootBall.whenPressed(new SetFlywheelRPM(6750));
-        stopFlywheel.whenPressed(new SetFlywheelRPM(0));
     }
 
     public double getWheel()
@@ -58,12 +65,17 @@ public class OI {
         return -throttle;
     }
 
-    public boolean getAlign() {
-        return align.get();
+    public boolean getAlignButton() {
+        return alignButton.get();
     }
 
     public boolean getQuickTurn(){
         return quickTurnButton.get();
     }
-}
 
+    public boolean isIntakeButtonPressed(){
+        return intakeButton.get();
+    }
+
+
+}

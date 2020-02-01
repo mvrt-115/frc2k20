@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "java.configuration.updateBuildConfiguration": "automatic",
   "files.exclude": {
@@ -13,3 +14,20 @@
     "**/.factorypath": true
   }
 }
+=======
+{
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "bin/": true,
+    "**/.classpath": true,
+    "**/.project": true,
+    "**/.settings": true,
+    "**/.factorypath": true
+  }
+}
+>>>>>>> 260bcf44f71e14237afe8796c459415f717e4d51

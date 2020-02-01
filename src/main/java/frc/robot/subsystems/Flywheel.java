@@ -41,8 +41,8 @@ public class Flywheel extends SubsystemBase {
     
     Hardware.flywheelFollower.follow(Hardware.flywheelMaster);
 
-    Hardware.flywheelMaster.setInverted(false);
-    Hardware.flywheelFollower.setInverted(false);
+    Hardware.flywheelMaster.setInverted(true);
+    Hardware.flywheelFollower.setInverted(true);
 
     Hardware.flywheelMaster.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, Constants.kPIDIdx, Constants.kTimeoutMs);
     Hardware.flywheelFollower.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, Constants.kPIDIdx, Constants.kTimeoutMs);
@@ -67,25 +67,29 @@ public class Flywheel extends SubsystemBase {
   }
 
   public void log() {
-    SmartDashboard.putNumber("Wheel RPM", getMotorRPM()/ Constants.kFlywheelGearRatio);
-    SmartDashboard.putNumber("Motor RPM", getMotorRPM());
+    SmartDashboard.putNumber("Wheel RPM", getWheelRPM());
+   // SmartDashboard.putNumber("Motor RPM", getMotorRPM());
    // SmartDashboard.putNumber("Motor Output", Hardware.flywheelMaster.getMotorOutputPercent());
     SmartDashboard.putNumber("Target Velocity", targetVelocity);
     SmartDashboard.putNumber("Current Draw", Hardware.flywheelMaster.getStatorCurrent());
-  
+    SmartDashboard.putNumber("Wheel RPM Error", targetVelocity - getWheelRPM());
   }
 
-  public double getMotorRPM() {
-    return Hardware.flywheelMaster.getSelectedSensorVelocity() *600 / 2048;
+  public double getWheelRPM() {
+    return Hardware.flywheelMaster.getSelectedSensorVelocity() *600 / 2048/ Constants.kFlywheelGearRatio;
   }
 
   public void setFlywheelState(FlywheelState newState){
     currState = newState;
   }
 
+  public FlywheelState getFlywheelState(){
+    return currState;
+  }
+
   public void periodic() {
     
-    flywheelRPM.add(getMotorRPM());
+    flywheelRPM.add(getWheelRPM());
 
     switch (currState) {
 
@@ -97,7 +101,7 @@ public class Flywheel extends SubsystemBase {
     case SPINNINGUP:
       SmartDashboard.putString("STATE", "Spinning UP");
       Hardware.flywheelMaster.set(ControlMode.Velocity, targetVelocity/600 * 2048 * Constants.kFlywheelGearRatio);
-      SmartDashboard.putNumber("ERROR" ,Hardware.flywheelMaster.getClosedLoopError());
+      SmartDashboard.putNumber("Talon ERROR" ,Hardware.flywheelMaster.getClosedLoopError());
      
       if(flywheelRPM.allWithinError(targetVelocity, Constants.kFlywheelAcceptableError)){
         time1 = Timer.getFPGATimestamp();
@@ -107,7 +111,7 @@ public class Flywheel extends SubsystemBase {
     case ATSPEED:
       SmartDashboard.putString("STATE", "AT SPEED");
       Hardware.flywheelMaster.set(ControlMode.Velocity, targetVelocity/ 600  * 2048 * Constants.kFlywheelGearRatio);
-      SmartDashboard.putNumber("ERROR" ,Hardware.flywheelMaster.getClosedLoopError());
+      SmartDashboard.putNumber("Talon ERROR" ,Hardware.flywheelMaster.getClosedLoopError());
 
    
       if(!flywheelRPM.allWithinError(targetVelocity, Constants.kFlywheelAcceptableError)){

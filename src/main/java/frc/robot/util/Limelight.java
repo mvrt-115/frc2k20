@@ -7,7 +7,12 @@ import edu.wpi.first.networktables.NetworkTableInstance;
  * Add your docs here.
  */
 public class Limelight {
-    NetworkTable limelight;
+    
+    private NetworkTable limelight;
+    private static final double kLimelightMountAngle = Math.toRadians(90);     
+    private static final double kLimelightHeight = 0;       // Inches    
+    private static final double kTargetHeight = 98;  // Inches **** CHANGE VALUE
+
 
     public static enum LED_MODE {
         ON, OFF, BLINKING;
@@ -63,5 +68,9 @@ public class Limelight {
             limelight.getEntry("pipeline").setNumber(2);
             break;
         }
+    }
+
+    public double getDistanceFromTarget(){
+        return 0;
     }
 }
