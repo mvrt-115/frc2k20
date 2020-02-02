@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.commands.AutonRoutine;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.util.Limelight;
 import frc.robot.subsystems.Intake;
@@ -39,6 +40,7 @@ public class Robot extends TimedRobot {
   public static Drivetrain drivetrain;
   public static Intake intake;
   public static Hopper hopper;
+  public static Climber climber;
   public static OI oi;
   //private RobotContainer m_robotContainer;
 
@@ -60,6 +62,7 @@ public class Robot extends TimedRobot {
     drivetrain = new Drivetrain();
     intake = new Intake();
     hopper = new Hopper();
+    climber = new Climber();
     Hardware.limelight = new Limelight();
     oi = new OI();
 

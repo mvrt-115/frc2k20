@@ -12,10 +12,12 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.SetFlywheelRPM;
 import frc.robot.commands.AutoHopper;
 import frc.robot.commands.AutoShoot;
+import frc.robot.commands.ClimbAndLevelCommand;
 import frc.robot.commands.DriveWithJoystick;
 import frc.robot.Robot;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ManualHopper;
+import frc.robot.commands.RaiseElevatorCommand;
 
 /**
  * Add your docs here.
@@ -32,6 +34,8 @@ public class OI {
     private Joystick operatorJoystick;
     private JoystickButton intakeButton;
     private JoystickButton hopperButton;
+    private JoystickButton raiseElevatorButton;
+    private JoystickButton climbButton;
 
     public OI(){
         driverJoystick = new Joystick(0);
@@ -44,8 +48,12 @@ public class OI {
 
         intakeButton = new JoystickButton(operatorJoystick, 1);
         hopperButton = new JoystickButton(operatorJoystick, 2);
+        raiseElevatorButton = new JoystickButton(operatorJoystick, 1);
+        climbButton = new JoystickButton(operatorJoystick, 2);
 
         
+        raiseElevatorButton.whenPressed(new RaiseElevatorCommand());
+        climbButton.whenPressed(new ClimbAndLevelCommand());
         intakeButton.whenPressed(new IntakeCommand());
         shootBall.whenPressed(new SetFlywheelRPM(8320));
         stopFlywheel.whenPressed(new SetFlywheelRPM(0));
