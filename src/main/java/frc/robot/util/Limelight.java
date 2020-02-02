@@ -9,8 +9,8 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 public class Limelight {
     
     private NetworkTable limelight;
-    private static final double kLimelightMountAngle = Math.toRadians(90);     
-    private static final double kLimelightHeight = 0;       // Inches    
+    private static final double kLimelightMountAngle = 12;     
+    private static final double kLimelightHeight = 41;       // Inches    
     private static final double kTargetHeight = 98;  // Inches **** CHANGE VALUE
 
 
@@ -71,6 +71,10 @@ public class Limelight {
     }
 
     public double getDistanceFromTarget(){
-        return 0;
+
+        double height = kTargetHeight-kLimelightHeight;
+        double angle = Math.toRadians(kLimelightMountAngle + getVerticalAngle());
+        double distance = height/Math.atan(angle);
+        return distance/12;
     }
 }

@@ -30,9 +30,9 @@ public class Intake extends SubsystemBase {
    * Creates a new Intake.
    */
   public Intake() {
-    Hardware.intakeRoller = new TalonSRX(0);
-    Hardware.intakePivot = new TalonSRX(1);
-    Hardware.intakeFunnel = new TalonSRX(2);
+    Hardware.intakeRoller = new TalonSRX(36);
+    Hardware.intakePivot = new TalonSRX(30);
+    Hardware.intakeFunnel = new TalonSRX(31);
 
     Hardware.intakeRoller.configFactoryDefault();
     Hardware.intakePivot.configFactoryDefault();
@@ -40,7 +40,7 @@ public class Intake extends SubsystemBase {
 
     Hardware.intakeRoller.setInverted(false);
     Hardware.intakePivot.setInverted(false);
-    Hardware.intakeFunnel.setInverted(true);
+    Hardware.intakeFunnel.setInverted(false);
 
     Hardware.intakeRoller.setNeutralMode(NeutralMode.Coast);
     Hardware.intakePivot.setNeutralMode(NeutralMode.Brake);

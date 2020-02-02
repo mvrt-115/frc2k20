@@ -47,7 +47,7 @@ public class OI {
 
         
         intakeButton.whenPressed(new IntakeCommand());
-        shootBall.whenPressed(new SetFlywheelRPM(4320));
+        shootBall.whenPressed(new SetFlywheelRPM(8320));
         stopFlywheel.whenPressed(new SetFlywheelRPM(0));
         alignButton.whenPressed(new AutoShoot(0));
         hopperButton.whenPressed(new ManualHopper());

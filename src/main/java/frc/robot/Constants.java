@@ -17,16 +17,19 @@ package frc.robot;
  */
 public final class Constants {
 
+	//Flywheel 
     public static final double kFlywheelP = 0.08;
     public static final double kFlywheelD = 0.8;
     public static final double kFlywheelFF = .0485;
     public static final double kFlywheelGearRatio = 20.0/34;
     public static final double kFlywheelAcceptableError = 100;
 
+	//Joystick
     public static final double kSensitivity = 0.90;
 	public static final double kWheelDeadband = 0.04;
 	public static final double kThrottleDeadband = 0.04;
 
+	//Drivetrain
     public static final double kTrackScrubFactor = 1.0469745223;
 	public static final double kTrackWidthInches = 24.2;
 	public static final double kTrackWidthMeters = .617432;
@@ -45,6 +48,7 @@ public final class Constants {
 	public static final double kDriveI = 0;
 	public static final double kDriveD = 0;
 
+	//Intake
 	public static final double kIntakeD = 0;
 	public static final double kIntakeP = 0;
 	public static final double kIntakeFF = 0;

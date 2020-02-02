@@ -21,8 +21,8 @@ public class Hopper extends SubsystemBase
    */
   public Hopper() 
   {
-    Hardware.bottomHopper = new TalonSRX(1);
-    Hardware.topHopper = new TalonSRX(2);
+    Hardware.bottomHopper = new TalonSRX(22);
+    Hardware.topHopper = new TalonSRX(32);
 
     Hardware.bottomHopper.configFactoryDefault();
     Hardware.topHopper.configFactoryDefault();

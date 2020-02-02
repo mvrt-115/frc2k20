@@ -73,6 +73,8 @@ public class Flywheel extends SubsystemBase {
     SmartDashboard.putNumber("Target Velocity", targetVelocity);
     SmartDashboard.putNumber("Current Draw", Hardware.flywheelMaster.getStatorCurrent());
     SmartDashboard.putNumber("Wheel RPM Error", targetVelocity - getWheelRPM());
+    SmartDashboard.putNumber("Limelight Ty", Hardware.limelight.getVerticalAngle());
+    SmartDashboard.putNumber("Distance", Hardware.limelight.getDistanceFromTarget());
   }
 
   public double getWheelRPM() {
