@@ -12,8 +12,6 @@ import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-
-import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Hardware;
@@ -55,13 +53,6 @@ public class Climber extends SubsystemBase {
     Hardware.elevatorMaster.config_kI(Constants.kPIDIdx, Constants.kElevatorI);
     Hardware.elevatorMaster.config_kD(Constants.kPIDIdx, Constants.kElevatorD);
 
-    new Notifier(new Runnable() {
-
-      public void run() {
-        periodic();
-      }
-
-    }).startPeriodic(0.005);
   }
 
   public void periodic() {
