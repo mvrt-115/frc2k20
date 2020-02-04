@@ -42,8 +42,7 @@ public class Hardware {
       public static TalonSRX intakeRoller;
       public static TalonSRX intakePivot;
       public static TalonSRX intakeFunnel;
-      public static DigitalInput limitDown;
-      public static DigitalInput limitUp;
+      public static DigitalInput intakeBottomlimitSwitch;
   
       public static AHRS gyro;
       public static Limelight limelight;

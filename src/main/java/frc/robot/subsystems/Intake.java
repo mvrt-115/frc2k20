@@ -13,6 +13,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -34,6 +35,8 @@ public class Intake extends SubsystemBase {
     Hardware.intakePivot = new TalonSRX(30);
     Hardware.intakeFunnel = new TalonSRX(31);
 
+    Hardware.intakeBottomlimitSwitch = new DigitalInput(5);
+
     Hardware.intakeRoller.configFactoryDefault();
     Hardware.intakePivot.configFactoryDefault();
     Hardware.intakeFunnel.configFactoryDefault();
@@ -48,6 +51,8 @@ public class Intake extends SubsystemBase {
 
     Hardware.intakePivot.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, Constants.kPIDIdx,
         Constants.kTimeoutMs);
+
+    Hardware.intakePivot.setSensorPhase(false);
     Hardware.intakePivot.setSelectedSensorPosition(0);
 
     Hardware.intakePivot.config_kP(Constants.kPIDIdx, Constants.kIntakeP);
@@ -55,29 +60,9 @@ public class Intake extends SubsystemBase {
     currState = IntakeState.STOWED;
   }
 
-  public double getIntakePivotAngle() {  
-    return Hardware.intakePivot.getSelectedSensorPosition() / Constants.kIntakeMaxTicks * Math.PI/2;
-  }
-
-  public void resetPivotEncoder() {
-    Hardware.intakePivot.setSelectedSensorPosition(0);
-  }
-
   public void runIntake() {
     Hardware.intakeFunnel.set(ControlMode.PercentOutput, 0.3);
     Hardware.intakeRoller.set(ControlMode.PercentOutput, 0.4);
-  }
-
-  public void setIntakeState(IntakeState desiredState) {
-    currState = desiredState;
-  }
-
-  public IntakeState getIntakeState() {
-    return currState;
-  }
-
-  public int getPivotTicks() {
-    return Hardware.intakePivot.getSelectedSensorPosition();
   }
 
   public void periodic() {
@@ -117,5 +102,33 @@ public class Intake extends SubsystemBase {
 
       break;
     }
+  }
+
+  public void setIntakeState(IntakeState desiredState) {
+    currState = desiredState;
+  }
+
+  public IntakeState getIntakeState() {
+    return currState;
+  }
+
+  public void log() {
+    SmartDashboard.putNumber("Intake Encoder", Hardware.intakePivot.getSelectedSensorPosition());
+  }
+
+  public int getPivotTicks() {
+    return Hardware.intakePivot.getSelectedSensorPosition();
+  }
+
+  public double getIntakePivotAngle() {
+    return Hardware.intakePivot.getSelectedSensorPosition() / Constants.kIntakeMaxTicks * Math.PI / 2;
+  }
+
+  public boolean getBottomLimitSwitch() {
+    return Hardware.intakeBottomlimitSwitch.get();
+  }
+
+  public void resetPivotEncoder() {
+    Hardware.intakePivot.setSelectedSensorPosition(0);
   }
 }

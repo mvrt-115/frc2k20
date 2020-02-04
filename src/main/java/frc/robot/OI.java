@@ -41,23 +41,23 @@ public class OI {
         driverJoystick = new Joystick(0);
         operatorJoystick = new Joystick(1);
 
-        shootBall = new JoystickButton(driverJoystick, 1);
-        stopFlywheel = new JoystickButton(driverJoystick, 2);
-        alignButton = new JoystickButton(driverJoystick, 8);
+        shootBall = new JoystickButton(driverJoystick, 8);
+        stopFlywheel = new JoystickButton(driverJoystick, 9);
+        alignButton = new JoystickButton(driverJoystick, 1);
         quickTurnButton = new JoystickButton(driverJoystick, 5);
 
         intakeButton = new JoystickButton(operatorJoystick, 1);
         hopperButton = new JoystickButton(operatorJoystick, 2);
-        raiseElevatorButton = new JoystickButton(operatorJoystick, 1);
-        climbButton = new JoystickButton(operatorJoystick, 2);
+        raiseElevatorButton = new JoystickButton(operatorJoystick, 4);
+        climbButton = new JoystickButton(operatorJoystick, 5);
 
         
         raiseElevatorButton.whenPressed(new RaiseElevatorCommand());
         climbButton.whenPressed(new ClimbAndLevelCommand());
-        intakeButton.whenPressed(new IntakeCommand());
+        intakeButton.whenPressed(new IntakeCommand(0));
         shootBall.whenPressed(new SetFlywheelRPM(8320));
         stopFlywheel.whenPressed(new SetFlywheelRPM(0));
-        alignButton.whenPressed(new AutoShoot(0));
+        alignButton.whenPressed(new AutoShoot(0, 0));
         hopperButton.whenPressed(new ManualHopper());
 
         Robot.hopper.setDefaultCommand(new AutoHopper());
@@ -67,14 +67,12 @@ public class OI {
     public double getWheel()
     {
         double wheel = driverJoystick.getRawAxis(0);
-      //  if(Math.abs(wheel) >= wheelDeadband) return (wheel - wheelDeadband * Math.abs(wheel) / wheel) / (1 - wheelDeadband);
         return wheel;
     }
 
     public double getThrottle()
     {
        double throttle = driverJoystick.getRawAxis(5);
-   //     if(Math.abs(throttle) >= 0.1) return (throttle - throttleDeadband * Math.abs(throttle) / throttle) / (1 - throttleDeadband);
         return -throttle;
     }
 

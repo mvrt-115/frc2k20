@@ -10,6 +10,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
 
@@ -63,5 +64,11 @@ public class Hopper extends SubsystemBase
   public void periodic() 
   {
     // This method will be called once per scheduler run
+  }
+
+
+  public void log(){
+    SmartDashboard.putBoolean("bottom Breakbeam", getBottomBreakbeam());
+    SmartDashboard.putBoolean("Top Breakbeam", getTopBreakbeam());
   }
 }

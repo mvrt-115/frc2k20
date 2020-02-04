@@ -128,4 +128,8 @@ public class Flywheel extends SubsystemBase {
     double recoverTime = time1-time2;
     SmartDashboard.putNumber("RecoverTime", recoverTime);
   }
+
+  public double getRPMFromDistance(double _distance){
+    return 0;
+  }
 }

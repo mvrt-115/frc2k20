@@ -77,4 +77,5 @@ public class Limelight {
         double distance = height/Math.atan(angle);
         return distance/12;
     }
+
 }

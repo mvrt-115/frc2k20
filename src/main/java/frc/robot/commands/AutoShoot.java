@@ -23,12 +23,16 @@ public class AutoShoot extends CommandBase {
    */
 
   private double timeout;
+  private double RPM;
   private double startTime;
   private RollingAverage horizontalOffset;
+  private RollingAverage verticalOffset;
 
-  public AutoShoot(double timeoutSeconds) {
-    timeout = timeoutSeconds;
+  public AutoShoot(double _timeoutSeconds, double _RPM) {
+    timeout = _timeoutSeconds;
+    RPM = _RPM;
     horizontalOffset = new RollingAverage(5);
+    verticalOffset = new RollingAverage(5);
     startTime = 0;
 
     addRequirements(Robot.drivetrain);
@@ -42,22 +46,25 @@ public class AutoShoot extends CommandBase {
   public void initialize() {
     startTime = Timer.getFPGATimestamp();
     horizontalOffset.reset();
+    verticalOffset.reset();
 
     Hardware.limelight.setPipeline(PIPELINE_STATE.VISION_ZOOM);
     Hardware.limelight.setLED(LED_MODE.ON);
     
-    Robot.flywheel.setTargetVelocity(3000);
-
+    if(RPM != 0){
+      Robot.flywheel.setTargetVelocity(RPM);
+    }else{
+      Robot.flywheel.setTargetVelocity(3000);
+    }
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
     horizontalOffset.add(Hardware.limelight.getHorizontalAngle());
-    Robot.drivetrain.alignToTarget(horizontalOffset.getAverage());
+    verticalOffset.add(Hardware.limelight.getHorizontalAngle());
 
-    Robot.flywheel.setTargetVelocity(0);
+    Robot.drivetrain.alignToTarget(horizontalOffset.getAverage());
 
 
     if (Hardware.limelight.hasTarget() && Robot.flywheel.getFlywheelState() == FlywheelState.ATSPEED
@@ -84,15 +91,9 @@ public class AutoShoot extends CommandBase {
   public boolean isFinished() {
 
     if (Robot.getRobotState() == RobotState.TELEOP) {
-      if (!Robot.oi.getAlignButton()) {
-        return true;
-      }
-      return false;
+      return !Robot.oi.getAlignButton();
     } else {
-      if (Timer.getFPGATimestamp() - startTime < timeout) {
-        return true;
-      }
-      return false;
+      return Timer.getFPGATimestamp() - startTime > timeout;
     }
 
   }

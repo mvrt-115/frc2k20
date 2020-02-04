@@ -23,7 +23,8 @@ public class ClimbAndLevelCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    Robot.climber.setElevatorState(ElevatorState.CLIMBING);
+    if(Robot.climber.getElevatorState() == ElevatorState.SETPOINT)
+      Robot.climber.setElevatorState(ElevatorState.CLIMBING);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

@@ -8,7 +8,9 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -19,9 +21,14 @@ public class AutonRoutine extends SequentialCommandGroup {
    */
   public AutonRoutine(Command trajectory1, Command trajectory2) {
     addCommands(
-      trajectory1,
-      new FlashLimelight(3)
-    //  trajectory2
+      new AutoShoot(8, 3000),
+      new ParallelCommandGroup(trajectory1,
+        new SequentialCommandGroup(
+          new WaitCommand(3),
+          new IntakeCommand(5)
+        )
+      ),
+      new AutoShoot(7, 6000)
     );
   }
 }

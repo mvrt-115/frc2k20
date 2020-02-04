@@ -10,17 +10,13 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Hardware;
-import frc.robot.commands.DriveWithJoystick;
-
 import java.util.function.DoubleFunction;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
-
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
@@ -33,7 +29,6 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
-import edu.wpi.first.wpilibj.util.Units;
 
 /**
  * Add your docs here.
@@ -322,7 +317,7 @@ public class Drivetrain extends SubsystemBase {
 		SmartDashboard.putNumber("NavX", Hardware.gyro.getAngle());
 	}
 
-	public void setPathDirection(boolean reversed){
+	public void invertPathDirection(boolean reversed){
 		trajectoryConfig.setReversed(reversed);
 	}
 

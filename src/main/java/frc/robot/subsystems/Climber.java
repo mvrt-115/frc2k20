@@ -13,6 +13,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Hardware;
@@ -47,10 +48,8 @@ public class Climber extends SubsystemBase {
 
     currState = ElevatorState.ZEROED;
 
-
     Hardware.elevatorMaster.configPeakOutputForward(1);
     Hardware.elevatorMaster.configPeakOutputReverse(-1);
-
 
     Hardware.elevatorMaster.config_kP(Constants.kPIDIdx, Constants.kElevatorP);
     Hardware.elevatorMaster.config_kI(Constants.kPIDIdx, Constants.kElevatorI);
@@ -61,32 +60,44 @@ public class Climber extends SubsystemBase {
 
     switch (currState) {
 
+    case ZEROED:
+      SmartDashboard.putString("Climber State", "ZEROED");
+
+      break;
     case SETPOINT:
-      Hardware.elevatorMaster.set(ControlMode.Position, Constants.kClimbHeight, DemandType.ArbitraryFeedForward, Constants.kElevatorHoldVoltage/12);
-      
+      Hardware.elevatorMaster.set(ControlMode.Position, Constants.kClimbHeight, DemandType.ArbitraryFeedForward,
+          Constants.kElevatorHoldVoltage / 12);
+
+      SmartDashboard.putString("Climber State", "SETPOINT");
       break;
     case CLIMBING:
-      Hardware.elevatorMaster.set(ControlMode.PercentOutput, Constants.kElevatorClimbVoltage/12);
+      Hardware.elevatorMaster.set(ControlMode.PercentOutput, Constants.kElevatorClimbVoltage / 12);
 
-      if(Hardware.elevatorMaster.getSelectedSensorPosition() < Constants.kClimbTicks){
+      if (Hardware.elevatorMaster.getSelectedSensorPosition() < Constants.kClimbTicks) {
         currState = ElevatorState.HOLD;
       }
 
+      SmartDashboard.putString("Climber State", "CLIMBING");
       break;
     case HOLD:
       Hardware.levelMotor.set(ControlMode.PercentOutput, angleError * Constants.kLevelP);
       Hardware.elevatorMaster.set(ControlMode.PercentOutput, 0);
+
+      SmartDashboard.putString("Climber State", "HOLD");
       break;
     }
 
   }
 
+  public void resetEncoder() {
+    Hardware.elevatorMaster.setSelectedSensorPosition(0);
+  }
 
-  public void setElevatorState(ElevatorState desiredState){
+  public void setElevatorState(ElevatorState desiredState) {
     currState = desiredState;
   }
 
-  public ElevatorState getElevatorState(){
+  public ElevatorState getElevatorState() {
     return currState;
   }
 }

@@ -7,8 +7,10 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
+import frc.robot.Robot.RobotState;
 import frc.robot.subsystems.Intake.IntakeState;
 
 public class IntakeCommand extends CommandBase 
@@ -16,14 +18,20 @@ public class IntakeCommand extends CommandBase
   /**
    * Creates a new IntakeCommand.
    */
-  public IntakeCommand() 
+  private double timeout;
+  private double startTime;
+
+  public IntakeCommand(double _timeout) 
   {
     addRequirements(Robot.intake);
+    timeout = _timeout;
+    startTime =0;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize(){
+    startTime = Timer.getFPGATimestamp();
     Robot.intake.setIntakeState(IntakeState.DEPLOYING);
   }
 
@@ -47,6 +55,10 @@ public class IntakeCommand extends CommandBase
   @Override
   public boolean isFinished() 
   {
-    return Robot.oi.isIntakeButtonPressed();
+    if(Robot.getRobotState() == RobotState.TELEOP){
+      return !Robot.oi.isIntakeButtonPressed();
+    }else{
+      return Timer.getFPGATimestamp() - startTime > timeout;
+    }
   }
 }

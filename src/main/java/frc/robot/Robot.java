@@ -17,7 +17,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
@@ -25,7 +24,10 @@ import frc.robot.commands.AutonRoutine;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.util.Limelight;
+import frc.robot.util.Limelight.PIPELINE_STATE;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Climber.ElevatorState;
+import frc.robot.subsystems.Flywheel.FlywheelState;
 import frc.robot.subsystems.Intake.IntakeState;
 
 /**
@@ -67,6 +69,8 @@ public class Robot extends TimedRobot {
     oi = new OI();
 
     setRobotState(RobotState.DISABLED);
+
+    Hardware.limelight.setPipeline(PIPELINE_STATE.DRIVER);
     
   }
 
@@ -81,6 +85,8 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     flywheel.log();
     drivetrain.log();
+    hopper.log();
+    intake.log();
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
@@ -109,16 +115,28 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    //m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    setRobotState(RobotState.AUTON);
 
-    drivetrain.setPathDirection(false);
+    intake.resetPivotEncoder();
+    intake.setIntakeState(IntakeState.STOWED);
+    
+    climber.setElevatorState(ElevatorState.ZEROED);
+    climber.resetEncoder();
+    
+    flywheel.setFlywheelState(FlywheelState.OFF);
+
+    drivetrain.resetOdometry();
+    drivetrain.configNeutralMode(NeutralMode.Brake);
+
+
+    drivetrain.invertPathDirection(false);
     Trajectory traj1 = TrajectoryGenerator.generateTrajectory(List.of(
       new Pose2d(),
       new Pose2d(5.3,1, new Rotation2d())
 
     ), drivetrain.getTrajectoryConfig());
    
-    drivetrain.setPathDirection(true);
+    drivetrain.invertPathDirection(true);
 
     Trajectory traj2 = TrajectoryGenerator.generateTrajectory(List.of(
     new Pose2d(2, 1, new Rotation2d()),
@@ -127,14 +145,8 @@ public class Robot extends TimedRobot {
     ),drivetrain.getTrajectoryConfig());
     
   
-    drivetrain.resetOdometry();
     m_autonomousCommand = new AutonRoutine(generatePath(traj1), generatePath(traj2));
-    setRobotState(RobotState.AUTON);
-    drivetrain.configNeutralMode(NeutralMode.Brake);
     m_autonomousCommand.schedule();
-    intake.resetPivotEncoder();
-    intake.setIntakeState(IntakeState.STOWED);
-
   }
 
   /**
