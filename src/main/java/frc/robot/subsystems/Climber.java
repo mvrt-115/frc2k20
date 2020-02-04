@@ -13,6 +13,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Hardware;
@@ -26,7 +27,7 @@ public class Climber extends SubsystemBase {
   private double angleError;
 
   public enum ElevatorState {
-    ZEROED, SETPOINT, CLIMBING, HOLD
+    PULLING, SETPOINT, HOLD, ZEROED, LEVEL, ZEROING
   };
 
   public Climber() {
@@ -47,14 +48,20 @@ public class Climber extends SubsystemBase {
 
     currState = ElevatorState.ZEROED;
 
-
     Hardware.elevatorMaster.configPeakOutputForward(1);
     Hardware.elevatorMaster.configPeakOutputReverse(-1);
-
 
     Hardware.elevatorMaster.config_kP(Constants.kPIDIdx, Constants.kElevatorP);
     Hardware.elevatorMaster.config_kI(Constants.kPIDIdx, Constants.kElevatorI);
     Hardware.elevatorMaster.config_kD(Constants.kPIDIdx, Constants.kElevatorD);
+
+    new Notifier(new Runnable() {
+
+      public void run() {
+        periodic();
+      }
+
+    }).startPeriodic(0.005);
   }
 
   public void periodic() {
@@ -63,24 +70,41 @@ public class Climber extends SubsystemBase {
 
     case SETPOINT:
       Hardware.elevatorMaster.set(ControlMode.Position, Constants.kClimbHeight, DemandType.ArbitraryFeedForward, Constants.kElevatorHoldVoltage/12);
-      
-      break;
-    case CLIMBING:
-      Hardware.elevatorMaster.set(ControlMode.PercentOutput, Constants.kElevatorClimbVoltage/12);
-
-      if(Hardware.elevatorMaster.getSelectedSensorPosition() < Constants.kClimbTicks){
+      if(Math.abs(Hardware.elevatorMaster.getSelectedSensorPosition() - Constants.kClimbTicks) < Constants.kClimbThreshold){
         currState = ElevatorState.HOLD;
       }
-
       break;
+
     case HOLD:
+      break;
+    
+    case PULLING:
+      Hardware.elevatorMaster.set(ControlMode.Position, Constants.kClimbZero, DemandType.ArbitraryFeedForward, Constants.kElevatorHoldVoltage/12);
+      if(Math.abs(Hardware.elevatorMaster.getSelectedSensorPosition() - Constants.kClimbZero) < Constants.kClimbThreshold){
+        currState = ElevatorState.LEVEL;
+      }
+      break;
+    
+    case LEVEL:
       Hardware.levelMotor.set(ControlMode.PercentOutput, angleError * Constants.kLevelP);
-      Hardware.elevatorMaster.set(ControlMode.PercentOutput, 0);
+      break;
+
+    case ZEROING:
+      Hardware.elevatorMaster.set(ControlMode.Position, Constants.kClimbZero, DemandType.ArbitraryFeedForward, Constants.kElevatorHoldVoltage/12);
+      if(Math.abs(Hardware.elevatorMaster.getSelectedSensorPosition() - Constants.kClimbZero) < Constants.kClimbThreshold){
+        currState = ElevatorState.ZEROED;
+      }
+      break;
+
+    case ZEROED:
+      stop();
       break;
     }
-
   }
 
+  public void stop() {
+    Hardware.elevatorMaster.set(ControlMode.PercentOutput, 0);
+  }
 
   public void setElevatorState(ElevatorState desiredState){
     currState = desiredState;

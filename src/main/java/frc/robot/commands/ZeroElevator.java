@@ -11,19 +11,18 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 import frc.robot.subsystems.Climber.ElevatorState;
 
-public class ClimbAndLevelCommand extends CommandBase {
+public class ZeroElevator extends CommandBase {
   /**
-   * Creates a new ClimbAndLevelCommand.
+   * Creates a new ZeroElevator.
    */
-  public ClimbAndLevelCommand() {
-    addRequirements(Robot.climber);
+  public ZeroElevator() {
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    Robot.climber.setElevatorState(ElevatorState.PULLING);
+    Robot.climber.setElevatorState(ElevatorState.ZEROING);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -39,6 +38,6 @@ public class ClimbAndLevelCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return true;
+    return false;
   }
 }
