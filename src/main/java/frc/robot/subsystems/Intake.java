@@ -12,7 +12,6 @@ import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Hardware;
@@ -48,14 +47,6 @@ public class Intake extends SubsystemBase {
     Hardware.intakePivot.config_kP(Constants.kPIDIdx, Constants.kIntakeP);
     Hardware.intakePivot.config_kD(Constants.kPIDIdx, Constants.kIntakeD);
     currState = IntakeState.STOWED;
-
-    new Notifier(new Runnable() {
-
-      public void run() {
-        periodic();
-      }
-
-    }).startPeriodic(0.005);
     
   }
 
