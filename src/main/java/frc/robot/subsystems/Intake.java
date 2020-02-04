@@ -19,7 +19,7 @@ import frc.robot.Hardware;
 public class Intake extends SubsystemBase {
 
   public enum IntakeState {
-    STOWED, DEPLOYED, STOWING, DEPLOYING, INTAKING
+    STOWED, STOWING, DEPLOYING
   };
 
   private IntakeState currState;
@@ -79,31 +79,15 @@ public class Intake extends SubsystemBase {
 
     case STOWED:
       Hardware.intakePivot.set(ControlMode.PercentOutput, 0);
-
-      break;
-    case DEPLOYED:
-      Hardware.intakePivot.set(ControlMode.PercentOutput, 0);
       break;
     case DEPLOYING:
       Hardware.intakePivot.set(ControlMode.MotionMagic, Constants.kIntakeDeployTicks, DemandType.ArbitraryFeedForward,
           Constants.kIntakeFF * getIntakePivotAngle());
-
-      if (getPivotTicks() > Constants.kIntakeDeployTicks)
-        currState = IntakeState.DEPLOYED;
-
       break;
     case STOWING:
       Hardware.intakePivot.set(ControlMode.MotionMagic, Constants.kIntakeStowedTicks, DemandType.ArbitraryFeedForward,
           Constants.kIntakeFF * getIntakePivotAngle());
-
-      if (getPivotTicks() < Constants.kIntakeStowedTicks)
-        currState = IntakeState.DEPLOYED;
-
-      break;
-    case INTAKING:
-      Hardware.intakePivot.set(ControlMode.PercentOutput, 0);
-      runIntake();
-
+      if (getPivotTicks() < Constants.kIntakeStowedTicks) currState = IntakeState.STOWED;
       break;
     }
   }

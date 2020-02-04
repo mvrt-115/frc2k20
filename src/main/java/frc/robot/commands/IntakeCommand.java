@@ -30,10 +30,8 @@ public class IntakeCommand extends CommandBase
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
-    if(Robot.intake.getIntakeState() == IntakeState.DEPLOYED)
-      Robot.intake.setIntakeState(IntakeState.INTAKING);
-
+    if(Robot.intake.getIntakeState() == IntakeState.DEPLOYING)
+      Robot.intake.runIntake();
   }
 
   // Called once the command ends or is interrupted.
