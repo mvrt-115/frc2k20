@@ -153,6 +153,7 @@
             "groupId": "com.ctre.phoenix",
             "artifactId": "platform-stub",
             "version": "5.17.6",
+
             "libName": "CTRE_PhoenixPlatform",
             "headerClassifier": "headers",
             "sharedLibrary": false,
@@ -166,6 +167,7 @@
             "groupId": "com.ctre.phoenix",
             "artifactId": "core",
             "version": "5.17.6",
+
             "libName": "CTRE_PhoenixCore",
             "headerClassifier": "headers",
             "sharedLibrary": false,
