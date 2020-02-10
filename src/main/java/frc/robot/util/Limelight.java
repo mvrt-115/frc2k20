@@ -9,8 +9,8 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 public class Limelight {
     
     private NetworkTable limelight;
-    private static final double kLimelightMountAngle = 12;     
-    private static final double kLimelightHeight = 41;       // Inches    
+    private static final double kLimelightMountAngle = 15;     
+    private static final double kLimelightHeight = 29.125;       // Inches    
     private static final double kTargetHeight = 98;  // Inches **** CHANGE VALUE
 
 
@@ -62,7 +62,7 @@ public class Limelight {
             limelight.getEntry("pipeline").setNumber(0);
             break;
         case VISION_ZOOM:
-            limelight.getEntry("pipeline").setNumber(1);
+            limelight.getEntry("pipeline").setNumber(0);
             break;
         case DRIVER:
             limelight.getEntry("pipeline").setNumber(2);
@@ -70,12 +70,17 @@ public class Limelight {
         }
     }
 
-    public double getDistanceFromTarget(){
+    public double getDistanceFromTarget(double angle){
 
         double height = kTargetHeight-kLimelightHeight;
-        double angle = Math.toRadians(kLimelightMountAngle + getVerticalAngle());
-        double distance = height/Math.atan(angle);
+        double correctedAngle = Math.toRadians(kLimelightMountAngle + angle);
+        double distance = height/Math.atan(correctedAngle);
         return distance/12;
+    }
+
+
+    public double getRPMFromDistance(double distance){
+        return 74.451 * (distance) + 3918.7;
     }
 
 }

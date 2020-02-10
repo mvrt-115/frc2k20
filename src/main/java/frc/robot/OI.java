@@ -41,13 +41,13 @@ public class OI {
         driverJoystick = new Joystick(0);
         operatorJoystick = new Joystick(1);
 
-        shootBall = new JoystickButton(driverJoystick, 8);
-        stopFlywheel = new JoystickButton(driverJoystick, 9);
-        alignButton = new JoystickButton(driverJoystick, 1);
-        quickTurnButton = new JoystickButton(driverJoystick, 5);
+        shootBall = new JoystickButton(driverJoystick, 9);
+        stopFlywheel = new JoystickButton(driverJoystick, 10);
+        alignButton = new JoystickButton(driverJoystick, 6);
+        quickTurnButton = new JoystickButton(driverJoystick, 5); 
 
-        intakeButton = new JoystickButton(operatorJoystick, 1);
-        hopperButton = new JoystickButton(operatorJoystick, 2);
+        intakeButton = new JoystickButton(driverJoystick, 8);
+        hopperButton = new JoystickButton(driverJoystick, 3);
         raiseElevatorButton = new JoystickButton(operatorJoystick, 4);
         climbButton = new JoystickButton(operatorJoystick, 5);
 
@@ -55,7 +55,7 @@ public class OI {
         raiseElevatorButton.whenPressed(new RaiseElevatorCommand());
         climbButton.whenPressed(new ClimbAndLevelCommand());
         intakeButton.whenPressed(new IntakeCommand(0));
-        shootBall.whenPressed(new SetFlywheelRPM(8320));
+        shootBall.whenPressed(new SetFlywheelRPM(3000));
         stopFlywheel.whenPressed(new SetFlywheelRPM(0));
         alignButton.whenPressed(new AutoShoot(0, 0));
         hopperButton.whenPressed(new ManualHopper());

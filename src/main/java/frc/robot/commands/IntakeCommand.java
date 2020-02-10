@@ -49,6 +49,7 @@ public class IntakeCommand extends CommandBase
   public void end(boolean interrupted) 
   {
     Robot.intake.setIntakeState(IntakeState.STOWING);
+    Robot.intake.stopRoller();
   }
 
   // Returns true when the command should end.

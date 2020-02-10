@@ -48,10 +48,10 @@ public class Drivetrain extends SubsystemBase {
 	private Pose2d currPosition;
 
 	public Drivetrain() {
-		Hardware.leftMaster = new TalonFX(5);
-		Hardware.leftFollower = new TalonFX(3);
-		Hardware.rightMaster = new TalonFX(1);
-		Hardware.rightFollower = new TalonFX(2);
+		Hardware.leftMaster = new TalonFX(2);
+		Hardware.leftFollower = new TalonFX(1);
+		Hardware.rightMaster = new TalonFX(3);
+		Hardware.rightFollower = new TalonFX(5);
 
 		Hardware.gyro = new AHRS(SPI.Port.kMXP);
 
@@ -86,7 +86,7 @@ public class Drivetrain extends SubsystemBase {
 				Constants.kTimeoutMs);
 
 		resetEncoder();
-		configNeutralMode(NeutralMode.Coast);
+		configNeutralMode(NeutralMode.Coast, NeutralMode.Coast);
 		Hardware.gyro.reset();
 
 		driveKinematics = new DifferentialDriveKinematics(Constants.kTrackWidthMeters);
@@ -160,11 +160,11 @@ public class Drivetrain extends SubsystemBase {
 		Hardware.rightFollower.setSelectedSensorPosition(0);
 	}
 
-	public void configNeutralMode(NeutralMode mode) {
-		Hardware.leftMaster.setNeutralMode(mode);
-		Hardware.rightMaster.setNeutralMode(mode);
-		Hardware.leftFollower.setNeutralMode(mode);
-		Hardware.rightFollower.setNeutralMode(mode);
+	public void configNeutralMode(NeutralMode mode1, NeutralMode mode2) {
+		Hardware.leftMaster.setNeutralMode(mode1);
+		Hardware.rightMaster.setNeutralMode(mode1);
+		Hardware.leftFollower.setNeutralMode(mode2);
+		Hardware.rightFollower.setNeutralMode(mode2);
 	}
 
 	public void cheesyDriveWithJoystick(double throttle, double wheel, boolean quickturn) {
@@ -311,7 +311,7 @@ public class Drivetrain extends SubsystemBase {
 	public void log() {
 		SmartDashboard.putNumber("Left Encoder", Hardware.leftMaster.getSelectedSensorPosition());
 		SmartDashboard.putNumber("Right Encoder", Hardware.rightMaster.getSelectedSensorPosition());
-		SmartDashboard.putNumber("Current", Hardware.leftMaster.getStatorCurrent());
+		SmartDashboard.putNumber("Current", Hardware.leftMaster.getStatorCurrent()* 4);
 		SmartDashboard.putNumber("Curr X Position", currPosition.getTranslation().getX());
 		SmartDashboard.putNumber("Curr Y Position", currPosition.getTranslation().getY());
 		SmartDashboard.putNumber("NavX", Hardware.gyro.getAngle());

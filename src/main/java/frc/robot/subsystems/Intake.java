@@ -26,22 +26,25 @@ public class Intake extends SubsystemBase {
   };
 
   private IntakeState currState;
+  private boolean defaultLimitSwitch;
 
   /**
    * Creates a new Intake.
    */
+  
+  
   public Intake() {
     Hardware.intakeRoller = new TalonSRX(36);
     Hardware.intakePivot = new TalonSRX(30);
-    Hardware.intakeFunnel = new TalonSRX(31);
+    Hardware.intakeFunnel = new TalonSRX(22);
 
-    Hardware.intakeBottomlimitSwitch = new DigitalInput(5);
+    Hardware.intakeBottomlimitSwitch = new DigitalInput(6);
 
     Hardware.intakeRoller.configFactoryDefault();
     Hardware.intakePivot.configFactoryDefault();
     Hardware.intakeFunnel.configFactoryDefault();
 
-    Hardware.intakeRoller.setInverted(false);
+    Hardware.intakeRoller.setInverted(true);
     Hardware.intakePivot.setInverted(false);
     Hardware.intakeFunnel.setInverted(false);
 
@@ -58,19 +61,22 @@ public class Intake extends SubsystemBase {
     Hardware.intakePivot.config_kP(Constants.kPIDIdx, Constants.kIntakeP);
     Hardware.intakePivot.config_kD(Constants.kPIDIdx, Constants.kIntakeD);
     currState = IntakeState.STOWED;
+    defaultLimitSwitch = Hardware.intakeBottomlimitSwitch.get();
   }
 
   public void runIntake() {
-    Hardware.intakeFunnel.set(ControlMode.PercentOutput, 0.3);
-    Hardware.intakeRoller.set(ControlMode.PercentOutput, 0.4);
+    Hardware.intakeFunnel.set(ControlMode.PercentOutput, 0.2);
+    Hardware.intakeRoller.set(ControlMode.PercentOutput, 0.8);
   }
 
   public void periodic() {
-    switch (currState) {
-
+    double feedForward = Constants.kIntakeFF * Math.cos(Math.toRadians(getIntakePivotAngle())); 
+    
+  switch (currState) {
+  
     case STOWED:
       SmartDashboard.putString("INTAKE STATE", "Stowed");
-      Hardware.intakePivot.set(ControlMode.PercentOutput, 0);
+      Hardware.intakePivot.set(ControlMode.PercentOutput, -.1);
 
       break;
     case DEPLOYED:
@@ -79,29 +85,35 @@ public class Intake extends SubsystemBase {
       break;
     case DEPLOYING:
       SmartDashboard.putString("INTAKE STATE", "Deploying");
-      Hardware.intakePivot.set(ControlMode.MotionMagic, Constants.kIntakeDeployTicks, DemandType.ArbitraryFeedForward,
-          Constants.kIntakeFF * getIntakePivotAngle());
+      Hardware.intakePivot.set(ControlMode.Position, Constants.kIntakeDeployTicks, DemandType.ArbitraryFeedForward,
+        feedForward);
 
-      if (getPivotTicks() > Constants.kIntakeDeployTicks)
+    
+      if (getPivotTicks() > Constants.kIntakeDeployTicks || getIntakeLimitSwitch()!=defaultLimitSwitch)
         currState = IntakeState.DEPLOYED;
 
       break;
     case STOWING:
       SmartDashboard.putString("INTAKE STATE", "Stowing");
-      Hardware.intakePivot.set(ControlMode.MotionMagic, Constants.kIntakeStowedTicks, DemandType.ArbitraryFeedForward,
-          Constants.kIntakeFF * getIntakePivotAngle());
+      Hardware.intakePivot.set(ControlMode.Position, Constants.kIntakeStowedTicks, DemandType.ArbitraryFeedForward,
+          feedForward);
 
       if (getPivotTicks() < Constants.kIntakeStowedTicks)
-        currState = IntakeState.DEPLOYED;
+        currState = IntakeState.STOWED;
 
       break;
     case INTAKING:
       SmartDashboard.putString("INTAKE STATE", "Intaking");
-      Hardware.intakePivot.set(ControlMode.PercentOutput, 0);
+      Hardware.intakePivot.set(ControlMode.PercentOutput, 0.2);
       runIntake();
 
       break;
     }
+    
+  }
+
+  public void setDefaultLimitSwitchStart(){
+    defaultLimitSwitch = Hardware.intakeBottomlimitSwitch.get();
   }
 
   public void setIntakeState(IntakeState desiredState) {
@@ -114,6 +126,14 @@ public class Intake extends SubsystemBase {
 
   public void log() {
     SmartDashboard.putNumber("Intake Encoder", Hardware.intakePivot.getSelectedSensorPosition());
+    SmartDashboard.putBoolean("intake Limit Switch", Hardware.intakeBottomlimitSwitch.get());
+    SmartDashboard.putNumber("Angle", getIntakePivotAngle());
+    SmartDashboard.putNumber("intake Output", Hardware.intakePivot.getMotorOutputPercent());
+  }
+
+  public void stopRoller(){
+    Hardware.intakeRoller.set(ControlMode.PercentOutput, 0);
+    Hardware.intakeFunnel.set(ControlMode.PercentOutput, 0);
   }
 
   public int getPivotTicks() {
@@ -121,7 +141,7 @@ public class Intake extends SubsystemBase {
   }
 
   public double getIntakePivotAngle() {
-    return Hardware.intakePivot.getSelectedSensorPosition() / Constants.kIntakeMaxTicks * Math.PI / 2;
+    return 80 + (Hardware.intakePivot.getSelectedSensorPosition()/Constants.kIntakeMaxTicks*100);
   }
 
   public boolean getBottomLimitSwitch() {
@@ -130,5 +150,10 @@ public class Intake extends SubsystemBase {
 
   public void resetPivotEncoder() {
     Hardware.intakePivot.setSelectedSensorPosition(0);
+  }
+
+  public boolean getIntakeLimitSwitch(){
+    return Hardware.intakeBottomlimitSwitch.get();
+    
   }
 }

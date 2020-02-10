@@ -24,6 +24,7 @@ import frc.robot.commands.AutonRoutine;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.util.Limelight;
+import frc.robot.util.Limelight.LED_MODE;
 import frc.robot.util.Limelight.PIPELINE_STATE;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Climber.ElevatorState;
@@ -71,7 +72,8 @@ public class Robot extends TimedRobot {
     setRobotState(RobotState.DISABLED);
 
     Hardware.limelight.setPipeline(PIPELINE_STATE.DRIVER);
-    
+    Hardware.limelight.setLED(LED_MODE.ON);
+//    Hardware.limelight.setLED(LED_MODE.OFF);
   }
 
   /**
@@ -99,15 +101,17 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
+    Hardware.limelight.setLED(LED_MODE.ON);
     setRobotState(RobotState.DISABLED);
     startDisabledTime = Timer.getFPGATimestamp();
-    drivetrain.configNeutralMode(NeutralMode.Brake);
+    drivetrain.configNeutralMode(NeutralMode.Brake, NeutralMode.Brake);
+  
   }
 
   @Override
   public void disabledPeriodic() {
     if(Timer.getFPGATimestamp() - startDisabledTime > 2)
-      drivetrain.configNeutralMode(NeutralMode.Coast);
+      drivetrain.configNeutralMode(NeutralMode.Coast, NeutralMode.Brake);
   }
 
   /**
@@ -119,6 +123,7 @@ public class Robot extends TimedRobot {
 
     intake.resetPivotEncoder();
     intake.setIntakeState(IntakeState.STOWED);
+    intake.setDefaultLimitSwitchStart();
     
     climber.setElevatorState(ElevatorState.ZEROED);
     climber.resetEncoder();
@@ -126,7 +131,7 @@ public class Robot extends TimedRobot {
     flywheel.setFlywheelState(FlywheelState.OFF);
 
     drivetrain.resetOdometry();
-    drivetrain.configNeutralMode(NeutralMode.Brake);
+    drivetrain.configNeutralMode(NeutralMode.Brake, NeutralMode.Brake);
 
 
     drivetrain.invertPathDirection(false);
@@ -145,8 +150,8 @@ public class Robot extends TimedRobot {
     ),drivetrain.getTrajectoryConfig());
     
   
-    m_autonomousCommand = new AutonRoutine(generatePath(traj1), generatePath(traj2));
-    m_autonomousCommand.schedule();
+  //  m_autonomousCommand = new AutonRoutine(generatePath(traj1), generatePath(traj2));
+  //  m_autonomousCommand.schedule();
   }
 
   /**
@@ -166,7 +171,8 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     setRobotState(RobotState.TELEOP);
-    drivetrain.configNeutralMode(NeutralMode.Coast);
+    //Hardware.limelight.setLED(LED_MODE.OFF);
+    drivetrain.configNeutralMode(NeutralMode.Coast, NeutralMode.Coast);
   }
 
   /**

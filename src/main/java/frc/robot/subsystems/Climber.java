@@ -13,6 +13,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -27,13 +28,15 @@ public class Climber extends SubsystemBase {
   private double angleError;
 
   public enum ElevatorState {
-    ZEROED, SETPOINT, CLIMBING, HOLD
+    ZEROED, SETPOINT, CLIMBING, HOLD, ZEROING
   };
 
   public Climber() {
 
     Hardware.elevatorMaster = new TalonFX(0);
     Hardware.levelMotor = new TalonSRX(1);
+
+    Hardware.elevatorBottomLimitSwitch = new DigitalInput(9);
 
     Hardware.elevatorMaster.configFactoryDefault();
     Hardware.levelMotor.configFactoryDefault();
@@ -66,12 +69,12 @@ public class Climber extends SubsystemBase {
       break;
     case SETPOINT:
       Hardware.elevatorMaster.set(ControlMode.Position, Constants.kClimbHeight, DemandType.ArbitraryFeedForward,
-          Constants.kElevatorHoldVoltage / 12);
+          Constants.kElevatorHoldVoltage / 12.0);
 
       SmartDashboard.putString("Climber State", "SETPOINT");
       break;
     case CLIMBING:
-      Hardware.elevatorMaster.set(ControlMode.PercentOutput, Constants.kElevatorClimbVoltage / 12);
+      Hardware.elevatorMaster.set(ControlMode.PercentOutput, Constants.kElevatorClimbVoltage / 12.0);
 
       if (Hardware.elevatorMaster.getSelectedSensorPosition() < Constants.kClimbTicks) {
         currState = ElevatorState.HOLD;
@@ -85,8 +88,21 @@ public class Climber extends SubsystemBase {
 
       SmartDashboard.putString("Climber State", "HOLD");
       break;
+
+
+    case ZEROING:
+      Hardware.elevatorMaster.set(ControlMode.Position, 0, DemandType.ArbitraryFeedForward, Constants.kElevatorHoldVoltage/12.0);
+
+      if(getLimitSwitch()){
+        setElevatorState(ElevatorState.ZEROED);
+      }
+      break;
     }
 
+  }
+
+  public boolean getLimitSwitch(){
+    return Hardware.elevatorBottomLimitSwitch.get();
   }
 
   public void resetEncoder() {

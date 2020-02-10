@@ -8,6 +8,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Hardware;
 import frc.robot.Robot;
@@ -47,7 +48,7 @@ public class AutoShoot extends CommandBase {
     startTime = Timer.getFPGATimestamp();
     horizontalOffset.reset();
     verticalOffset.reset();
-
+    Robot.flywheel.setFlywheelState(FlywheelState.SPINNINGUP);
     Hardware.limelight.setPipeline(PIPELINE_STATE.VISION_ZOOM);
     Hardware.limelight.setLED(LED_MODE.ON);
     
@@ -65,16 +66,21 @@ public class AutoShoot extends CommandBase {
     verticalOffset.add(Hardware.limelight.getHorizontalAngle());
 
     Robot.drivetrain.alignToTarget(horizontalOffset.getAverage());
+    double avgDistance = Hardware.limelight.getDistanceFromTarget(verticalOffset.getAverage());
+    Robot.flywheel.updateTargetVelocity(Hardware.limelight.getRPMFromDistance(avgDistance));
 
-
-    if (Hardware.limelight.hasTarget() && Robot.flywheel.getFlywheelState() == FlywheelState.ATSPEED
-        && horizontalOffset.allWithinError(0, .5)) {
-      Robot.hopper.runHopper();
+    boolean canShoot;
+    if (Hardware.limelight.hasTarget() && horizontalOffset.allWithinError(0, .7) && Robot.flywheel.getFlywheelState() == FlywheelState.ATSPEED) {
+      Robot.hopper.runHopper(0.5, .5);
+      canShoot = true;
     }else{
       if(!Robot.hopper.getTopBreakbeam()){
-          Robot.hopper.runHopper();
+          Robot.hopper.runHopper(.3, .3);
       }
+      canShoot = false;
     }
+
+    SmartDashboard.putBoolean("can shoot", canShoot);
 
   }
 
@@ -82,6 +88,7 @@ public class AutoShoot extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     Robot.drivetrain.stop();
+    Robot.flywheel.setFlywheelState(FlywheelState.OFF);
     Hardware.limelight.setPipeline(PIPELINE_STATE.DRIVER);
     Hardware.limelight.setLED(LED_MODE.OFF);
   }

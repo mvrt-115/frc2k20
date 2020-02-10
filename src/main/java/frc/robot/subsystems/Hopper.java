@@ -20,28 +20,35 @@ public class Hopper extends SubsystemBase
   /**
    * Creates a new Hopper.
    */
+  private int balls;
+  private boolean lastBottom;
+  private boolean lastTop;
+
   public Hopper() 
   {
-    Hardware.bottomHopper = new TalonSRX(22);
+    Hardware.bottomHopper = new TalonSRX(35);
     Hardware.topHopper = new TalonSRX(32);
 
     Hardware.bottomHopper.configFactoryDefault();
     Hardware.topHopper.configFactoryDefault();
 
     Hardware.bottomHopper.setInverted(false);
-    Hardware.topHopper.setInverted(false);
+    Hardware.topHopper.setInverted(true);
 
     Hardware.topHopper.setNeutralMode(NeutralMode.Brake);
     Hardware.bottomHopper.setNeutralMode(NeutralMode.Brake);
 
-    Hardware.bottomHopperBreakbeam = new DigitalInput(0);
-    Hardware.TopHopperBreakbeam = new DigitalInput(1);
-
+    Hardware.bottomHopperBreakbeam = new DigitalInput(2);
+    Hardware.midHopperBreakbeam = new DigitalInput(1);
+    Hardware.topHopperBreakbeam = new DigitalInput(0);
+    balls = 0;
+    lastBottom = false;
+    lastTop = false;
   }
 
-  public void runHopper() {
-    Hardware.bottomHopper.set(ControlMode.PercentOutput, 0.3);
-    Hardware.topHopper.set(ControlMode.PercentOutput, 0.3);
+  public void runHopper(double _topSpeed, double _botSpeed) {
+    Hardware.bottomHopper.set(ControlMode.PercentOutput, _botSpeed);
+    Hardware.topHopper.set(ControlMode.PercentOutput, _topSpeed);
   }
 
   public void runBottom(){
@@ -49,11 +56,15 @@ public class Hopper extends SubsystemBase
   }
 
   public boolean getBottomBreakbeam() {
-    return Hardware.bottomHopperBreakbeam.get();
+    return !Hardware.bottomHopperBreakbeam.get();
   }
 
   public boolean getTopBreakbeam(){
-     return Hardware.TopHopperBreakbeam.get();
+     return !Hardware.topHopperBreakbeam.get();
+   }
+
+   public boolean getMiddleBreakbeam(){
+     return !Hardware.midHopperBreakbeam.get();
    }
 
   public void stopMotors(){
@@ -63,12 +74,31 @@ public class Hopper extends SubsystemBase
   @Override
   public void periodic() 
   {
-    // This method will be called once per scheduler run
+    boolean currBottom = getBottomBreakbeam();
+    boolean currTop = getTopBreakbeam();
+
+    if(currBottom && !lastBottom)
+      balls++;
+
+    if(!currTop && lastTop)
+      balls--;
+
+    lastTop = currTop;
+    lastBottom = currBottom;
+  }
+
+  public int getBalls(){
+    return balls;
+  }
+
+  public void setBalls(int _balls){
+    balls = _balls;
   }
 
 
   public void log(){
     SmartDashboard.putBoolean("bottom Breakbeam", getBottomBreakbeam());
     SmartDashboard.putBoolean("Top Breakbeam", getTopBreakbeam());
+    SmartDashboard.putNumber("Num of Balls", balls);
   }
 }

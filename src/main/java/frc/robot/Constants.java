@@ -18,7 +18,7 @@ package frc.robot;
 public final class Constants {
 
 	//Flywheel 
-    public static final double kFlywheelP = 0.08;
+    public static final double kFlywheelP = 0.19;
     public static final double kFlywheelD = 0.8;
     public static final double kFlywheelFF = .0485;
     public static final double kFlywheelGearRatio = 20.0/34;
@@ -50,10 +50,10 @@ public final class Constants {
 
 	//Intake
 	public static final double kIntakeD = 0;
-	public static final double kIntakeP = 0;
-	public static final double kIntakeFF = 0;
-	public static final double kIntakeStowedTicks = 0;
-	public static final double kIntakeDeployTicks = 0;
+	public static final double kIntakeP = 0.306;
+	public static final double kIntakeFF = .2;
+	public static final double kIntakeStowedTicks = 60;
+	public static final double kIntakeDeployTicks = 900;
 	public static final double kIntakeMaxTicks = 1000;
 	
 	public static final int kPIDIdx = 0;
