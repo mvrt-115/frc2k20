@@ -63,8 +63,8 @@ public final class Constants {
 	public static final double kElevatorP = 0;
 	public static final double kElevatorI = 0;
 	public static final double kElevatorD = 0;
-	public static final double kElevatorHoldVoltage = 0;
-    public static final double kElevatorClimbVoltage = 0;
+	public static final double kElevatorHoldOutput = 0;
+    public static final double kElevatorClimbOutput = -.2;
     
     public static final double kClimbHeight = 0;
     public static final double kLevelP = 0;

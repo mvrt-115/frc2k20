@@ -65,8 +65,8 @@ public class Drivetrain extends SubsystemBase {
 		Hardware.rightMaster.setInverted(true);
 		Hardware.rightFollower.setInverted(true);
 
-		Hardware.leftFollower.follow(Hardware.leftMaster);
-		Hardware.rightFollower.follow(Hardware.rightMaster);
+	//	Hardware.leftFollower.follow(Hardware.leftMaster);
+	//	Hardware.rightFollower.follow(Hardware.rightMaster);
 
 		driveMotorCurrentConfig = new SupplyCurrentLimitConfiguration(true, 40, 50, 3.8);
 
@@ -160,6 +160,9 @@ public class Drivetrain extends SubsystemBase {
 		Hardware.rightFollower.setSelectedSensorPosition(0);
 	}
 
+	public void configNeutralMode(NeutralMode _mode){
+		configNeutralMode(_mode, _mode);
+	}
 	public void configNeutralMode(NeutralMode mode1, NeutralMode mode2) {
 		Hardware.leftMaster.setNeutralMode(mode1);
 		Hardware.rightMaster.setNeutralMode(mode1);
@@ -285,6 +288,8 @@ public class Drivetrain extends SubsystemBase {
 
 	public void setLeftRightMotorOutputs(double left, double right) {
 		Hardware.leftMaster.set(ControlMode.PercentOutput, left);
+		Hardware.leftFollower.set(ControlMode.PercentOutput, left);
+		Hardware.rightFollower.set(ControlMode.PercentOutput, right);
 		Hardware.rightMaster.set(ControlMode.PercentOutput, right);
 
 	}

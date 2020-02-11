@@ -69,12 +69,12 @@ public class Climber extends SubsystemBase {
       break;
     case SETPOINT:
       Hardware.elevatorMaster.set(ControlMode.Position, Constants.kClimbHeight, DemandType.ArbitraryFeedForward,
-          Constants.kElevatorHoldVoltage / 12.0);
+          Constants.kElevatorHoldOutput);
 
       SmartDashboard.putString("Climber State", "SETPOINT");
       break;
     case CLIMBING:
-      Hardware.elevatorMaster.set(ControlMode.PercentOutput, Constants.kElevatorClimbVoltage / 12.0);
+      Hardware.elevatorMaster.set(ControlMode.PercentOutput, Constants.kElevatorClimbOutput);
 
       if (Hardware.elevatorMaster.getSelectedSensorPosition() < Constants.kClimbTicks) {
         currState = ElevatorState.HOLD;
@@ -89,9 +89,9 @@ public class Climber extends SubsystemBase {
       SmartDashboard.putString("Climber State", "HOLD");
       break;
 
-
     case ZEROING:
-      Hardware.elevatorMaster.set(ControlMode.Position, 0, DemandType.ArbitraryFeedForward, Constants.kElevatorHoldVoltage/12.0);
+      Hardware.elevatorMaster.set(ControlMode.Position, 20, DemandType.ArbitraryFeedForward,
+          Constants.kElevatorHoldOutput);
 
       if(getLimitSwitch()){
         setElevatorState(ElevatorState.ZEROED);

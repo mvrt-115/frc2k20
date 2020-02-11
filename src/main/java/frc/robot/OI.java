@@ -10,6 +10,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.SetFlywheelRPM;
+import frc.robot.util.JoystickTrigger;
 import frc.robot.commands.AutoHopper;
 import frc.robot.commands.AutoShoot;
 import frc.robot.commands.ClimbAndLevelCommand;
@@ -33,7 +34,8 @@ public class OI {
 
     private Joystick operatorJoystick;
     private JoystickButton intakeButton;
-    private JoystickButton hopperButton;
+    private JoystickTrigger hopperForwardButton;
+    private JoystickTrigger hopperReverseButton;
     private JoystickButton raiseElevatorButton;
     private JoystickButton climbButton;
 
@@ -45,12 +47,12 @@ public class OI {
         stopFlywheel = new JoystickButton(driverJoystick, 10);
         alignButton = new JoystickButton(driverJoystick, 6);
         quickTurnButton = new JoystickButton(driverJoystick, 5); 
-
         intakeButton = new JoystickButton(driverJoystick, 8);
-        hopperButton = new JoystickButton(driverJoystick, 3);
+
+        hopperForwardButton = new JoystickTrigger(operatorJoystick, 4);
+        hopperReverseButton = new JoystickTrigger(operatorJoystick, 5);
         raiseElevatorButton = new JoystickButton(operatorJoystick, 4);
         climbButton = new JoystickButton(operatorJoystick, 5);
-
         
         raiseElevatorButton.whenPressed(new RaiseElevatorCommand());
         climbButton.whenPressed(new ClimbAndLevelCommand());
@@ -58,7 +60,8 @@ public class OI {
         shootBall.whenPressed(new SetFlywheelRPM(3000));
         stopFlywheel.whenPressed(new SetFlywheelRPM(0));
         alignButton.whenPressed(new AutoShoot(0, 0));
-        hopperButton.whenPressed(new ManualHopper());
+        hopperForwardButton.whenActive(new ManualHopper(0.3, 0.3));
+        hopperReverseButton.whenActive(new ManualHopper(-0.3, -0.3));
 
         Robot.hopper.setDefaultCommand(new AutoHopper());
         Robot.drivetrain.setDefaultCommand(new DriveWithJoystick());
@@ -90,6 +93,6 @@ public class OI {
 
     public boolean getHopperButton()
     {
-        return hopperButton.get();
+        return hopperForwardButton.get() || hopperReverseButton.get();
     }
 }

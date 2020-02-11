@@ -8,6 +8,7 @@
 package frc.robot.commands;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
+import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Hardware;
 import frc.robot.Robot;
@@ -16,8 +17,12 @@ public class ManualHopper extends CommandBase {
   /**
    * Creates a new ManualHopper.
    */
-  public ManualHopper() {
+  double bottomSpeed, topSpeed;
+
+  public ManualHopper(double _bottomSpeed, double _topSpeed) {
     addRequirements(Robot.hopper);
+    bottomSpeed = _bottomSpeed;
+    topSpeed = _topSpeed;
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -29,7 +34,7 @@ public class ManualHopper extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    Robot.hopper.runHopper(.5, .4);
+    Robot.hopper.runHopper(topSpeed, bottomSpeed);
   }
 
   // Called once the command ends or is interrupted.

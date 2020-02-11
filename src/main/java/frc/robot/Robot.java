@@ -71,9 +71,8 @@ public class Robot extends TimedRobot {
 
     setRobotState(RobotState.DISABLED);
 
-    Hardware.limelight.setPipeline(PIPELINE_STATE.DRIVER);
+    Hardware.limelight.setPipeline(PIPELINE_STATE.VISION_WIDE);
     Hardware.limelight.setLED(LED_MODE.ON);
-//    Hardware.limelight.setLED(LED_MODE.OFF);
   }
 
   /**
@@ -101,17 +100,16 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
-    Hardware.limelight.setLED(LED_MODE.ON);
     setRobotState(RobotState.DISABLED);
     startDisabledTime = Timer.getFPGATimestamp();
-    drivetrain.configNeutralMode(NeutralMode.Brake, NeutralMode.Brake);
+    drivetrain.configNeutralMode(NeutralMode.Brake);
   
   }
 
   @Override
   public void disabledPeriodic() {
     if(Timer.getFPGATimestamp() - startDisabledTime > 2)
-      drivetrain.configNeutralMode(NeutralMode.Coast, NeutralMode.Brake);
+      drivetrain.configNeutralMode(NeutralMode.Coast);
   }
 
   /**
@@ -171,8 +169,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     setRobotState(RobotState.TELEOP);
-    //Hardware.limelight.setLED(LED_MODE.OFF);
-    drivetrain.configNeutralMode(NeutralMode.Coast, NeutralMode.Coast);
+    drivetrain.configNeutralMode(NeutralMode.Coast, NeutralMode.Brake);
   }
 
   /**

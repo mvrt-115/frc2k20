@@ -49,7 +49,7 @@ public class AutoShoot extends CommandBase {
     horizontalOffset.reset();
     verticalOffset.reset();
     Robot.flywheel.setFlywheelState(FlywheelState.SPINNINGUP);
-    Hardware.limelight.setPipeline(PIPELINE_STATE.VISION_ZOOM);
+    Hardware.limelight.setPipeline(PIPELINE_STATE.VISION_WIDE);
     Hardware.limelight.setLED(LED_MODE.ON);
     
     if(RPM != 0){
@@ -88,9 +88,8 @@ public class AutoShoot extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     Robot.drivetrain.stop();
+    Robot.hopper.stopMotors();
     Robot.flywheel.setFlywheelState(FlywheelState.OFF);
-    Hardware.limelight.setPipeline(PIPELINE_STATE.DRIVER);
-    Hardware.limelight.setLED(LED_MODE.OFF);
   }
 
   // Returns true when the command should end.

@@ -85,6 +85,9 @@ public class Flywheel extends SubsystemBase {
 
   public void setFlywheelState(FlywheelState newState){
     currState = newState;
+
+    if(newState == FlywheelState.OFF)
+      targetVelocity = 0;
   }
 
   public FlywheelState getFlywheelState(){
