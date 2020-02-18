@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Hardware;
+import frc.robot.Robot;
+import frc.robot.Robot.RobotState;
 
 public class Hopper extends SubsystemBase 
 {
@@ -77,12 +79,13 @@ public class Hopper extends SubsystemBase
     boolean currBottom = getBottomBreakbeam();
     boolean currTop = getTopBreakbeam();
 
-    if(currBottom && !lastBottom)
-      balls++;
+    if(Robot.getRobotState() != RobotState.DISABLED){
+      if(currBottom && !lastBottom)
+        balls++;
 
-    if(!currTop && lastTop)
-      balls--;
-
+      if(!currTop && lastTop)
+        balls--;
+    }
     lastTop = currTop;
     lastBottom = currBottom;
   }
@@ -97,8 +100,9 @@ public class Hopper extends SubsystemBase
 
 
   public void log(){
-    SmartDashboard.putBoolean("bottom Breakbeam", getBottomBreakbeam());
-    SmartDashboard.putBoolean("Top Breakbeam", getTopBreakbeam());
+  //  SmartDashboard.putBoolean("bottom Breakbeam", getBottomBreakbeam());
+  //  SmartDashboard.putBoolean("Top Breakbeam", getTopBreakbeam());
     SmartDashboard.putNumber("Num of Balls", balls);
+    SmartDashboard.putNumber("Output", Hardware.topHopper.getMotorOutputPercent());
   }
 }

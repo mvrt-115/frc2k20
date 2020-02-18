@@ -33,7 +33,7 @@ public class Climber extends SubsystemBase {
 
   public Climber() {
 
-    Hardware.elevatorMaster = new TalonFX(0);
+    Hardware.elevatorMaster = new TalonFX(9);
     Hardware.levelMotor = new TalonSRX(1);
 
     Hardware.elevatorBottomLimitSwitch = new DigitalInput(9);
@@ -73,6 +73,8 @@ public class Climber extends SubsystemBase {
 
       SmartDashboard.putString("Climber State", "SETPOINT");
       break;
+
+     
     case CLIMBING:
       Hardware.elevatorMaster.set(ControlMode.PercentOutput, Constants.kElevatorClimbOutput);
 
@@ -83,24 +85,27 @@ public class Climber extends SubsystemBase {
       SmartDashboard.putString("Climber State", "CLIMBING");
       break;
     case HOLD:
-      Hardware.levelMotor.set(ControlMode.PercentOutput, angleError * Constants.kLevelP);
-      Hardware.elevatorMaster.set(ControlMode.PercentOutput, 0);
+   //   Hardware.levelMotor.set(ControlMode.PercentOutput, angleError * Constants.kLevelP);
+      Hardware.elevatorMaster.set(ControlMode.PercentOutput, -0.1);
 
       SmartDashboard.putString("Climber State", "HOLD");
       break;
-
+      
     case ZEROING:
-      Hardware.elevatorMaster.set(ControlMode.Position, 20, DemandType.ArbitraryFeedForward,
+      Hardware.elevatorMaster.set(ControlMode.Position, Constants.kElevatorZero, DemandType.ArbitraryFeedForward,
           Constants.kElevatorHoldOutput);
 
-      if(getLimitSwitch()){
+      if(getEncoder() < 4000)
         setElevatorState(ElevatorState.ZEROED);
-      }
+      
       break;
     }
 
   }
 
+  public double getEncoder(){
+    return Hardware.elevatorMaster.getSelectedSensorPosition();
+  }
   public boolean getLimitSwitch(){
     return Hardware.elevatorBottomLimitSwitch.get();
   }
@@ -115,5 +120,9 @@ public class Climber extends SubsystemBase {
 
   public ElevatorState getElevatorState() {
     return currState;
+  }
+
+  public void log() {
+    SmartDashboard.putNumber("Climber encoder", getEncoder());
   }
 }

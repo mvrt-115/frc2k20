@@ -9,6 +9,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
@@ -20,15 +21,23 @@ public class AutonRoutine extends SequentialCommandGroup {
    * Creates a new AutonRoutine.
    */
   public AutonRoutine(Command trajectory1, Command trajectory2) {
+    
     addCommands(
-      new AutoShoot(8, 3000),
-      new ParallelCommandGroup(trajectory1,
-        new SequentialCommandGroup(
-          new WaitCommand(3),
-          new IntakeCommand(5)
+        
+    
+      new AutoShoot(6800).withTimeout(3),
+        new ParallelRaceGroup(
+          new ParallelCommandGroup(trajectory2,
+            new IntakeCommand().withTimeout(5.5)
+          ),
+          new AutoHopper().withTimeout(10)
+        ),
+        new ParallelRaceGroup(
+          new SequentialCommandGroup(trajectory1,
+            new AutoShoot(6200).withTimeout(5)
+          ),  
+          new IntakeCommand().withTimeout(5)
         )
-      ),
-      new AutoShoot(7, 6000)
     );
   }
 }

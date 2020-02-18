@@ -65,8 +65,16 @@ public class Drivetrain extends SubsystemBase {
 		Hardware.rightMaster.setInverted(true);
 		Hardware.rightFollower.setInverted(true);
 
-	//	Hardware.leftFollower.follow(Hardware.leftMaster);
-	//	Hardware.rightFollower.follow(Hardware.rightMaster);
+
+		Hardware.leftMaster.configVoltageCompSaturation(10, Constants.kTimeoutMs);
+		Hardware.leftFollower.configVoltageCompSaturation(10, Constants.kTimeoutMs);
+		Hardware.rightMaster.configVoltageCompSaturation(10, Constants.kTimeoutMs);
+		Hardware.rightFollower.configVoltageCompSaturation(10, Constants.kTimeoutMs);
+
+		Hardware.leftMaster.enableVoltageCompensation(true);
+		Hardware.leftFollower.enableVoltageCompensation(true);
+		Hardware.rightMaster.enableVoltageCompensation(true);
+		Hardware.rightFollower.enableVoltageCompensation(true);
 
 		driveMotorCurrentConfig = new SupplyCurrentLimitConfiguration(true, 40, 50, 3.8);
 
@@ -75,7 +83,11 @@ public class Drivetrain extends SubsystemBase {
 		Hardware.rightMaster.configSupplyCurrentLimit(driveMotorCurrentConfig);
 		Hardware.rightFollower.configSupplyCurrentLimit(driveMotorCurrentConfig);
 
-		
+		Hardware.leftMaster.configOpenloopRamp(.4);
+		Hardware.leftFollower.configOpenloopRamp(.4);
+		Hardware.rightMaster.configOpenloopRamp(.4);
+		Hardware.rightFollower.configOpenloopRamp(.4);
+
 		Hardware.leftMaster.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, Constants.kPIDIdx,
 				Constants.kTimeoutMs);
 		Hardware.rightMaster.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, Constants.kPIDIdx,
@@ -146,7 +158,7 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	public void setOutputVolts(double leftVolts, double rightVolts) {
-		setLeftRightMotorOutputs(leftVolts / 12, rightVolts / 12);
+		setLeftRightMotorOutputs(leftVolts / 10.0, rightVolts / 10.0);
 	}
 
 	public Rotation2d getGyroRotation() {
@@ -295,10 +307,11 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	public void alignToTarget(double error) {
-		double kFF = 0.05;
-		double kP = .018;
+		double kFF = 0.037;
+		double kP = .003;
 		double output;
-		if (Math.abs(error) > .15) {
+
+		if (Math.abs(error) > .5) {
 			output = error * kP + Math.copySign(kFF, error);
 		} else {
 			output = error * kP;
@@ -313,13 +326,13 @@ public class Drivetrain extends SubsystemBase {
 		setLeftRightMotorOutputs(0, 0);
 	}
 
-	public void log() {
-		SmartDashboard.putNumber("Left Encoder", Hardware.leftMaster.getSelectedSensorPosition());
-		SmartDashboard.putNumber("Right Encoder", Hardware.rightMaster.getSelectedSensorPosition());
+	public void log() {//
+		// SmartDashboard.putNumber("Left Encoder", Hardware.leftMaster.getSelectedSensorPosition());
+		// SmartDashboard.putNumber("Right Encoder", Hardware.rightMaster.getSelectedSensorPosition());
 		SmartDashboard.putNumber("Current", Hardware.leftMaster.getStatorCurrent()* 4);
-		SmartDashboard.putNumber("Curr X Position", currPosition.getTranslation().getX());
-		SmartDashboard.putNumber("Curr Y Position", currPosition.getTranslation().getY());
-		SmartDashboard.putNumber("NavX", Hardware.gyro.getAngle());
+		 SmartDashboard.putNumber("Curr X Position", currPosition.getTranslation().getX());
+		 SmartDashboard.putNumber("Curr Y Position", currPosition.getTranslation().getY());
+		 SmartDashboard.putNumber("NavX", Hardware.gyro.getAngle());
 	}
 
 	public void invertPathDirection(boolean reversed){

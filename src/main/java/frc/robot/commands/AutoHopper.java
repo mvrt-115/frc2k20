@@ -10,6 +10,7 @@ package frc.robot.commands;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Hardware;
 import frc.robot.Robot;
@@ -39,6 +40,7 @@ public class AutoHopper extends CommandBase {
   public void execute() {
     int balls = Robot.hopper.getBalls();
 
+    SmartDashboard.putNumber("Test", 12);
 
     if(balls == 3 && lastBall == 2){
       startTime = Timer.getFPGATimestamp();
@@ -49,6 +51,7 @@ public class AutoHopper extends CommandBase {
 
     if( Robot.flywheel.getFlywheelState() == FlywheelState.SPINNINGUP || Robot.flywheel.getFlywheelState() == FlywheelState.ATSPEED){
       Robot.hopper.runHopper(.3, .3);
+      SmartDashboard.putNumber("Test", 13);
     }
     else if(balls ==1){
       Robot.hopper.runHopper(0, 0.3);
@@ -65,9 +68,10 @@ public class AutoHopper extends CommandBase {
     }else if(balls >= 4){
      // Do nothing
     }else{
-      if(Robot.intake.getIntakeState() == IntakeState.INTAKING)  
+      if(Robot.intake.getIntakeState() == IntakeState.INTAKING){
         Robot.hopper.runHopper(0, .3);
-      else 
+        SmartDashboard.putNumber("Test", 14);
+      }else 
         Robot.hopper.runHopper(0, 0);
     
     }

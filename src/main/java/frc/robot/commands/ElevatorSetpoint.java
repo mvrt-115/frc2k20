@@ -8,14 +8,17 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.subsystems.Climber.ElevatorState;
 
-public class RaiseElevatorCommand extends CommandBase {
+public class ElevatorSetpoint extends CommandBase {
   /**
    * Creates a new RaiseElevator.
    */
-  public RaiseElevatorCommand() {
+  double setpoint;
+  public ElevatorSetpoint(double _setpoint) {
+    setpoint = _setpoint;
     addRequirements(Robot.climber);
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -23,7 +26,11 @@ public class RaiseElevatorCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    Robot.climber.setElevatorState(ElevatorState.SETPOINT);
+    if(setpoint == Constants.kElevatorZero){
+      Robot.climber.setElevatorState(ElevatorState.ZEROING);
+    }else{
+      Robot.climber.setElevatorState(ElevatorState.SETPOINT);
+    }
   }
 
   // Called every time the scheduler runs while the command is scheduled.

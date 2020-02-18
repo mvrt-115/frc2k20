@@ -48,6 +48,9 @@ public class Intake extends SubsystemBase {
     Hardware.intakePivot.setInverted(false);
     Hardware.intakeFunnel.setInverted(false);
 
+//    Hardware.intakePivot.configVoltageCompSaturation(10, Constants.kTimeoutMs);
+//    Hardware.intakePivot.enableVoltageCompensation(true);
+
     Hardware.intakeRoller.setNeutralMode(NeutralMode.Coast);
     Hardware.intakePivot.setNeutralMode(NeutralMode.Brake);
     Hardware.intakeFunnel.setNeutralMode(NeutralMode.Coast);
@@ -66,17 +69,18 @@ public class Intake extends SubsystemBase {
 
   public void runIntake() {
     Hardware.intakeFunnel.set(ControlMode.PercentOutput, 0.2);
-    Hardware.intakeRoller.set(ControlMode.PercentOutput, 0.8);
+    Hardware.intakeRoller.set(ControlMode.PercentOutput, 0.6);
   }
 
   public void periodic() {
     double feedForward = Constants.kIntakeFF * Math.cos(Math.toRadians(getIntakePivotAngle())); 
     
+    
   switch (currState) {
   
     case STOWED:
       SmartDashboard.putString("INTAKE STATE", "Stowed");
-      Hardware.intakePivot.set(ControlMode.PercentOutput, -.1);
+      Hardware.intakePivot.set(ControlMode.PercentOutput, -1.0/12);
 
       break;
     case DEPLOYED:
@@ -104,12 +108,12 @@ public class Intake extends SubsystemBase {
       break;
     case INTAKING:
       SmartDashboard.putString("INTAKE STATE", "Intaking");
-      Hardware.intakePivot.set(ControlMode.PercentOutput, 0.2);
+      Hardware.intakePivot.set(ControlMode.PercentOutput, 2.0/12);
       runIntake();
 
       break;
     }
-    
+
   }
 
   public void setDefaultLimitSwitchStart(){
@@ -125,10 +129,10 @@ public class Intake extends SubsystemBase {
   }
 
   public void log() {
-    SmartDashboard.putNumber("Intake Encoder", Hardware.intakePivot.getSelectedSensorPosition());
-    SmartDashboard.putBoolean("intake Limit Switch", Hardware.intakeBottomlimitSwitch.get());
+//    SmartDashboard.putNumber("Intake Encoder", Hardware.intakePivot.getSelectedSensorPosition());
+//    SmartDashboard.putBoolean("intake Limit Switch", Hardware.intakeBottomlimitSwitch.get());
     SmartDashboard.putNumber("Angle", getIntakePivotAngle());
-    SmartDashboard.putNumber("intake Output", Hardware.intakePivot.getMotorOutputPercent());
+ //   SmartDashboard.putNumber("intake Output", Hardware.intakePivot.getMotorOutputPercent());
   }
 
   public void stopRoller(){

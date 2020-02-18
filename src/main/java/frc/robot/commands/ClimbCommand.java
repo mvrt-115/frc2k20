@@ -7,54 +7,39 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
-import frc.robot.Robot.RobotState;
-import frc.robot.subsystems.Intake.IntakeState;
+import frc.robot.subsystems.Climber.ElevatorState;
 
-public class IntakeCommand extends CommandBase 
-{
+public class ClimbCommand extends CommandBase {
   /**
-   * Creates a new IntakeCommand.
+   * Creates a new ClimbAndLevelCommand.
    */
-  public IntakeCommand() 
-  {
-    addRequirements(Robot.intake);
+  public ClimbCommand() {
+    addRequirements(Robot.climber);
+    // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize(){
-    Robot.intake.setIntakeState(IntakeState.DEPLOYING);
+  public void initialize() {
+    if(Robot.climber.getElevatorState() == ElevatorState.SETPOINT)
+      Robot.climber.setElevatorState(ElevatorState.CLIMBING);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
-    if(Robot.intake.getIntakeState() == IntakeState.DEPLOYED)
-      Robot.intake.setIntakeState(IntakeState.INTAKING);
-
-  
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) 
-  {
-    Robot.intake.setIntakeState(IntakeState.STOWING);
-    Robot.intake.stopRoller();
+  public void end(boolean interrupted) {
   }
 
   // Returns true when the command should end.
   @Override
-  public boolean isFinished() 
-  {
-    if(Robot.getRobotState() == RobotState.TELEOP){
-      return !Robot.oi.isIntakeButtonPressed();
-    }else{
-      return false;
-    }  
+  public boolean isFinished() {
+    return true;
   }
 }

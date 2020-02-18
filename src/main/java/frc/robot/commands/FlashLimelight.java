@@ -10,6 +10,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Hardware;
+import frc.robot.Robot;
 import frc.robot.util.Limelight.LED_MODE;
 
 public class FlashLimelight extends CommandBase {

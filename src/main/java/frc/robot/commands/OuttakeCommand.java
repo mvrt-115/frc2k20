@@ -7,54 +7,40 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Robot;
-import frc.robot.Robot.RobotState;
-import frc.robot.subsystems.Intake.IntakeState;
+import com.ctre.phoenix.motorcontrol.ControlMode;
 
-public class IntakeCommand extends CommandBase 
-{
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Hardware;
+import frc.robot.Robot;
+
+public class OuttakeCommand extends CommandBase {
   /**
-   * Creates a new IntakeCommand.
+   * Creates a new OuttakeCommand.
    */
-  public IntakeCommand() 
-  {
-    addRequirements(Robot.intake);
+  public OuttakeCommand() {
+    // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize(){
-    Robot.intake.setIntakeState(IntakeState.DEPLOYING);
+  public void initialize() {
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
-    if(Robot.intake.getIntakeState() == IntakeState.DEPLOYED)
-      Robot.intake.setIntakeState(IntakeState.INTAKING);
-
-  
+    Hardware.intakeRoller.set(ControlMode.PercentOutput, -0.7);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) 
-  {
-    Robot.intake.setIntakeState(IntakeState.STOWING);
-    Robot.intake.stopRoller();
+  public void end(boolean interrupted) {
+    Hardware.intakeRoller.set(ControlMode.PercentOutput, 0);
   }
 
   // Returns true when the command should end.
   @Override
-  public boolean isFinished() 
-  {
-    if(Robot.getRobotState() == RobotState.TELEOP){
-      return !Robot.oi.isIntakeButtonPressed();
-    }else{
-      return false;
-    }  
+  public boolean isFinished() {
+    return Robot.oi.getTest();
   }
 }

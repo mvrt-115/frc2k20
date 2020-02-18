@@ -23,18 +23,15 @@ public class AutoShoot extends CommandBase {
    * Creates a new autoShoot.
    */
 
-  private double timeout;
   private double RPM;
-  private double startTime;
   private RollingAverage horizontalOffset;
   private RollingAverage verticalOffset;
 
-  public AutoShoot(double _timeoutSeconds, double _RPM) {
-    timeout = _timeoutSeconds;
+  public AutoShoot(double _RPM) {
+    
     RPM = _RPM;
-    horizontalOffset = new RollingAverage(5);
+    horizontalOffset = new RollingAverage(9);
     verticalOffset = new RollingAverage(5);
-    startTime = 0;
 
     addRequirements(Robot.drivetrain);
     addRequirements(Robot.flywheel);
@@ -45,7 +42,6 @@ public class AutoShoot extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    startTime = Timer.getFPGATimestamp();
     horizontalOffset.reset();
     verticalOffset.reset();
     Robot.flywheel.setFlywheelState(FlywheelState.SPINNINGUP);
@@ -56,6 +52,7 @@ public class AutoShoot extends CommandBase {
       Robot.flywheel.setTargetVelocity(RPM);
     }else{
       Robot.flywheel.setTargetVelocity(3000);
+      Robot.flywheel.setFlywheelState(FlywheelState.SPINNINGUP);
     }
   }
 
@@ -67,10 +64,13 @@ public class AutoShoot extends CommandBase {
 
     Robot.drivetrain.alignToTarget(horizontalOffset.getAverage());
     double avgDistance = Hardware.limelight.getDistanceFromTarget(verticalOffset.getAverage());
-    Robot.flywheel.updateTargetVelocity(Hardware.limelight.getRPMFromDistance(avgDistance));
+
+    if(RPM == 0 ){
+      Robot.flywheel.updateTargetVelocity(Hardware.limelight.getRPMFromDistance(avgDistance));
+    }
 
     boolean canShoot;
-    if (Hardware.limelight.hasTarget() && horizontalOffset.allWithinError(0, .7) && Robot.flywheel.getFlywheelState() == FlywheelState.ATSPEED) {
+    if (Hardware.limelight.hasTarget() && horizontalOffset.allWithinError(0, 1.6) && Robot.flywheel.getFlywheelState() == FlywheelState.ATSPEED) {
       Robot.hopper.runHopper(0.5, .5);
       canShoot = true;
     }else{
@@ -98,9 +98,9 @@ public class AutoShoot extends CommandBase {
 
     if (Robot.getRobotState() == RobotState.TELEOP) {
       return !Robot.oi.getAlignButton();
-    } else {
-      return Timer.getFPGATimestamp() - startTime > timeout;
     }
+
+    return false;
 
   }
 }

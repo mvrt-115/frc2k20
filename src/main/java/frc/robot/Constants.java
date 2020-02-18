@@ -18,9 +18,9 @@ package frc.robot;
 public final class Constants {
 
 	//Flywheel 
-    public static final double kFlywheelP = 0.19;
-    public static final double kFlywheelD = 0.8;
-    public static final double kFlywheelFF = .0485;
+    public static final double kFlywheelP = 0.15;  // 0.75
+    public static final double kFlywheelD = 7;
+    public static final double kFlywheelFF = .058;
     public static final double kFlywheelGearRatio = 20.0/34;
     public static final double kFlywheelAcceptableError = 100;
 
@@ -32,17 +32,17 @@ public final class Constants {
 	//Drivetrain
     public static final double kTrackScrubFactor = 1.0469745223;
 	public static final double kTrackWidthInches = 24.2;
-	public static final double kTrackWidthMeters = .617432;
-    public static final double kWheelDiameterMeters = .1450848;
+	public static final double kTrackWidthMeters = .5883;
+    public static final double kWheelDiameterMeters = .158;         // .1450848;
     
-	public static final double kMaxVelocityMetersPerSecond = 1;
+	public static final double kMaxVelocityMetersPerSecond = 1.2;
 	public static final double kMaxAccelerationMetersPerSecondSq = 2;
 	public static final double kDriveGearRatio = (46.0/9) * (44.0/20);
 	public static final int kFalconTicksPerRotation = 2048;
 	
-	public static final double kDriveS = 0.327; 
+	public static final double kDriveS = 0.166; 
 	public static final double kDriveV = 2.53; 
-	public static final double kDriveA = 0.168;  
+	public static final double kDriveA = 0.311;  
 
 	public static final double kDriveP = 1; 
 	public static final double kDriveI = 0;
@@ -50,23 +50,23 @@ public final class Constants {
 
 	//Intake
 	public static final double kIntakeD = 0;
-	public static final double kIntakeP = 0.306;
-	public static final double kIntakeFF = .2;
+	public static final double kIntakeP = 0.476;
+	public static final double kIntakeFF = .15;
 	public static final double kIntakeStowedTicks = 60;
-	public static final double kIntakeDeployTicks = 900;
+	public static final double kIntakeDeployTicks = 1000;
 	public static final double kIntakeMaxTicks = 1000;
 	
 	public static final int kPIDIdx = 0;
 	public static final int kTimeoutMs = 10;
  
 	//Climber
-	public static final double kElevatorP = 0;
+	public static final double kElevatorP = 0.5;
 	public static final double kElevatorI = 0;
 	public static final double kElevatorD = 0;
-	public static final double kElevatorHoldOutput = 0;
-    public static final double kElevatorClimbOutput = -.2;
+	public static final double kElevatorHoldOutput = -.2;
+    public static final double kElevatorClimbOutput = -.45;
     
-    public static final double kClimbHeight = 0;
-    public static final double kLevelP = 0;
-	public static final int kClimbTicks = 0;
+	public static final double kClimbHeight = 300000;
+	public static final double kElevatorZero = 1000;
+	public static final int kClimbTicks = 80000;
 }
