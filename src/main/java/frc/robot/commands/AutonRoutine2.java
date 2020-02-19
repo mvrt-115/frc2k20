@@ -17,45 +17,48 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Robot;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
-public class AutonRoutine extends SequentialCommandGroup {
+public class AutonRoutine2 extends SequentialCommandGroup {
   /**
-   * Creates a new AutonRoutine.
+   * Creates a new AutonRoutine2.
    */
-  public AutonRoutine() {
-    
+  public AutonRoutine2() {
+
     addCommands(
-        
-    
-      new AutoShoot(6800).withTimeout(3),
-        new ParallelRaceGroup(
-          new ParallelCommandGroup(
-            getTrajectory1(),
-            new IntakeCommand().withTimeout(5.5)
+        new ParallelRaceGroup(    
+            new SequentialCommandGroup(
+              new ParallelCommandGroup(
+                getTrajectory1(),
+                new IntakeCommand().withTimeout(3)
+              ),
+              new ParallelRaceGroup(
+                getTrajectory2(),
+                new IntakeCommand()
+            )
           ),
-          new AutoHopper().withTimeout(10)
+          new AutoHopper().withTimeout(15)
         ),
-        new ParallelRaceGroup(
-          new SequentialCommandGroup(
-            getTrajectory2(),
-            new AutoShoot(6200).withTimeout(5)
-          ),  
-          new IntakeCommand().withTimeout(5)
+        new AutoShoot(5000).withTimeout(4),
+        new ParallelRaceGroup(  
+            new ParallelCommandGroup(
+              getTrajectory3(),
+              new IntakeCommand().withTimeout(4.5)
+            ),
+            new AutoHopper()
         )
-    );
+      );
   }
 
-  public Command getTrajectory2(){
-    Robot.drivetrain.invertPathDirection(false);
+  public Command getTrajectory1(){
+    Robot.drivetrain.invertPathDirection(true);
 
     Trajectory traj1 = TrajectoryGenerator.generateTrajectory(List.of(
-      new Pose2d(-4, -1.7, new Rotation2d()),  
-      new Pose2d(-1.25,0, new Rotation2d().fromDegrees(8))
+      new Pose2d(),
+      new Pose2d(-2.05, -.2, new Rotation2d(.4,.161))
 
     ), Robot.drivetrain.getTrajectoryConfig());
 
@@ -63,13 +66,25 @@ public class AutonRoutine extends SequentialCommandGroup {
     return Robot.generatePath(traj1);
   }
 
-  public Command getTrajectory1(){
+  public Command getTrajectory2(){
+    Robot.drivetrain.invertPathDirection(false);
+
+    Trajectory traj1 = TrajectoryGenerator.generateTrajectory(List.of(
+      new Pose2d(-2, -.2, new Rotation2d(.4,.161)),
+      new Pose2d(-.9, -.6, new Rotation2d(0,-.1)),
+      new Pose2d(-.4,-2, new Rotation2d().fromDegrees(-10))
+
+    ), Robot.drivetrain.getTrajectoryConfigSlow());
+
+    return Robot.generatePath(traj1);
+  }
+
+  public Command getTrajectory3(){
     Robot.drivetrain.invertPathDirection(true);
 
     Trajectory traj1 = TrajectoryGenerator.generateTrajectory(List.of(
-      new Pose2d(0, 0, new Rotation2d()),  
-      new Pose2d(-2.2,-1.7, new Rotation2d().fromDegrees(8)),
-      new Pose2d(-4, -1.7, new Rotation2d())
+      new Pose2d(-.4,-2, new Rotation2d().fromDegrees(0)),
+      new Pose2d(-2.3, -1.8, new Rotation2d(.374, -.35))
 
     ), Robot.drivetrain.getTrajectoryConfig());
 

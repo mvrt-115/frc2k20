@@ -101,7 +101,7 @@ public class Hopper extends SubsystemBase
 
   public void log(){
   //  SmartDashboard.putBoolean("bottom Breakbeam", getBottomBreakbeam());
-  //  SmartDashboard.putBoolean("Top Breakbeam", getTopBreakbeam());
+   SmartDashboard.putBoolean("Top Breakbeam", getTopBreakbeam());
     SmartDashboard.putNumber("Num of Balls", balls);
     SmartDashboard.putNumber("Output", Hardware.topHopper.getMotorOutputPercent());
   }

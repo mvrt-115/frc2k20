@@ -19,10 +19,12 @@ import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.commands.AutoShoot;
 import frc.robot.commands.AutonRoutine;
+import frc.robot.commands.AutonRoutine2;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.util.Limelight;
@@ -54,7 +56,6 @@ public class Robot extends TimedRobot {
   };
 
   private static RobotState currState = RobotState.DISABLED;
-  private RamseteCommand autoCommand;
   private double startDisabledTime;
   public double desiredRPM;
 
@@ -76,7 +77,7 @@ public class Robot extends TimedRobot {
 
     Hardware.limelight.setPipeline(PIPELINE_STATE.VISION_WIDE);
     Hardware.limelight.setLED(LED_MODE.ON);
-   // SmartDashboard.putNumber("Desired RPM", 0);
+  //  SmartDashboard.putNumber("Desired RPM", 0);
     flywheel.setFlywheelState(FlywheelState.OFF);
 
   }
@@ -90,8 +91,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    //desiredRPM =  SmartDashboard.getNumber("Desired RPM", 0);
-  //  flywheel.updateTargetVelocity(desiredRPM);
+  //  desiredRPM =  SmartDashboard.getNumber("Desired RPM", 0);
+   // flywheel.updateTargetVelocity(desiredRPM);
     flywheel.log();
     drivetrain.log();
     hopper.log();
@@ -144,28 +145,12 @@ public class Robot extends TimedRobot {
     drivetrain.configNeutralMode(NeutralMode.Brake, NeutralMode.Brake);
 
 
-    drivetrain.invertPathDirection(false);
-    Trajectory traj1 = TrajectoryGenerator.generateTrajectory(List.of(
-      new Pose2d(-4, -1.7, new Rotation2d()),  
-      new Pose2d(-2,-1, new Rotation2d().fromDegrees(15))
-    
 
-    ), drivetrain.getTrajectoryConfig());
-   
-    drivetrain.invertPathDirection(true);
-
-    Trajectory traj2 = TrajectoryGenerator.generateTrajectory(List.of(
-    new Pose2d(0, 0, new Rotation2d()),
-    new Pose2d(-2,-1.7, new Rotation2d().fromDegrees(8)),
-    new Pose2d(-4, -1.7, new Rotation2d().fromDegrees(0))
-
-    ),drivetrain.getTrajectoryConfig());
-
-    hopper.setBalls(3);
+    hopper.setBalls(0);
 
    // m_autonomousCommand = generatePath(traj1);
     
-      m_autonomousCommand = new AutonRoutine(generatePath(traj1), generatePath(traj2));
+      m_autonomousCommand = new AutonRoutine();
 
   //  m_autonomousCommand = new AutoShoot(6000).withTimeout(8);
     
@@ -230,9 +215,9 @@ public class Robot extends TimedRobot {
   }
 
   
-  public Command generatePath(Trajectory trajectory){
+  public static Command generatePath(Trajectory trajectory){
     
-     autoCommand = new RamseteCommand(
+    var autoCommand = new RamseteCommand(
       trajectory,
       drivetrain::getPose,
       drivetrain.getRamseteController(),

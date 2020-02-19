@@ -49,7 +49,7 @@ public class AutoShoot extends CommandBase {
     Hardware.limelight.setLED(LED_MODE.ON);
     
     if(RPM != 0){
-      Robot.flywheel.setTargetVelocity(RPM);
+  //    Robot.flywheel.setTargetVelocity(RPM);
     }else{
       Robot.flywheel.setTargetVelocity(3000);
       Robot.flywheel.setFlywheelState(FlywheelState.SPINNINGUP);
@@ -66,7 +66,7 @@ public class AutoShoot extends CommandBase {
     double avgDistance = Hardware.limelight.getDistanceFromTarget(verticalOffset.getAverage());
 
     if(RPM == 0 ){
-      Robot.flywheel.updateTargetVelocity(Hardware.limelight.getRPMFromDistance(avgDistance));
+ //     Robot.flywheel.updateTargetVelocity(Hardware.limelight.getRPMFromDistance(avgDistance));
     }
 
     boolean canShoot;

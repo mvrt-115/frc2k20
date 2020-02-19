@@ -45,6 +45,7 @@ public class Drivetrain extends SubsystemBase {
 	private PIDController leftDriveController, rightDriveController;
 	private RamseteController ramseteController;
 	private TrajectoryConfig trajectoryConfig;
+	private TrajectoryConfig trajectoryConfigSlow;
 	private Pose2d currPosition;
 
 	public Drivetrain() {
@@ -111,6 +112,9 @@ public class Drivetrain extends SubsystemBase {
 		trajectoryConfig = new TrajectoryConfig(Constants.kMaxVelocityMetersPerSecond,
 				Constants.kMaxAccelerationMetersPerSecondSq);
 		trajectoryConfig.setReversed(false);
+
+		trajectoryConfigSlow = new TrajectoryConfig(1, 1);
+		trajectoryConfigSlow.setReversed(false);
 
 		ramseteController = new RamseteController();
 
@@ -307,11 +311,11 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	public void alignToTarget(double error) {
-		double kFF = 0.037;
-		double kP = .003;
+		double kFF = 0.039;
+		double kP = .0044;
 		double output;
 
-		if (Math.abs(error) > .5) {
+		if (Math.abs(error) > .6) {
 			output = error * kP + Math.copySign(kFF, error);
 		} else {
 			output = error * kP;
@@ -337,6 +341,7 @@ public class Drivetrain extends SubsystemBase {
 
 	public void invertPathDirection(boolean reversed){
 		trajectoryConfig.setReversed(reversed);
+		trajectoryConfigSlow.setReversed(reversed);
 	}
 
 	public PIDController getLeftDriveController() {
@@ -353,6 +358,10 @@ public class Drivetrain extends SubsystemBase {
 
 	public TrajectoryConfig getTrajectoryConfig() {
 		return trajectoryConfig;
+	}
+
+	public TrajectoryConfig getTrajectoryConfigSlow(){
+		return trajectoryConfigSlow;
 	}
 
 	public Pose2d getPose() {

@@ -30,12 +30,16 @@ public final class Constants {
 	public static final double kThrottleDeadband = 0.04;
 
 	//Drivetrain
+	public static final double kLimelightFF = 0.042;
+	public static final double kLimelightP = 0.04;
+
+
     public static final double kTrackScrubFactor = 1.0469745223;
 	public static final double kTrackWidthInches = 24.2;
 	public static final double kTrackWidthMeters = .5883;
     public static final double kWheelDiameterMeters = .158;         // .1450848;
     
-	public static final double kMaxVelocityMetersPerSecond = 1.2;
+	public static final double kMaxVelocityMetersPerSecond = 1.5;
 	public static final double kMaxAccelerationMetersPerSecondSq = 2;
 	public static final double kDriveGearRatio = (46.0/9) * (44.0/20);
 	public static final int kFalconTicksPerRotation = 2048;
