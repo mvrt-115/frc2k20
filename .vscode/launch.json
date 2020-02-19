@@ -1,0 +1,51 @@
+<<<<<<< HEAD
+<<<<<<< HEAD
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+
+    {
+      "type": "wpilib",
+      "name": "WPILib Desktop Debug",
+      "request": "launch",
+      "desktop": true,
+    },
+    {
+      "type": "wpilib",
+      "name": "WPILib roboRIO Debug",
+      "request": "launch",
+      "desktop": false,
+    }
+  ]
+}
+=======
+=======
+>>>>>>> d81c55ca7cbe603fb23af07b4763f816fc18dcd4
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+
+    {
+      "type": "wpilib",
+      "name": "WPILib Desktop Debug",
+      "request": "launch",
+      "desktop": true,
+    },
+    {
+      "type": "wpilib",
+      "name": "WPILib roboRIO Debug",
+      "request": "launch",
+      "desktop": false,
+    }
+  ]
+}
+<<<<<<< HEAD
+>>>>>>> 260bcf44f71e14237afe8796c459415f717e4d51
+=======
+>>>>>>> d81c55ca7cbe603fb23af07b4763f816fc18dcd4
