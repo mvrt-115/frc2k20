@@ -10,7 +10,6 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Hardware;
-import java.util.function.DoubleFunction;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
@@ -35,8 +34,6 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
  */
 public class Drivetrain extends SubsystemBase {
 
-	private double quickStopAccumulator = 0.0;
-	private DoubleFunction<Double> limiter = limiter(-0.9, 0.9);
 	private SupplyCurrentLimitConfiguration driveMotorCurrentConfig;
 
 	private DifferentialDriveKinematics driveKinematics;
@@ -49,11 +46,19 @@ public class Drivetrain extends SubsystemBase {
 	private Pose2d currPosition;
 
 	public Drivetrain() {
-		Hardware.leftMaster = new TalonFX(2);
-		Hardware.leftFollower = new TalonFX(1);
-		Hardware.rightMaster = new TalonFX(3);
-		Hardware.rightFollower = new TalonFX(5);
 
+		if(Constants.kCompBot){
+			Hardware.leftMaster = new TalonFX(46);
+			Hardware.leftFollower = new TalonFX(9);
+			Hardware.rightMaster = new TalonFX(48);
+			Hardware.rightFollower = new TalonFX(6);
+		  }else{
+			Hardware.leftMaster = new TalonFX(2);
+			Hardware.leftFollower = new TalonFX(1);
+			Hardware.rightMaster = new TalonFX(3);
+			Hardware.rightFollower = new TalonFX(5);
+		  }
+	
 		Hardware.gyro = new AHRS(SPI.Port.kMXP);
 
 		Hardware.leftMaster.configFactoryDefault();
@@ -113,7 +118,7 @@ public class Drivetrain extends SubsystemBase {
 				Constants.kMaxAccelerationMetersPerSecondSq);
 		trajectoryConfig.setReversed(false);
 
-		trajectoryConfigSlow = new TrajectoryConfig(1, 1);
+		trajectoryConfigSlow = new TrajectoryConfig(.9, 1);
 		trajectoryConfigSlow.setReversed(false);
 
 		ramseteController = new RamseteController();
@@ -186,87 +191,11 @@ public class Drivetrain extends SubsystemBase {
 		Hardware.rightFollower.setNeutralMode(mode2);
 	}
 
-	public void cheesyDriveWithJoystick(double throttle, double wheel, boolean quickturn) {
-		wheel = handleDeadband(wheel, Constants.kWheelDeadband);
-		throttle = handleDeadband(throttle, Constants.kThrottleDeadband);
-
-		double overPower;
-		double angularPower;
-
-		wheel = dampen(wheel, 0.5);
-		wheel = dampen(wheel, 0.5);
-		wheel = dampen(wheel, 0.5);
-
-		if (quickturn) {
-			if (Math.abs(throttle) < 0.2) {
-				double alpha = 0.1;
-				quickStopAccumulator = (1 - alpha) * quickStopAccumulator + alpha * limiter.apply(wheel) * 2;
-			}
-			overPower = 1.0;
-			angularPower = wheel;
-			angularPower *= 0.45;
-		} else {
-			overPower = 0.0;
-			angularPower = Math.abs(throttle) * wheel * Constants.kSensitivity - quickStopAccumulator;
-			angularPower *= 0.8;
-			if (quickStopAccumulator > 1) {
-				quickStopAccumulator -= 1;
-			} else if (quickStopAccumulator < -1) {
-				quickStopAccumulator += 1;
-			} else {
-				quickStopAccumulator = 0.0;
-			}
-		}
-
-		double rightPwm = throttle - (-1 * angularPower);
-		double leftPwm = throttle + (-1 * angularPower);
-		if (leftPwm > 1.0) {
-			rightPwm -= overPower * (leftPwm - 1.0);
-			leftPwm = 1.0;
-		} else if (rightPwm > 1.0) {
-			leftPwm -= overPower * (rightPwm - 1.0);
-			rightPwm = 1.0;
-		} else if (leftPwm < -1.0) {
-			rightPwm += overPower * (-1.0 - leftPwm);
-			leftPwm = -1.0;
-		} else if (rightPwm < -1.0) {
-			leftPwm += overPower * (-1.0 - rightPwm);
-			rightPwm = -1.0;
-		}
-
-		setLeftRightMotorOutputs(leftPwm, rightPwm);
-	}
-
-	/*
-	 * public double handleDeadband(double val, double deadband) { return
-	 * (Math.abs(val) > Math.abs(deadband)) ? val : 0.0; }
-	 */
-
 	public double handleDeadband(double val, double deadband) {
 		if (Math.abs(val) >= deadband)
 			return (val - deadband * Math.abs(val) / val) / (1 - deadband);
 		else
 			return 0;
-	}
-
-	private static double dampen(double wheel, double wheelNonLinearity) {
-		double factor = Math.PI * wheelNonLinearity;
-		return Math.sin(factor * wheel) / Math.sin(factor);
-	}
-
-	private DoubleFunction<Double> limiter(double minimum, double maximum) {
-		if (maximum < minimum) {
-			throw new IllegalArgumentException("The minimum value cannot exceed the maximum value");
-		}
-		return (double value) -> {
-			if (value > maximum) {
-				return maximum;
-			}
-			if (value < minimum) {
-				return minimum;
-			}
-			return value;
-		};
 	}
 
 	public void cheesyIshDrive(double throttle, double wheel, boolean quickTurn) {

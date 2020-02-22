@@ -6,43 +6,65 @@
 /*----------------------------------------------------------------------------*/
 
 package frc.robot.subsystems;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Hardware;
 import frc.robot.Robot;
 import frc.robot.Robot.RobotState;
+import frc.robot.subsystems.Flywheel.FlywheelState;
 
-public class Hopper extends SubsystemBase 
-{
- 
+public class Hopper extends SubsystemBase {
+
   /**
    * Creates a new Hopper.
    */
   private int balls;
   private boolean lastBottom;
   private boolean lastTop;
+  private SupplyCurrentLimitConfiguration currentConfig;
 
-  public Hopper() 
-  {
-    Hardware.bottomHopper = new TalonSRX(35);
-    Hardware.topHopper = new TalonSRX(32);
+  public Hopper() {
+
+    if(Constants.kCompBot){   
+      Hardware.bottomHopper = new TalonSRX(2);
+      Hardware.topHopper = new TalonSRX(7);
+      Hardware.bottomHopperBreakbeam = new DigitalInput(2);
+      Hardware.topHopperBreakbeam = new DigitalInput(6);
+    }else{
+      Hardware.bottomHopper = new TalonSRX(35);
+      Hardware.topHopper = new TalonSRX(32);
+      Hardware.bottomHopperBreakbeam = new DigitalInput(2);
+      Hardware.topHopperBreakbeam = new DigitalInput(0);
+    }
 
     Hardware.bottomHopper.configFactoryDefault();
     Hardware.topHopper.configFactoryDefault();
 
-    Hardware.bottomHopper.setInverted(false);
-    Hardware.topHopper.setInverted(true);
+    Hardware.bottomHopper.setInverted(Constants.kCompBot);
+    Hardware.topHopper.setInverted(false);
+
+    Hardware.bottomHopper.configVoltageCompSaturation(10, Constants.kTimeoutMs);
+    Hardware.topHopper.configVoltageCompSaturation(10, Constants.kTimeoutMs);
+
+    Hardware.bottomHopper.enableVoltageCompensation(true);
+    Hardware.topHopper.enableVoltageCompensation(true);
+
+
+    currentConfig = new SupplyCurrentLimitConfiguration(true, 20, 0, 20);
+
+    Hardware.bottomHopper.configSupplyCurrentLimit(currentConfig, Constants.kTimeoutMs);
+    Hardware.topHopper.configSupplyCurrentLimit(currentConfig, Constants.kTimeoutMs);
 
     Hardware.topHopper.setNeutralMode(NeutralMode.Brake);
     Hardware.bottomHopper.setNeutralMode(NeutralMode.Brake);
 
-    Hardware.bottomHopperBreakbeam = new DigitalInput(2);
-    Hardware.midHopperBreakbeam = new DigitalInput(1);
-    Hardware.topHopperBreakbeam = new DigitalInput(0);
     balls = 0;
     lastBottom = false;
     lastTop = false;
@@ -53,7 +75,7 @@ public class Hopper extends SubsystemBase
     Hardware.topHopper.set(ControlMode.PercentOutput, _topSpeed);
   }
 
-  public void runBottom(){
+  public void runBottom() {
     Hardware.bottomHopper.set(ControlMode.PercentOutput, 0.3);
   }
 
@@ -61,48 +83,43 @@ public class Hopper extends SubsystemBase
     return !Hardware.bottomHopperBreakbeam.get();
   }
 
-  public boolean getTopBreakbeam(){
-     return !Hardware.topHopperBreakbeam.get();
-   }
-
-   public boolean getMiddleBreakbeam(){
-     return !Hardware.midHopperBreakbeam.get();
-   }
-
-  public void stopMotors(){
-    Hardware.topHopper.set(ControlMode.PercentOutput, 0);
-    Hardware.bottomHopper.set(ControlMode.PercentOutput,0);
+  public boolean getTopBreakbeam() {
+    return !Hardware.topHopperBreakbeam.get();
   }
+
+  public void stopMotors() {
+    Hardware.topHopper.set(ControlMode.PercentOutput, 0);
+    Hardware.bottomHopper.set(ControlMode.PercentOutput, 0);
+  }
+
   @Override
-  public void periodic() 
-  {
+  public void periodic() {
     boolean currBottom = getBottomBreakbeam();
     boolean currTop = getTopBreakbeam();
 
-    if(Robot.getRobotState() != RobotState.DISABLED){
-      if(currBottom && !lastBottom)
+    if (Robot.getRobotState() != RobotState.DISABLED) {
+      if (currBottom && !lastBottom)
         balls++;
 
-      if(!currTop && lastTop)
+      if (!currTop && lastTop && Robot.flywheel.getFlywheelState() == FlywheelState.SPINNINGUP ||Robot.flywheel.getFlywheelState() == FlywheelState.ATSPEED )
         balls--;
     }
     lastTop = currTop;
     lastBottom = currBottom;
   }
 
-  public int getBalls(){
+  public int getBalls() {
     return balls;
   }
 
-  public void setBalls(int _balls){
+  public void setBalls(int _balls) {
     balls = _balls;
   }
 
-
-  public void log(){
-  //  SmartDashboard.putBoolean("bottom Breakbeam", getBottomBreakbeam());
-   SmartDashboard.putBoolean("Top Breakbeam", getTopBreakbeam());
+  public void log() {
+     SmartDashboard.putBoolean("bottom Breakbeam", getBottomBreakbeam());
+     SmartDashboard.putBoolean("Top Breakbeam", getTopBreakbeam());
     SmartDashboard.putNumber("Num of Balls", balls);
-    SmartDashboard.putNumber("Output", Hardware.topHopper.getMotorOutputPercent());
+    // SmartDashboard.putNumber("Output", Hardware.topHopper.getMotorOutputPercent());
   }
 }

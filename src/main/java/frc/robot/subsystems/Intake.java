@@ -31,25 +31,38 @@ public class Intake extends SubsystemBase {
   /**
    * Creates a new Intake.
    */
-  
-  
-  public Intake() {
-    Hardware.intakeRoller = new TalonSRX(36);
-    Hardware.intakePivot = new TalonSRX(30);
-    Hardware.intakeFunnel = new TalonSRX(22);
 
-    Hardware.intakeBottomlimitSwitch = new DigitalInput(6);
+  public Intake() {
+
+    if(Constants.kCompBot){
+      Hardware.intakeRoller = new TalonSRX(5);
+      Hardware.intakePivot = new TalonSRX(3);
+      Hardware.intakeFunnel = new TalonSRX(31);
+      Hardware.intakeBottomlimitSwitch = new DigitalInput(0); 
+
+    }else{
+      Hardware.intakeRoller = new TalonSRX(36);
+      Hardware.intakePivot = new TalonSRX(30);
+      Hardware.intakeFunnel = new TalonSRX(22);
+      Hardware.intakeBottomlimitSwitch = new DigitalInput(6); 
+
+    }
 
     Hardware.intakeRoller.configFactoryDefault();
     Hardware.intakePivot.configFactoryDefault();
     Hardware.intakeFunnel.configFactoryDefault();
 
-    Hardware.intakeRoller.setInverted(true);
+    Hardware.intakeRoller.setInverted(!Constants.kCompBot);
     Hardware.intakePivot.setInverted(false);
     Hardware.intakeFunnel.setInverted(false);
 
-//    Hardware.intakePivot.configVoltageCompSaturation(10, Constants.kTimeoutMs);
-//    Hardware.intakePivot.enableVoltageCompensation(true);
+    Hardware.intakePivot.configVoltageCompSaturation(10, Constants.kTimeoutMs);
+    Hardware.intakeRoller.configVoltageCompSaturation(10, Constants.kTimeoutMs);
+    Hardware.intakeFunnel.configVoltageCompSaturation(10, Constants.kTimeoutMs);
+
+    Hardware.intakePivot.enableVoltageCompensation(true);
+    Hardware.intakeRoller.enableVoltageCompensation(true);
+    Hardware.intakeFunnel.enableVoltageCompensation(true);
 
     Hardware.intakeRoller.setNeutralMode(NeutralMode.Coast);
     Hardware.intakePivot.setNeutralMode(NeutralMode.Brake);
@@ -73,14 +86,13 @@ public class Intake extends SubsystemBase {
   }
 
   public void periodic() {
-    double feedForward = Constants.kIntakeFF * Math.cos(Math.toRadians(getIntakePivotAngle())); 
-    
-    
-  switch (currState) {
-  
+    double feedForward = Constants.kIntakeFF * Math.cos(Math.toRadians(getIntakePivotAngle()));
+
+    switch (currState) {
+
     case STOWED:
       SmartDashboard.putString("INTAKE STATE", "Stowed");
-      Hardware.intakePivot.set(ControlMode.PercentOutput, -1.0/12);
+      Hardware.intakePivot.set(ControlMode.PercentOutput, -1.0 / 12);
 
       break;
     case DEPLOYED:
@@ -90,10 +102,9 @@ public class Intake extends SubsystemBase {
     case DEPLOYING:
       SmartDashboard.putString("INTAKE STATE", "Deploying");
       Hardware.intakePivot.set(ControlMode.Position, Constants.kIntakeDeployTicks, DemandType.ArbitraryFeedForward,
-        feedForward);
+          feedForward);
 
-    
-      if (getPivotTicks() > Constants.kIntakeDeployTicks || getIntakeLimitSwitch()!=defaultLimitSwitch)
+      if (getPivotTicks() > Constants.kIntakeDeployTicks || getIntakeLimitSwitch() != defaultLimitSwitch)
         currState = IntakeState.DEPLOYED;
 
       break;
@@ -108,7 +119,7 @@ public class Intake extends SubsystemBase {
       break;
     case INTAKING:
       SmartDashboard.putString("INTAKE STATE", "Intaking");
-      Hardware.intakePivot.set(ControlMode.PercentOutput, 2.0/12);
+      Hardware.intakePivot.set(ControlMode.PercentOutput, 2.0 / 12);
       runIntake();
 
       break;
@@ -116,7 +127,7 @@ public class Intake extends SubsystemBase {
 
   }
 
-  public void setDefaultLimitSwitchStart(){
+  public void setDefaultLimitSwitchStart() {
     defaultLimitSwitch = Hardware.intakeBottomlimitSwitch.get();
   }
 
@@ -129,13 +140,15 @@ public class Intake extends SubsystemBase {
   }
 
   public void log() {
-//    SmartDashboard.putNumber("Intake Encoder", Hardware.intakePivot.getSelectedSensorPosition());
-//    SmartDashboard.putBoolean("intake Limit Switch", Hardware.intakeBottomlimitSwitch.get());
+     SmartDashboard.putNumber("Intake Encoder", Hardware.intakePivot.getSelectedSensorPosition());
+    // SmartDashboard.putBoolean("intake Limit Switch",
+    // Hardware.intakeBottomlimitSwitch.get());
     SmartDashboard.putNumber("Angle", getIntakePivotAngle());
- //   SmartDashboard.putNumber("intake Output", Hardware.intakePivot.getMotorOutputPercent());
+    // SmartDashboard.putNumber("intake Output",
+    // Hardware.intakePivot.getMotorOutputPercent());
   }
 
-  public void stopRoller(){
+  public void stopRoller() {
     Hardware.intakeRoller.set(ControlMode.PercentOutput, 0);
     Hardware.intakeFunnel.set(ControlMode.PercentOutput, 0);
   }
@@ -145,7 +158,7 @@ public class Intake extends SubsystemBase {
   }
 
   public double getIntakePivotAngle() {
-    return 80 + (Hardware.intakePivot.getSelectedSensorPosition()/Constants.kIntakeMaxTicks*100);
+    return 80 + (Hardware.intakePivot.getSelectedSensorPosition() / Constants.kIntakeMaxTicks * 100);
   }
 
   public boolean getBottomLimitSwitch() {
@@ -156,8 +169,8 @@ public class Intake extends SubsystemBase {
     Hardware.intakePivot.setSelectedSensorPosition(0);
   }
 
-  public boolean getIntakeLimitSwitch(){
+  public boolean getIntakeLimitSwitch() {
     return Hardware.intakeBottomlimitSwitch.get();
-    
+
   }
 }

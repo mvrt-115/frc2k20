@@ -7,13 +7,13 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Hardware;
 import frc.robot.Robot;
 import frc.robot.Robot.RobotState;
 import frc.robot.subsystems.Flywheel.FlywheelState;
+import frc.robot.subsystems.LEDStrip.LEDColor;
 import frc.robot.util.RollingAverage;
 import frc.robot.util.Limelight.LED_MODE;
 import frc.robot.util.Limelight.PIPELINE_STATE;
@@ -47,9 +47,10 @@ public class AutoShoot extends CommandBase {
     Robot.flywheel.setFlywheelState(FlywheelState.SPINNINGUP);
     Hardware.limelight.setPipeline(PIPELINE_STATE.VISION_WIDE);
     Hardware.limelight.setLED(LED_MODE.ON);
+    Robot.led.setColor(LEDColor.YELLOW);
     
     if(RPM != 0){
-  //    Robot.flywheel.setTargetVelocity(RPM);
+      Robot.flywheel.setTargetVelocity(RPM);
     }else{
       Robot.flywheel.setTargetVelocity(3000);
       Robot.flywheel.setFlywheelState(FlywheelState.SPINNINGUP);
@@ -66,18 +67,20 @@ public class AutoShoot extends CommandBase {
     double avgDistance = Hardware.limelight.getDistanceFromTarget(verticalOffset.getAverage());
 
     if(RPM == 0 ){
- //     Robot.flywheel.updateTargetVelocity(Hardware.limelight.getRPMFromDistance(avgDistance));
+       Robot.flywheel.updateTargetVelocity(Hardware.limelight.getRPMFromDistance(avgDistance));
     }
 
     boolean canShoot;
     if (Hardware.limelight.hasTarget() && horizontalOffset.allWithinError(0, 1.6) && Robot.flywheel.getFlywheelState() == FlywheelState.ATSPEED) {
       Robot.hopper.runHopper(0.5, .5);
       canShoot = true;
+      Robot.led.setColor(LEDColor.GREEN);
     }else{
       if(!Robot.hopper.getTopBreakbeam()){
           Robot.hopper.runHopper(.3, .3);
       }
       canShoot = false;
+      Robot.led.setColor(LEDColor.YELLOW);
     }
 
     SmartDashboard.putBoolean("can shoot", canShoot);
@@ -90,6 +93,7 @@ public class AutoShoot extends CommandBase {
     Robot.drivetrain.stop();
     Robot.hopper.stopMotors();
     Robot.flywheel.setFlywheelState(FlywheelState.OFF);
+    Robot.led.setColor(LEDColor.BLUE);
   }
 
   // Returns true when the command should end.

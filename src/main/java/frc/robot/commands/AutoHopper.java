@@ -38,8 +38,32 @@ public class AutoHopper extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+  
+
     int balls = Robot.hopper.getBalls();
 
+    if( Robot.flywheel.getFlywheelState() == FlywheelState.SPINNINGUP || Robot.flywheel.getFlywheelState() == FlywheelState.ATSPEED){
+      Robot.hopper.runHopper(.3, .5);
+      SmartDashboard.putNumber("Test", 13);
+    }else if(balls == 0 && Robot.intake.getIntakeState() == IntakeState.INTAKING){
+      Robot.hopper.runHopper(0,0.7);
+    }else if(balls ==1 ){
+      Robot.hopper.runHopper(0,0.7);
+    }else if( balls == 2){
+      if(!Robot.hopper.getTopBreakbeam())
+        Robot.hopper.runHopper( 0.3, 0.5);
+      else
+        Robot.hopper.runHopper(0, 0.5);
+    }else if(balls ==3){
+      if(!Robot.hopper.getTopBreakbeam())
+      Robot.hopper.runHopper(0.3, 0.5);
+     else
+      Robot.hopper.runHopper(0, 0.9);  
+    }else if(balls ==4){
+      Robot.hopper.runHopper(0, 0);
+    } 
+
+/*
     SmartDashboard.putNumber("Test", 12);
 
     if(balls == 3 && lastBall == 2){
@@ -75,8 +99,9 @@ public class AutoHopper extends CommandBase {
         Robot.hopper.runHopper(0, 0);
     
     }
+    */
 
-    lastBall = balls;
+  //  lastBall = balls;
   }
 
   // Called once the command ends or is interrupted.

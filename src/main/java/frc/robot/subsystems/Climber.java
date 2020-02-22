@@ -25,7 +25,6 @@ public class Climber extends SubsystemBase {
    */
 
   private ElevatorState currState;
-  private double angleError;
 
   public enum ElevatorState {
     ZEROED, SETPOINT, CLIMBING, HOLD, ZEROING
@@ -33,16 +32,15 @@ public class Climber extends SubsystemBase {
 
   public Climber() {
 
-    Hardware.elevatorMaster = new TalonFX(9);
-    Hardware.levelMotor = new TalonSRX(1);
-
-    Hardware.elevatorBottomLimitSwitch = new DigitalInput(9);
-
+    if(Constants.kCompBot){
+      Hardware.elevatorMaster = new TalonFX(22);
+    }else{
+      Hardware.elevatorMaster = new TalonFX(9);
+    }
+    
     Hardware.elevatorMaster.configFactoryDefault();
-    Hardware.levelMotor.configFactoryDefault();
 
     Hardware.elevatorMaster.setInverted(false);
-    Hardware.levelMotor.setInverted(false);
 
     Hardware.elevatorMaster.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, Constants.kPIDIdx,
         Constants.kTimeoutMs);

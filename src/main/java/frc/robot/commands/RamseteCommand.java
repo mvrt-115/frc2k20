@@ -192,6 +192,8 @@ public class RamseteCommand extends CommandBase {
       rightOutput = rightSpeedSetpoint;
     }
 
+    SmartDashboard.putNumber("Right Output", rightOutput);
+    
     SmartDashboard.putNumber("Target X", m_trajectory.sample(curTime).poseMeters.getTranslation().getX());
     SmartDashboard.putNumber("Target Y", m_trajectory.sample(curTime).poseMeters.getTranslation().getY());
 

@@ -59,7 +59,7 @@ public class AutonRoutine2 extends SequentialCommandGroup {
     Trajectory traj1 = TrajectoryGenerator.generateTrajectory(List.of(
       new Pose2d(),
       new Pose2d(-2.05, -.2, new Rotation2d(.4,.161))
-
+     // new Pose2d(-2, -.2, new Rotation2d(1.52, .62))
     ), Robot.drivetrain.getTrajectoryConfig());
 
     
@@ -70,6 +70,10 @@ public class AutonRoutine2 extends SequentialCommandGroup {
     Robot.drivetrain.invertPathDirection(false);
 
     Trajectory traj1 = TrajectoryGenerator.generateTrajectory(List.of(
+
+      // new Pose2d(-2, -.2, new Rotation2d(2.99, 1.4)),
+      // new Pose2d(-.4, -1.8, new Rotation2d(2.2,0))
+
       new Pose2d(-2, -.2, new Rotation2d(.4,.161)),
       new Pose2d(-.9, -.6, new Rotation2d(0,-.1)),
       new Pose2d(-.4,-2, new Rotation2d().fromDegrees(-10))

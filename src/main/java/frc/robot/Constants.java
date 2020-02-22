@@ -16,6 +16,8 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+	
+	public static final boolean kCompBot = true;
 
 	//Flywheel 
     public static final double kFlywheelP = 0.15;  // 0.75
@@ -33,7 +35,6 @@ public final class Constants {
 	public static final double kLimelightFF = 0.042;
 	public static final double kLimelightP = 0.04;
 
-
     public static final double kTrackScrubFactor = 1.0469745223;
 	public static final double kTrackWidthInches = 24.2;
 	public static final double kTrackWidthMeters = .5883;
@@ -48,7 +49,7 @@ public final class Constants {
 	public static final double kDriveV = 2.53; 
 	public static final double kDriveA = 0.311;  
 
-	public static final double kDriveP = 1; 
+	public static final double kDriveP = 0; 
 	public static final double kDriveI = 0;
 	public static final double kDriveD = 0;
 
@@ -59,9 +60,6 @@ public final class Constants {
 	public static final double kIntakeStowedTicks = 60;
 	public static final double kIntakeDeployTicks = 1000;
 	public static final double kIntakeMaxTicks = 1000;
-	
-	public static final int kPIDIdx = 0;
-	public static final int kTimeoutMs = 10;
  
 	//Climber
 	public static final double kElevatorP = 0.5;
@@ -73,4 +71,8 @@ public final class Constants {
 	public static final double kClimbHeight = 300000;
 	public static final double kElevatorZero = 1000;
 	public static final int kClimbTicks = 80000;
+
+	//Misc.	
+	public static final int kPIDIdx = 0;
+	public static final int kTimeoutMs = 10;
 }

@@ -33,12 +33,19 @@ public class Flywheel extends SubsystemBase {
   double time1, time2;
 
   public Flywheel() {
-    Hardware.flywheelMaster = new TalonFX(11);
-    Hardware.flywheelFollower = new TalonFX(12);
+
+    if(Constants.kCompBot){
+      Hardware.flywheelMaster = new TalonFX(11);
+      Hardware.flywheelFollower = new TalonFX(12);
+    }else{
+      Hardware.flywheelMaster = new TalonFX(11);
+      Hardware.flywheelFollower = new TalonFX(12);
+    }
+
 
     Hardware.flywheelMaster.configFactoryDefault();
     Hardware.flywheelFollower.configFactoryDefault();
-    
+
     Hardware.flywheelMaster.configVoltageCompSaturation(10, Constants.kTimeoutMs);
     Hardware.flywheelMaster.enableVoltageCompensation(true);
 
@@ -47,13 +54,14 @@ public class Flywheel extends SubsystemBase {
     Hardware.flywheelMaster.setInverted(false);
     Hardware.flywheelFollower.setInverted(false);
 
-    Hardware.flywheelMaster.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, Constants.kPIDIdx, Constants.kTimeoutMs);
-    Hardware.flywheelFollower.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, Constants.kPIDIdx, Constants.kTimeoutMs);
+    Hardware.flywheelMaster.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, Constants.kPIDIdx,
+        Constants.kTimeoutMs);
+    Hardware.flywheelFollower.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, Constants.kPIDIdx,
+        Constants.kTimeoutMs);
 
     Hardware.flywheelMaster.config_kF(Constants.kPIDIdx, Constants.kFlywheelFF);
     Hardware.flywheelMaster.config_kP(Constants.kPIDIdx, Constants.kFlywheelP);
     Hardware.flywheelMaster.config_kD(Constants.kPIDIdx, Constants.kFlywheelD);
-
 
     targetVelocity = 0;
     currState = FlywheelState.OFF;
@@ -70,31 +78,35 @@ public class Flywheel extends SubsystemBase {
     setFlywheelState(FlywheelState.SPINNINGUP);
   }
 
-  public void updateTargetVelocity(double desiredVelocity){
+  public void updateTargetVelocity(double desiredVelocity) {
     targetVelocity = desiredVelocity;
   }
 
   public void log() {
-  //  SmartDashboard.putNumber("Flywheel Output", Hardware.flywheelMaster.getMotorOutputPercent());
+    // SmartDashboard.putNumber("Flywheel Output",
+    // Hardware.flywheelMaster.getMotorOutputPercent());
+    // SmartDashboard.putNumber("Current Draw",
+    // Hardware.flywheelMaster.getStatorCurrent());
+    // SmartDashboard.putNumber("Wheel RPM Error", targetVelocity - getWheelRPM());
+    // SmartDashboard.putNumber("Limelight Ty",
+    // Hardware.limelight.getVerticalAngle());
     SmartDashboard.putNumber("Wheel RPM", getWheelRPM());
-  //  SmartDashboard.putNumber("Current Draw", Hardware.flywheelMaster.getStatorCurrent());
- //   SmartDashboard.putNumber("Wheel RPM Error", targetVelocity - getWheelRPM());
-//    SmartDashboard.putNumber("Limelight Ty", Hardware.limelight.getVerticalAngle());
-    SmartDashboard.putNumber("Distance", Hardware.limelight.getDistanceFromTarget(Hardware.limelight.getVerticalAngle()));
+    SmartDashboard.putNumber("Distance",
+        Hardware.limelight.getDistanceFromTarget(Hardware.limelight.getVerticalAngle()));
   }
 
   public double getWheelRPM() {
-    return Hardware.flywheelMaster.getSelectedSensorVelocity() *600 / 2048/ Constants.kFlywheelGearRatio;
+    return Hardware.flywheelMaster.getSelectedSensorVelocity() * 600 / 2048 / Constants.kFlywheelGearRatio;
   }
 
-  public void setFlywheelState(FlywheelState newState){
+  public void setFlywheelState(FlywheelState newState) {
     currState = newState;
 
-    if(newState == FlywheelState.OFF)
+    if (newState == FlywheelState.OFF)
       targetVelocity = 0;
   }
 
-  public FlywheelState getFlywheelState(){
+  public FlywheelState getFlywheelState() {
     return currState;
   }
 
@@ -110,19 +122,18 @@ public class Flywheel extends SubsystemBase {
       break;
     case SPINNINGUP:
       SmartDashboard.putString("FLYWHEEL STATE", "Spinning UP");
-      Hardware.flywheelMaster.set(ControlMode.Velocity, targetVelocity/600 * 2048 * Constants.kFlywheelGearRatio);
-     
-      if(flywheelRPM.allWithinError(targetVelocity, Constants.kFlywheelAcceptableError)){
+      Hardware.flywheelMaster.set(ControlMode.Velocity, targetVelocity / 600 * 2048 * Constants.kFlywheelGearRatio);
+
+      if (flywheelRPM.allWithinError(targetVelocity, Constants.kFlywheelAcceptableError)) {
         time1 = Timer.getFPGATimestamp();
         setFlywheelState(FlywheelState.ATSPEED);
       }
       break;
     case ATSPEED:
       SmartDashboard.putString("FLYWHEEL STATE", "AT SPEED");
-      Hardware.flywheelMaster.set(ControlMode.Velocity, targetVelocity/ 600  * 2048 * Constants.kFlywheelGearRatio);
+      Hardware.flywheelMaster.set(ControlMode.Velocity, targetVelocity / 600 * 2048 * Constants.kFlywheelGearRatio);
 
-   
-      if(!flywheelRPM.allWithinError(targetVelocity, Constants.kFlywheelAcceptableError)){
+      if (!flywheelRPM.allWithinError(targetVelocity, Constants.kFlywheelAcceptableError)) {
         time2 = Timer.getFPGATimestamp();
         setFlywheelState(FlywheelState.SPINNINGUP);
       }
@@ -130,12 +141,11 @@ public class Flywheel extends SubsystemBase {
       break;
     }
 
-
-    double recoverTime = time1-time2;
+    double recoverTime = time1 - time2;
     SmartDashboard.putNumber("RecoverTime", recoverTime);
   }
 
-  public double getRPMFromDistance(double _distance){
+  public double getRPMFromDistance(double _distance) {
     return 0;
   }
 }

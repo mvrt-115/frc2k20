@@ -39,7 +39,7 @@ public class Hardware {
   public static TalonSRX topHopper;
   public static DigitalInput bottomHopperBreakbeam;
   public static DigitalInput topHopperBreakbeam;
-  public static DigitalInput midHopperBreakbeam;
+//  public static DigitalInput midHopperBreakbeam;
 
   // intake
   public static TalonSRX intakeRoller;

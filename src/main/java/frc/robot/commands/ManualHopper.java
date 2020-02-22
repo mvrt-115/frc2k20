@@ -6,12 +6,9 @@
 /*----------------------------------------------------------------------------*/
 
 package frc.robot.commands;
-import com.ctre.phoenix.motorcontrol.ControlMode;
-
-import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Hardware;
 import frc.robot.Robot;
+import frc.robot.subsystems.Intake.IntakeState;
 
 public class ManualHopper extends CommandBase {
   /**
@@ -29,6 +26,7 @@ public class ManualHopper extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    Robot.intake.setIntakeState(IntakeState.DEPLOYING);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -41,6 +39,7 @@ public class ManualHopper extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     Robot.hopper.stopMotors();
+    Robot.intake.setIntakeState(IntakeState.STOWING);
   }
 
   // Returns true when the command should end.
