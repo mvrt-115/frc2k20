@@ -12,6 +12,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -19,6 +20,7 @@ import frc.robot.Hardware;
 import frc.robot.Robot;
 import frc.robot.Robot.RobotState;
 import frc.robot.subsystems.Flywheel.FlywheelState;
+import frc.robot.subsystems.LEDStrip.LEDColor;
 
 public class Hopper extends SubsystemBase {
 
@@ -29,7 +31,8 @@ public class Hopper extends SubsystemBase {
   private boolean lastBottom;
   private boolean lastTop;
   private SupplyCurrentLimitConfiguration currentConfig;
-
+  private double lastTimeBottom;
+  private double lastTimeTop;
   public Hopper() {
 
     if(Constants.kCompBot){   
@@ -68,6 +71,8 @@ public class Hopper extends SubsystemBase {
     balls = 0;
     lastBottom = false;
     lastTop = false;
+    lastTimeBottom = Timer.getFPGATimestamp();
+    lastTimeTop = Timer.getFPGATimestamp();
   }
 
   public void runHopper(double _topSpeed, double _botSpeed) {
@@ -99,10 +104,21 @@ public class Hopper extends SubsystemBase {
 
     if (Robot.getRobotState() != RobotState.DISABLED) {
       if (currBottom && !lastBottom)
-        balls++;
+        if(Timer.getFPGATimestamp() - lastTimeBottom > .3){
+          balls++;
+          lastTimeBottom = Timer.getFPGATimestamp();
+        }
+      if (!currTop && lastTop && (Robot.flywheel.getFlywheelState() == FlywheelState.SPINNINGUP ||Robot.flywheel.getFlywheelState() == FlywheelState.ATSPEED) ){
+       if(Timer.getFPGATimestamp() - lastTimeTop > .3){
+          lastTimeTop = Timer.getFPGATimestamp();
+          balls--;
+       }
+      }
+    }
 
-      if (!currTop && lastTop && Robot.flywheel.getFlywheelState() == FlywheelState.SPINNINGUP ||Robot.flywheel.getFlywheelState() == FlywheelState.ATSPEED )
-        balls--;
+
+    if(balls <0 || balls > 5){
+      Robot.led.setColor(LEDColor.RED);
     }
     lastTop = currTop;
     lastBottom = currBottom;

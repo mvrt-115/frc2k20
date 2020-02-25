@@ -34,8 +34,8 @@ public class OI {
     private JoystickButton quickTurnButton;
 
 
-    private JoystickButton test;
-    private Joystick operatorJoystick;
+    public JoystickButton test;
+    public Joystick operatorJoystick;
     private JoystickButton intakeButton;
     private POVButton hopperForwardButton;
     private POVButton hopperReverseButton;

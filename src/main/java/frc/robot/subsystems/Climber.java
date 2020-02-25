@@ -14,10 +14,13 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Hardware;
+import frc.robot.Robot;
+import frc.robot.subsystems.Intake.IntakeState;
 
 public class Climber extends SubsystemBase {
   /**
@@ -38,9 +41,10 @@ public class Climber extends SubsystemBase {
       Hardware.elevatorMaster = new TalonFX(9);
     }
     
+    Hardware.elevatorServo = new Servo(0);
     Hardware.elevatorMaster.configFactoryDefault();
 
-    Hardware.elevatorMaster.setInverted(false);
+    Hardware.elevatorMaster.setInverted(Constants.kCompBot);
 
     Hardware.elevatorMaster.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, Constants.kPIDIdx,
         Constants.kTimeoutMs);
@@ -62,10 +66,14 @@ public class Climber extends SubsystemBase {
     switch (currState) {
 
     case ZEROED:
+    Hardware.elevatorServo.set(0.3);
       SmartDashboard.putString("Climber State", "ZEROED");
 
       break;
     case SETPOINT:
+    Hardware.elevatorServo.set(0.3);
+    Robot.intake.setIntakeState(IntakeState.DEPLOYING);
+    
       Hardware.elevatorMaster.set(ControlMode.Position, Constants.kClimbHeight, DemandType.ArbitraryFeedForward,
           Constants.kElevatorHoldOutput);
 
@@ -74,6 +82,7 @@ public class Climber extends SubsystemBase {
 
      
     case CLIMBING:
+    Hardware.elevatorServo.set(0);
       Hardware.elevatorMaster.set(ControlMode.PercentOutput, Constants.kElevatorClimbOutput);
 
       if (Hardware.elevatorMaster.getSelectedSensorPosition() < Constants.kClimbTicks) {
@@ -83,8 +92,8 @@ public class Climber extends SubsystemBase {
       SmartDashboard.putString("Climber State", "CLIMBING");
       break;
     case HOLD:
-   //   Hardware.levelMotor.set(ControlMode.PercentOutput, angleError * Constants.kLevelP);
-      Hardware.elevatorMaster.set(ControlMode.PercentOutput, -0.1);
+      Hardware.elevatorServo.set(0);
+      Hardware.elevatorMaster.set(ControlMode.PercentOutput, 0);
 
       SmartDashboard.putString("Climber State", "HOLD");
       break;
@@ -97,8 +106,7 @@ public class Climber extends SubsystemBase {
         setElevatorState(ElevatorState.ZEROED);
       
       break;
-    }
-
+    }    
   }
 
   public double getEncoder(){
@@ -122,5 +130,6 @@ public class Climber extends SubsystemBase {
 
   public void log() {
     SmartDashboard.putNumber("Climber encoder", getEncoder());
+    SmartDashboard.putNumber("Servo Positoin", Hardware.elevatorServo.get());
   }
 }

@@ -78,6 +78,9 @@ public class Robot extends TimedRobot {
   //  SmartDashboard.putNumber("Desired RPM", 0);
     flywheel.setFlywheelState(FlywheelState.OFF);
     CameraServer.getInstance().startAutomaticCapture();
+  //  Hardware.elevatorServo.set(0.1);
+  Hardware.elevatorServo.set(0.3);
+
     
   }
 
@@ -110,7 +113,6 @@ public class Robot extends TimedRobot {
     setRobotState(RobotState.DISABLED);
     led.setColor(LEDColor.MVRT); 
     drivetrain.configNeutralMode(NeutralMode.Brake);
-
     startDisabledTime = Timer.getFPGATimestamp();
   
   }
@@ -142,7 +144,7 @@ public class Robot extends TimedRobot {
 
     led.setColor(LEDColor.RAINBOW);
 
-    hopper.setBalls(0);
+    hopper.setBalls(3);
     
     m_autonomousCommand = new AutonRoutine2();
 
@@ -160,6 +162,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    Hardware.elevatorServo.set(0.1);
     led.setColor(LEDColor.BLUE);
 
         // This makes sure that the autonomous stops running when
@@ -170,7 +173,9 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     setRobotState(RobotState.TELEOP);
+    climber.setElevatorState(ElevatorState.ZEROED);
     drivetrain.configNeutralMode(NeutralMode.Coast, NeutralMode.Coast);
+    Hardware.elevatorServo.set(0.3);
 
   }
 

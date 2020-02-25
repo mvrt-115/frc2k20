@@ -12,6 +12,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Servo;
 import frc.robot.util.Limelight;
 
 /**
@@ -21,7 +22,7 @@ public class Hardware {
 
   //Climber
   public static TalonFX elevatorMaster;
-  public static TalonSRX levelMotor;
+  public static Servo elevatorServo;
   public static DigitalInput elevatorBottomLimitSwitch;
 
   // Flywheel

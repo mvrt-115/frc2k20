@@ -38,33 +38,45 @@ public class AutoHopper extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-  
-
     int balls = Robot.hopper.getBalls();
 
-    if( Robot.flywheel.getFlywheelState() == FlywheelState.SPINNINGUP || Robot.flywheel.getFlywheelState() == FlywheelState.ATSPEED){
-      Robot.hopper.runHopper(.3, .5);
-      SmartDashboard.putNumber("Test", 13);
-    }else if(balls == 0 && Robot.intake.getIntakeState() == IntakeState.INTAKING){
-      Robot.hopper.runHopper(0,0.7);
+    SmartDashboard.putNumber("test", 12);
+    if(balls == 0 && Robot.intake.getIntakeState() == IntakeState.INTAKING){
+      Robot.hopper.runHopper(0,0.85);
+      SmartDashboard.putNumber("test", 19);
     }else if(balls ==1 ){
-      Robot.hopper.runHopper(0,0.7);
+      Robot.hopper.runHopper(0,0.87);
     }else if( balls == 2){
       if(!Robot.hopper.getTopBreakbeam())
-        Robot.hopper.runHopper( 0.3, 0.5);
+        Robot.hopper.runHopper( 0.3, 0.8);
       else
-        Robot.hopper.runHopper(0, 0.5);
+        Robot.hopper.runHopper(0, 0.8);
     }else if(balls ==3){
-      if(!Robot.hopper.getTopBreakbeam())
-      Robot.hopper.runHopper(0.3, 0.5);
-     else
-      Robot.hopper.runHopper(0, 0.9);  
+
+/*      if(lastBall == 2 && balls == 3){
+        startTime = Timer.getFPGATimestamp();
+      }
+      if(!Robot.hopper.getTopBreakbeam()){
+        Robot.hopper.runHopper(0.3, 0.7);
+      }else if(Timer.getFPGATimestamp() - startTime < 2.5){
+        Robot.hopper.runHopper(0, 0.45);
+      }else {
+        Robot.hopper.runHopper(0, 0);
+      }
+  */
+    if(!Robot.hopper.getTopBreakbeam()){
+      Robot.hopper.runHopper(0.3, 0.7);
+    }else{
+      Robot.hopper.runHopper(0, 0.45);
+    }
+      
     }else if(balls ==4){
       Robot.hopper.runHopper(0, 0);
     } 
-
+  
+    lastBall = balls;
 /*
-    SmartDashboard.putNumber("Test", 12);
+    PRACTICE BOT CODE
 
     if(balls == 3 && lastBall == 2){
       startTime = Timer.getFPGATimestamp();

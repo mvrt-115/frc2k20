@@ -13,6 +13,7 @@ import frc.robot.Hardware;
 import frc.robot.Robot;
 import frc.robot.Robot.RobotState;
 import frc.robot.subsystems.Flywheel.FlywheelState;
+import frc.robot.subsystems.Intake.IntakeState;
 import frc.robot.subsystems.LEDStrip.LEDColor;
 import frc.robot.util.RollingAverage;
 import frc.robot.util.Limelight.LED_MODE;
@@ -30,7 +31,7 @@ public class AutoShoot extends CommandBase {
   public AutoShoot(double _RPM) {
     
     RPM = _RPM;
-    horizontalOffset = new RollingAverage(9);
+    horizontalOffset = new RollingAverage(12);
     verticalOffset = new RollingAverage(5);
 
     addRequirements(Robot.drivetrain);
@@ -42,6 +43,7 @@ public class AutoShoot extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    Robot.drivetrain.integralAcc = 0;
     horizontalOffset.reset();
     verticalOffset.reset();
     Robot.flywheel.setFlywheelState(FlywheelState.SPINNINGUP);
@@ -55,6 +57,7 @@ public class AutoShoot extends CommandBase {
       Robot.flywheel.setTargetVelocity(3000);
       Robot.flywheel.setFlywheelState(FlywheelState.SPINNINGUP);
     }
+    Robot.intake.setIntakeState(IntakeState.DEPLOYING);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -67,24 +70,25 @@ public class AutoShoot extends CommandBase {
     double avgDistance = Hardware.limelight.getDistanceFromTarget(verticalOffset.getAverage());
 
     if(RPM == 0 ){
-       Robot.flywheel.updateTargetVelocity(Hardware.limelight.getRPMFromDistance(avgDistance));
+      if(Hardware.limelight.getDistanceFromTarget(Hardware.limelight.getVerticalAngle()) > 70){
+        SmartDashboard.putNumber("Testtt", 12);
+           Robot.flywheel.updateTargetVelocity(9000);
+        }else{
+          SmartDashboard.putNumber("Testtt", 19);
+          Robot.flywheel.updateTargetVelocity(Hardware.limelight.getRPMFromDistance(avgDistance));
+        }
     }
+   // Robot.flywheel.updateTargetVelocity(8500);
 
-    boolean canShoot;
-    if (Hardware.limelight.hasTarget() && horizontalOffset.allWithinError(0, 1.6) && Robot.flywheel.getFlywheelState() == FlywheelState.ATSPEED) {
+    if (Hardware.limelight.hasTarget() && horizontalOffset.allWithinError(0, 2.6) && Robot.flywheel.getFlywheelState() == FlywheelState.ATSPEED) {
       Robot.hopper.runHopper(0.5, .5);
-      canShoot = true;
-      Robot.led.setColor(LEDColor.GREEN);
+      Robot.led.setColor(LEDColor.PURPLE);
     }else{
       if(!Robot.hopper.getTopBreakbeam()){
           Robot.hopper.runHopper(.3, .3);
       }
-      canShoot = false;
       Robot.led.setColor(LEDColor.YELLOW);
     }
-
-    SmartDashboard.putBoolean("can shoot", canShoot);
-
   }
 
   // Called once the command ends or is interrupted.
@@ -93,7 +97,11 @@ public class AutoShoot extends CommandBase {
     Robot.drivetrain.stop();
     Robot.hopper.stopMotors();
     Robot.flywheel.setFlywheelState(FlywheelState.OFF);
+   
+   if(Robot.getRobotState() == RobotState.TELEOP)
     Robot.led.setColor(LEDColor.BLUE);
+   else
+    Robot.led.setColor(LEDColor.RAINBOW);
   }
 
   // Returns true when the command should end.

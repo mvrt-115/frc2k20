@@ -44,6 +44,7 @@ public class Drivetrain extends SubsystemBase {
 	private TrajectoryConfig trajectoryConfig;
 	private TrajectoryConfig trajectoryConfigSlow;
 	private Pose2d currPosition;
+	public double integralAcc;
 
 	public Drivetrain() {
 
@@ -122,6 +123,7 @@ public class Drivetrain extends SubsystemBase {
 		trajectoryConfigSlow.setReversed(false);
 
 		ramseteController = new RamseteController();
+		integralAcc = 0;
 
 	}
 
@@ -240,11 +242,12 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	public void alignToTarget(double error) {
-		double kFF = 0.039;
-		double kP = .0044;
+		double kFF = 0.044;  //0.033;
+		double kP = .0055;
 		double output;
+		integralAcc += error;
 
-		if (Math.abs(error) > .6) {
+		if (Math.abs(error) > .5) {			// .5
 			output = error * kP + Math.copySign(kFF, error);
 		} else {
 			output = error * kP;

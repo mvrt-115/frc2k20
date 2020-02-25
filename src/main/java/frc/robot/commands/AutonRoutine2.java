@@ -24,7 +24,7 @@ import frc.robot.Robot;
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
 public class AutonRoutine2 extends SequentialCommandGroup {
   /**
-   * Creates a new AutonRoutine2.
+   * Rendezvous Auton Routine
    */
   public AutonRoutine2() {
 
@@ -88,7 +88,7 @@ public class AutonRoutine2 extends SequentialCommandGroup {
 
     Trajectory traj1 = TrajectoryGenerator.generateTrajectory(List.of(
       new Pose2d(-.4,-2, new Rotation2d().fromDegrees(0)),
-      new Pose2d(-2.3, -1.8, new Rotation2d(.374, -.35))
+      new Pose2d(-2.4, -1.6, new Rotation2d(.374, -.55))
 
     ), Robot.drivetrain.getTrajectoryConfig());
 

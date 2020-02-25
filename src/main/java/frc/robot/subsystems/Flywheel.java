@@ -45,7 +45,7 @@ public class Flywheel extends SubsystemBase {
 
     Hardware.flywheelMaster.configFactoryDefault();
     Hardware.flywheelFollower.configFactoryDefault();
-
+    
     Hardware.flywheelMaster.configVoltageCompSaturation(10, Constants.kTimeoutMs);
     Hardware.flywheelMaster.enableVoltageCompensation(true);
 
@@ -83,11 +83,11 @@ public class Flywheel extends SubsystemBase {
   }
 
   public void log() {
-    // SmartDashboard.putNumber("Flywheel Output",
-    // Hardware.flywheelMaster.getMotorOutputPercent());
+     SmartDashboard.putNumber("Flywheel Output",
+     Hardware.flywheelMaster.getMotorOutputPercent());
     // SmartDashboard.putNumber("Current Draw",
     // Hardware.flywheelMaster.getStatorCurrent());
-    // SmartDashboard.putNumber("Wheel RPM Error", targetVelocity - getWheelRPM());
+     SmartDashboard.putNumber("Wheel RPM Error", targetVelocity - getWheelRPM());
     // SmartDashboard.putNumber("Limelight Ty",
     // Hardware.limelight.getVerticalAngle());
     SmartDashboard.putNumber("Wheel RPM", getWheelRPM());

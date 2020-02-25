@@ -81,7 +81,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void runIntake() {
-    Hardware.intakeFunnel.set(ControlMode.PercentOutput, 0.2);
+    Hardware.intakeFunnel.set(ControlMode.PercentOutput, 0.5);
     Hardware.intakeRoller.set(ControlMode.PercentOutput, 0.6);
   }
 
@@ -141,6 +141,8 @@ public class Intake extends SubsystemBase {
 
   public void log() {
      SmartDashboard.putNumber("Intake Encoder", Hardware.intakePivot.getSelectedSensorPosition());
+     SmartDashboard.putNumber("Intake Supply Current Draw", Hardware.intakeRoller.getSupplyCurrent());
+     SmartDashboard.putNumber("Intake Stator Current Draw ",Hardware.intakeRoller.getStatorCurrent());
     // SmartDashboard.putBoolean("intake Limit Switch",
     // Hardware.intakeBottomlimitSwitch.get());
     SmartDashboard.putNumber("Angle", getIntakePivotAngle());

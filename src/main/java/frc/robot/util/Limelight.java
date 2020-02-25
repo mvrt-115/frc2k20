@@ -10,7 +10,7 @@ public class Limelight {
     
     private NetworkTable limelight;
     private static final double kLimelightMountAngle = 15;     
-    private static final double kLimelightHeight = 30.25;       // Inches    
+    private static final double kLimelightHeight = 41;       // Inches    
     private static final double kTargetHeight = 98;  // Inches **** CHANGE VALUE
 
 

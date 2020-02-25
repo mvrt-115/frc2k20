@@ -55,9 +55,9 @@ public final class Constants {
 
 	//Intake
 	public static final double kIntakeD = 0;
-	public static final double kIntakeP = 0.476;
-	public static final double kIntakeFF = .15;
-	public static final double kIntakeStowedTicks = 60;
+	public static final double kIntakeP = 0.496;
+	public static final double kIntakeFF = .22;
+	public static final double kIntakeStowedTicks =80;
 	public static final double kIntakeDeployTicks = 1000;
 	public static final double kIntakeMaxTicks = 1000;
  

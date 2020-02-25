@@ -27,7 +27,7 @@ public class LEDStrip extends SubsystemBase
   private LEDColor currColor;
 
   public enum LEDColor {
-    RAINBOW, MVRT, GREEN, BLUE, YELLOW, COUNTER
+    RAINBOW, MVRT, PURPLE, BLUE, YELLOW, COUNTER, RED
   } 
 
   /**
@@ -108,11 +108,11 @@ public class LEDStrip extends SubsystemBase
 
   }
  
-  public void green()
+  public void purple()
   {
     for(var i = 0; i < m_ledBuffer.getLength(); i++)
     {
-      m_ledBuffer.setRGB(i, 0, 255, 0);
+      m_ledBuffer.setRGB(i, 84, 0, 84);
     }
    
     m_led.setData(m_ledBuffer);
@@ -132,7 +132,7 @@ public class LEDStrip extends SubsystemBase
   {
     for(var i = 0; i < m_ledBuffer.getLength(); i++)
     {
-      m_ledBuffer.setRGB(i, 54, 55, 83);
+      m_ledBuffer.setRGB(i, 255, 255, 0);
     }
    
     m_led.setData(m_ledBuffer);
@@ -145,13 +145,13 @@ public class LEDStrip extends SubsystemBase
     {
       for(int i = 0; i < m_ledBuffer.getLength() * balls / 5; i++)
       {
-        m_ledBuffer.setRGB(i, 14, 19, 151);
+        m_ledBuffer.setRGB(i, 204, 39, 136);
         // (98,174,197)
       }
 
       for(int i = m_ledBuffer.getLength() * balls / 5; i < m_ledBuffer.getLength(); i++)
       {
-        m_ledBuffer.setRGB(i, 204, 39, 136);
+        m_ledBuffer.setRGB(i, 14, 19, 151);
         //(230,64,114)
       }
     }
@@ -190,8 +190,8 @@ public class LEDStrip extends SubsystemBase
         }
 
         break;
-      case GREEN:
-        green();
+      case PURPLE:
+        purple();
 
         break;
       case YELLOW:
@@ -212,35 +212,16 @@ public class LEDStrip extends SubsystemBase
           updateHopperStrip();
         }
         break;
+
+      case RED:
+        if(Robot.hopper.getBalls() >= 0 && Robot.hopper.getBalls() <= 5){
+          setColor(LEDColor.COUNTER);
+        }
+        red();
     }
 
     m_led.setData(m_ledBuffer);
 
-
-   /* if(RobotState.isDisabled()) red();
-    else if(Robot.climber.getElevatorState() != ElevatorState.ZEROED) rainbow();
-    else if(Robot.hopper.getBalls() == 0)
-    {
-      if(lastBalls != 0)
-      {
-        MVRT();
-        lastBalls = 0;
-      }
-      if(System.currentTimeMillis() - lastTime >= 50) 
-      {
-        rotate();
-        lastTime = System.currentTimeMillis();
-      }
-    }
-    else 
-    {
-      updateHopperStrip();
-      lastBalls = Robot.hopper.getBalls();
-    }
-
-    m_led.setData(m_ledBuffer);
-  }
-  */
   }
 
 }

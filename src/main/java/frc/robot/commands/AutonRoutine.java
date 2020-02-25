@@ -30,17 +30,14 @@ import frc.robot.Robot;
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
 public class AutonRoutine extends SequentialCommandGroup {
   /**
-   * Creates a new AutonRoutine.
+   * Right Side Trench Auton
    */
-
-
-   // RIGHT SIDE TRENCH AUTON
   public AutonRoutine() {
     
     addCommands(
         
     
-      new AutoShoot(6800).withTimeout(3),
+      new AutoShoot(6800).withTimeout(4),
         new ParallelRaceGroup(
           new ParallelCommandGroup(
             getTrajectory1(),
@@ -63,7 +60,7 @@ public class AutonRoutine extends SequentialCommandGroup {
     Robot.drivetrain.invertPathDirection(false);
 
     Trajectory traj1 = TrajectoryGenerator.generateTrajectory(List.of(
-      new Pose2d(-4, -1.7, new Rotation2d()),  
+      new Pose2d(-4, -1.55, new Rotation2d()),  
       new Pose2d(-1.25,0, new Rotation2d().fromDegrees(8))
 
     ), Robot.drivetrain.getTrajectoryConfig());
@@ -87,8 +84,8 @@ public class AutonRoutine extends SequentialCommandGroup {
 
     Trajectory traj1 = TrajectoryGenerator.generateTrajectory(List.of(
       new Pose2d(0, 0, new Rotation2d()),  
-      new Pose2d(-2.2,-1.7, new Rotation2d().fromDegrees(8)),
-      new Pose2d(-4, -1.7, new Rotation2d())
+      new Pose2d(-2.2,-1.55, new Rotation2d().fromDegrees(8)),
+      new Pose2d(-4, -1.55, new Rotation2d())
 
     ), Robot.drivetrain.getTrajectoryConfig());
 
