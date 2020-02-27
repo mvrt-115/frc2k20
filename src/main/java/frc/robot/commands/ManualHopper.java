@@ -6,47 +6,45 @@
 /*----------------------------------------------------------------------------*/
 
 package frc.robot.commands;
-
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Hardware;
-import frc.robot.util.Limelight.LED_MODE;
+import frc.robot.Robot;
+import frc.robot.subsystems.Intake.IntakeState;
 
-public class FlashLimelight extends CommandBase {
+public class ManualHopper extends CommandBase {
   /**
-   * Creates a new FlashLimelight.
+   * Creates a new ManualHopper.
    */
-  private double startTime;
-  private double timeoutSeconds;
-  public FlashLimelight(double timeoutSeconds) {
-    this.timeoutSeconds = timeoutSeconds;
+  double bottomSpeed, topSpeed;
+
+  public ManualHopper(double _bottomSpeed, double _topSpeed) {
+    addRequirements(Robot.hopper);
+    bottomSpeed = _bottomSpeed;
+    topSpeed = _topSpeed;
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    startTime = Timer.getFPGATimestamp();
-    Hardware.limelight.setLED(LED_MODE.BLINKING);
+    Robot.intake.setIntakeState(IntakeState.DEPLOYING);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    Robot.hopper.runHopper(topSpeed, bottomSpeed);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    Hardware.limelight.setLED(LED_MODE.OFF);
+    Robot.hopper.stopMotors();
+    Robot.intake.setIntakeState(IntakeState.STOWING);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(Timer.getFPGATimestamp() - startTime > timeoutSeconds){
-      return true;
-    }
-    return false;
+    return !Robot.oi.getHopperButton();
   }
 }

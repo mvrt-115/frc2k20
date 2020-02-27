@@ -7,27 +7,24 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Hardware;
-import frc.robot.util.Limelight.LED_MODE;
+import frc.robot.Robot;
+import frc.robot.subsystems.Climber.ElevatorState;
 
-public class FlashLimelight extends CommandBase {
+public class ClimbCommand extends CommandBase {
   /**
-   * Creates a new FlashLimelight.
+   * Creates a new ClimbAndLevelCommand.
    */
-  private double startTime;
-  private double timeoutSeconds;
-  public FlashLimelight(double timeoutSeconds) {
-    this.timeoutSeconds = timeoutSeconds;
+  public ClimbCommand() {
+    addRequirements(Robot.climber);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    startTime = Timer.getFPGATimestamp();
-    Hardware.limelight.setLED(LED_MODE.BLINKING);
+    if(Robot.climber.getElevatorState() == ElevatorState.SETPOINT)
+      Robot.climber.setElevatorState(ElevatorState.CLIMBING);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -38,15 +35,11 @@ public class FlashLimelight extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    Hardware.limelight.setLED(LED_MODE.OFF);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(Timer.getFPGATimestamp() - startTime > timeoutSeconds){
-      return true;
-    }
-    return false;
+    return true;
   }
 }

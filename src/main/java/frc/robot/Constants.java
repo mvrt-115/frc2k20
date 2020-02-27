@@ -16,38 +16,63 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+	
+	public static final boolean kCompBot = true;
 
-    public static double kFlywheelP = 0.07;
-    public static double kFlywheelD = 0;
-    public static double kFlywheelFF = .0465;
+	//Flywheel 
+    public static final double kFlywheelP = 0.15;  // 0.75
+    public static final double kFlywheelD = 7;
+    public static final double kFlywheelFF = .058;
+    public static final double kFlywheelGearRatio = 20.0/34;
+    public static final double kFlywheelAcceptableError = 100;
 
-    public static double kFlywheelAcceptableError = 100;
-	public static final int kFlywheelGearRatio = 20/34;
-
-    public static final double kTrackScrubFactor = 1.0469745223;
-	public static final double kSensitivity = 0.90;
-
+	//Joystick
+    public static final double kSensitivity = 0.90;
 	public static final double kWheelDeadband = 0.04;
 	public static final double kThrottleDeadband = 0.04;
 
+	//Drivetrain
+	public static final double kLimelightFF = 0.042;
+	public static final double kLimelightP = 0.04;
+
+    public static final double kTrackScrubFactor = 1.0469745223;
 	public static final double kTrackWidthInches = 24.2;
-	public static final double kTrackWidthMeters = .617432;
-	public static final double kWheelDiameterMeters = .1450848;
-	public static final double kMaxVelocityMetersPerSecond = 1;
+	public static final double kTrackWidthMeters = .5883;
+    public static final double kWheelDiameterMeters = .158;         // .1450848;
+    
+	public static final double kMaxVelocityMetersPerSecond = 1.5;
 	public static final double kMaxAccelerationMetersPerSecondSq = 2;
-	public static final double kDriveGearRatio = (46/9) * (44/20);
-	public static final int kTicksPerRotation = 2048;
+	public static final double kDriveGearRatio = (46.0/9) * (44.0/20);
+	public static final int kFalconTicksPerRotation = 2048;
 	
-
-	public static final double kDriveS = .327; 
+	public static final double kDriveS = 0.166; 
 	public static final double kDriveV = 2.53; 
-	public static final double kDriveA = 0.168;  
+	public static final double kDriveA = 0.311;  
 
-	public static final double kDriveP = 1; 
+	public static final double kDriveP = 0; 
 	public static final double kDriveI = 0;
 	public static final double kDriveD = 0;
 
+	//Intake
+	public static final double kIntakeD = 0;
+	public static final double kIntakeP = 0.496;
+	public static final double kIntakeFF = .22;
+	public static final double kIntakeStowedTicks =80;
+	public static final double kIntakeDeployTicks = 1000;
+	public static final double kIntakeMaxTicks = 1000;
+ 
+	//Climber
+	public static final double kElevatorP = 0.5;
+	public static final double kElevatorI = 0;
+	public static final double kElevatorD = 0;
+	public static final double kElevatorHoldOutput = -.2;
+    public static final double kElevatorClimbOutput = -.45;
+    
+	public static final double kClimbHeight = 300000;
+	public static final double kElevatorZero = 1000;
+	public static final int kClimbTicks = 80000;
 
+	//Misc.	
 	public static final int kPIDIdx = 0;
 	public static final int kTimeoutMs = 10;
 }

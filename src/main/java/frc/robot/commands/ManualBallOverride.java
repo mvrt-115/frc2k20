@@ -7,27 +7,24 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Hardware;
-import frc.robot.util.Limelight.LED_MODE;
+import frc.robot.Robot;
 
-public class FlashLimelight extends CommandBase {
+public class ManualBallOverride extends CommandBase {
   /**
-   * Creates a new FlashLimelight.
+   * Creates a new ManualBallOverride.
    */
-  private double startTime;
-  private double timeoutSeconds;
-  public FlashLimelight(double timeoutSeconds) {
-    this.timeoutSeconds = timeoutSeconds;
+
+  private int change;
+  public ManualBallOverride(int _change) {
+    change = _change;
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    startTime = Timer.getFPGATimestamp();
-    Hardware.limelight.setLED(LED_MODE.BLINKING);
+    Robot.hopper.setBalls(Robot.hopper.getBalls() + change);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -38,15 +35,12 @@ public class FlashLimelight extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    Hardware.limelight.setLED(LED_MODE.OFF);
+    
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(Timer.getFPGATimestamp() - startTime > timeoutSeconds){
-      return true;
-    }
-    return false;
+    return true;
   }
 }

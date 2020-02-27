@@ -7,33 +7,29 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Flywheel;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import frc.robot.subsystems.Hopper;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.command.WaitCommand;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator.ControlVectorList;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.AutoAlign;
 import frc.robot.commands.AutonRoutine;
-import frc.robot.commands.FlashLimelight;
+import frc.robot.commands.AutonRoutine2;
+import frc.robot.commands.RamseteCommand;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.util.Limelight;
+import frc.robot.util.Limelight.LED_MODE;
+import frc.robot.util.Limelight.PIPELINE_STATE;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.LEDStrip;
+import frc.robot.subsystems.Climber.ElevatorState;
+import frc.robot.subsystems.Flywheel.FlywheelState;
+import frc.robot.subsystems.Intake.IntakeState;
+import frc.robot.subsystems.LEDStrip.LEDColor;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -44,18 +40,21 @@ import frc.robot.util.Limelight;
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   public static Flywheel flywheel;
-  public static OI oi;
   public static Drivetrain drivetrain;
-  
+  public static Intake intake;
+  public static Hopper hopper;
+  public static Climber climber;
+  public static LEDStrip led;
+  public static OI oi;
   //private RobotContainer m_robotContainer;
 
   public enum RobotState{
     DISABLED, TELEOP, AUTON
   };
 
-  private RobotState currState;
-  private RamseteCommand autoCommand;
+  private static RobotState currState = RobotState.DISABLED;
   private double startDisabledTime;
+  public double desiredRPM;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -65,14 +64,24 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     flywheel =  new Flywheel();
     drivetrain = new Drivetrain();
+    intake = new Intake();
+    hopper = new Hopper();
+    climber = new Climber();
+    led = new LEDStrip();
     Hardware.limelight = new Limelight();
     oi = new OI();
 
     setRobotState(RobotState.DISABLED);
 
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-    // autonomous chooser on the dashboard.
-    //m_robotContainer = new RobotContainer();
+    Hardware.limelight.setPipeline(PIPELINE_STATE.VISION_WIDE);
+    Hardware.limelight.setLED(LED_MODE.ON);
+  //  SmartDashboard.putNumber("Desired RPM", 0);
+    flywheel.setFlywheelState(FlywheelState.OFF);
+    CameraServer.getInstance().startAutomaticCapture();
+  //  Hardware.elevatorServo.set(0.1);
+  Hardware.elevatorServo.set(0.3);
+
+    
   }
 
   /**
@@ -84,13 +93,16 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+  //  desiredRPM =  SmartDashboard.getNumber("Desired RPM", 0);
+   // flywheel.updateTargetVelocity(desiredRPM);
     flywheel.log();
     drivetrain.log();
-    // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
-    // commands, running already-scheduled commands, removing finished or interrupted commands,
-    // and running subsystem periodic() methods.  This must be called from the robot's periodic
-    // block in order for anything in the Command-based framework to work.
+    hopper.log();
+    intake.log();
+    climber.log();
+    
     CommandScheduler.getInstance().run();
+
   }
 
   /**
@@ -99,8 +111,10 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     setRobotState(RobotState.DISABLED);
-    startDisabledTime = Timer.getFPGATimestamp();
+    led.setColor(LEDColor.MVRT); 
     drivetrain.configNeutralMode(NeutralMode.Brake);
+    startDisabledTime = Timer.getFPGATimestamp();
+  
   }
 
   @Override
@@ -114,29 +128,29 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    //m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-
-    drivetrain.setPathDirection(false);
-    Trajectory traj1 = TrajectoryGenerator.generateTrajectory(List.of(
-      new Pose2d(),
-      new Pose2d(5.3,1, new Rotation2d())
-
-    ), drivetrain.getTrajectoryConfig());
-   
-    drivetrain.setPathDirection(true);
-
-    Trajectory traj2 = TrajectoryGenerator.generateTrajectory(List.of(
-    new Pose2d(2, 1, new Rotation2d()),
-    new Pose2d()
-
-    ),drivetrain.getTrajectoryConfig());
-    
-  
-    drivetrain.resetOdometry();
-    m_autonomousCommand = new AutonRoutine(generatePath(traj1), generatePath(traj2));
     setRobotState(RobotState.AUTON);
-    drivetrain.configNeutralMode(NeutralMode.Brake);
-    m_autonomousCommand.schedule();
+
+    intake.resetPivotEncoder();
+    intake.setIntakeState(IntakeState.STOWED);
+    intake.setDefaultLimitSwitchStart();
+    
+    climber.setElevatorState(ElevatorState.ZEROED);
+    climber.resetEncoder();
+    
+    flywheel.setFlywheelState(FlywheelState.OFF);
+
+    drivetrain.resetOdometry();
+    drivetrain.configNeutralMode(NeutralMode.Brake, NeutralMode.Brake);
+
+    led.setColor(LEDColor.RAINBOW);
+
+    hopper.setBalls(3);
+    
+    m_autonomousCommand = new AutonRoutine2();
+
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.schedule();
+    }
   }
 
   /**
@@ -148,7 +162,10 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    // This makes sure that the autonomous stops running when
+    Hardware.elevatorServo.set(0.1);
+    led.setColor(LEDColor.BLUE);
+
+        // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
@@ -156,7 +173,10 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     setRobotState(RobotState.TELEOP);
-    drivetrain.configNeutralMode(NeutralMode.Coast);
+    climber.setElevatorState(ElevatorState.ZEROED);
+    drivetrain.configNeutralMode(NeutralMode.Coast, NeutralMode.Coast);
+    Hardware.elevatorServo.set(0.3);
+
   }
 
   /**
@@ -164,12 +184,14 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+  
   }
 
   @Override
   public void testInit() {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
+
   }
 
   /**
@@ -178,14 +200,18 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {
   }
+
   public void setRobotState(final RobotState newState) {
     currState = newState;
   }
 
+  public static RobotState getRobotState(){
+    return currState;
+  }
   
-  public Command generatePath(Trajectory trajectory){
+  public static Command generatePath(Trajectory trajectory){
     
-     autoCommand = new RamseteCommand(
+    var autoCommand = new RamseteCommand(
       trajectory,
       drivetrain::getPose,
       drivetrain.getRamseteController(),
@@ -199,7 +225,7 @@ public class Robot extends TimedRobot {
     );
 
   
-    return autoCommand.andThen(() -> drivetrain.setLeftRightMotorOutputs(0, 0));
+    return autoCommand;
   }
 
 }

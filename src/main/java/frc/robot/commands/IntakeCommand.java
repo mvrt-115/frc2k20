@@ -6,47 +6,53 @@
 /*----------------------------------------------------------------------------*/
 
 package frc.robot.commands;
-
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Hardware;
-import frc.robot.util.Limelight.LED_MODE;
+import frc.robot.Robot;
+import frc.robot.Robot.RobotState;
+import frc.robot.subsystems.Intake.IntakeState;
 
-public class FlashLimelight extends CommandBase {
+public class IntakeCommand extends CommandBase 
+{
   /**
-   * Creates a new FlashLimelight.
+   * Creates a new IntakeCommand.
    */
-  private double startTime;
-  private double timeoutSeconds;
-  public FlashLimelight(double timeoutSeconds) {
-    this.timeoutSeconds = timeoutSeconds;
-    // Use addRequirements() here to declare subsystem dependencies.
+  public IntakeCommand() 
+  {
+    addRequirements(Robot.intake);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    startTime = Timer.getFPGATimestamp();
-    Hardware.limelight.setLED(LED_MODE.BLINKING);
+  public void initialize(){
+    Robot.intake.setIntakeState(IntakeState.INTAKING);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+
+    if(Robot.intake.getIntakeState() == IntakeState.DEPLOYED)
+      Robot.intake.setIntakeState(IntakeState.INTAKING);
+
+  
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    Hardware.limelight.setLED(LED_MODE.OFF);
+  public void end(boolean interrupted) 
+  {
+    Robot.intake.setIntakeState(IntakeState.STOWING);
+    Robot.intake.stopRoller();
   }
 
   // Returns true when the command should end.
   @Override
-  public boolean isFinished() {
-    if(Timer.getFPGATimestamp() - startTime > timeoutSeconds){
-      return true;
-    }
-    return false;
+  public boolean isFinished() 
+  {
+    if(Robot.getRobotState() == RobotState.TELEOP){
+      return !Robot.oi.isIntakeButtonPressed();
+    }else{
+      return false;
+    }  
   }
 }
