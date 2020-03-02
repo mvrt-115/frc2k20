@@ -23,60 +23,23 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Robot;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
-public class AutonRoutine extends SequentialCommandGroup {
+public class BasicAuto extends SequentialCommandGroup {
   /**
    * Right Side Trench Auton
    */
-  public AutonRoutine() {
+  public BasicAuto() {
     
     addCommands(
-        
-    
-      new AutoShoot(6800).withTimeout(4),
-        new ParallelRaceGroup(
-          new ParallelCommandGroup(
-            getTrajectory1(),
-            new IntakeCommand().withTimeout(5.5)
-          ),
-          new AutoHopper().withTimeout(10)
-        ),
-        new ParallelRaceGroup(
-          new SequentialCommandGroup(
-            getTrajectory2(),
-            new AutoShoot(6200).withTimeout(5)
-          ),  
-          new IntakeCommand().withTimeout(7)
-        )
-    );
-  }
-
-  public Command getTrajectory2(){
-    
-    Robot.drivetrain.invertPathDirection(false);
-
-    Trajectory traj1 = TrajectoryGenerator.generateTrajectory(List.of(
-      new Pose2d(-4, -1.55, new Rotation2d()),  
-      new Pose2d(-1.25,0, new Rotation2d().fromDegrees(8))
-
-    ), Robot.drivetrain.getTrajectoryConfig());
-
-    
-    // String trajectoryJSON = "paths/Right-Path2.wpilib.json";
-    // Path trajectoryPath;
-    // try {
-    //   trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
-    //   Trajectory trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
-    //   TrajectoryUtil.toPathweaverJson(traj1, trajectoryPath);
-    // } catch (IOException ex) {
-    //   DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
- //   }
- 
-    return Robot.generatePath(traj1);
+      
+      new WaitCommand(6),
+      new AutoShoot(6800).withTimeout(6.5),
+      getTrajectory1());
   }
 
   public Command getTrajectory1(){
@@ -84,8 +47,7 @@ public class AutonRoutine extends SequentialCommandGroup {
 
     Trajectory traj1 = TrajectoryGenerator.generateTrajectory(List.of(
       new Pose2d(0, 0, new Rotation2d()),  
-      new Pose2d(-2.2,-1.55, new Rotation2d().fromDegrees(8)),
-      new Pose2d(-4, -1.55, new Rotation2d())
+      new Pose2d(-1,0, new Rotation2d().fromDegrees(0))
 
     ), Robot.drivetrain.getTrajectoryConfig());
 

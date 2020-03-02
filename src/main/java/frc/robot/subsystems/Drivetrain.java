@@ -242,12 +242,12 @@ public class Drivetrain extends SubsystemBase {
 	}
 
 	public void alignToTarget(double error) {
-		double kFF = 0.044;  //0.033;
+		double kFF = 0.035;  //0.033;
 		double kP = .0055;
 		double output;
 		integralAcc += error;
 
-		if (Math.abs(error) > .5) {			// .5
+		if (Math.abs(error) > .9) {			// .5
 			output = error * kP + Math.copySign(kFF, error);
 		} else {
 			output = error * kP;

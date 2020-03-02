@@ -8,6 +8,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.subsystems.Climber.ElevatorState;
 
@@ -23,7 +24,7 @@ public class ClimbCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if(Robot.climber.getElevatorState() == ElevatorState.SETPOINT)
+    if(Robot.climber.getElevatorState() == ElevatorState.SETPOINT || Robot.climber.getEncoder() > Constants.kClimbTicks)
       Robot.climber.setElevatorState(ElevatorState.CLIMBING);
   }
 

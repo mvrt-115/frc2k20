@@ -6,14 +6,11 @@
 /*----------------------------------------------------------------------------*/
 
 package frc.robot.commands;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Hardware;
 import frc.robot.Robot;
 import frc.robot.Robot.RobotState;
 import frc.robot.subsystems.Flywheel.FlywheelState;
-import frc.robot.subsystems.Intake.IntakeState;
 import frc.robot.subsystems.LEDStrip.LEDColor;
 import frc.robot.util.RollingAverage;
 import frc.robot.util.Limelight.LED_MODE;
@@ -57,7 +54,6 @@ public class AutoShoot extends CommandBase {
       Robot.flywheel.setTargetVelocity(3000);
       Robot.flywheel.setFlywheelState(FlywheelState.SPINNINGUP);
     }
-    Robot.intake.setIntakeState(IntakeState.DEPLOYING);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -70,22 +66,15 @@ public class AutoShoot extends CommandBase {
     double avgDistance = Hardware.limelight.getDistanceFromTarget(verticalOffset.getAverage());
 
     if(RPM == 0 ){
-      if(Hardware.limelight.getDistanceFromTarget(Hardware.limelight.getVerticalAngle()) > 70){
-        SmartDashboard.putNumber("Testtt", 12);
-           Robot.flywheel.updateTargetVelocity(9000);
-        }else{
-          SmartDashboard.putNumber("Testtt", 19);
-          Robot.flywheel.updateTargetVelocity(Hardware.limelight.getRPMFromDistance(avgDistance));
-        }
+      Robot.flywheel.updateTargetVelocity(Hardware.limelight.getRPMFromDistance(avgDistance));
     }
-   // Robot.flywheel.updateTargetVelocity(8500);
 
-    if (Hardware.limelight.hasTarget() && horizontalOffset.allWithinError(0, 2.6) && Robot.flywheel.getFlywheelState() == FlywheelState.ATSPEED) {
-      Robot.hopper.runHopper(0.5, .5);
+    if ((Hardware.limelight.hasTarget() && horizontalOffset.allWithinError(0, 2.6) && Robot.flywheel.getFlywheelState() == FlywheelState.ATSPEED) || Robot.oi.getShooterOverrideButton()) {
+      Robot.hopper.runHopper(0.54, .54);
       Robot.led.setColor(LEDColor.PURPLE);
     }else{
       if(!Robot.hopper.getTopBreakbeam()){
-          Robot.hopper.runHopper(.3, .3);
+          Robot.hopper.runHopper(.4, .4);
       }
       Robot.led.setColor(LEDColor.YELLOW);
     }
@@ -97,6 +86,7 @@ public class AutoShoot extends CommandBase {
     Robot.drivetrain.stop();
     Robot.hopper.stopMotors();
     Robot.flywheel.setFlywheelState(FlywheelState.OFF);
+    Hardware.limelight.setLED(LED_MODE.OFF);
    
    if(Robot.getRobotState() == RobotState.TELEOP)
     Robot.led.setColor(LEDColor.BLUE);
@@ -109,7 +99,7 @@ public class AutoShoot extends CommandBase {
   public boolean isFinished() {
 
     if (Robot.getRobotState() == RobotState.TELEOP) {
-      return !Robot.oi.getAlignButton();
+      return !Robot.oi.getAlignButton() && !Robot.oi.getControlPanelShot();
     }
 
     return false;

@@ -15,10 +15,15 @@ import frc.robot.subsystems.Flywheel;
 import frc.robot.subsystems.Hopper;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import frc.robot.commands.AutonRoutine;
 import frc.robot.commands.AutonRoutine2;
+import frc.robot.commands.AutonRoutine3;
+import frc.robot.commands.BasicAuto;
 import frc.robot.commands.RamseteCommand;
+import frc.robot.commands.RendezvousAuton2;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.util.Limelight;
@@ -46,7 +51,8 @@ public class Robot extends TimedRobot {
   public static Climber climber;
   public static LEDStrip led;
   public static OI oi;
-  //private RobotContainer m_robotContainer;
+  
+  private SendableChooser<Command> autonSelector;
 
   public enum RobotState{
     DISABLED, TELEOP, AUTON
@@ -74,14 +80,19 @@ public class Robot extends TimedRobot {
     setRobotState(RobotState.DISABLED);
 
     Hardware.limelight.setPipeline(PIPELINE_STATE.VISION_WIDE);
-    Hardware.limelight.setLED(LED_MODE.ON);
-  //  SmartDashboard.putNumber("Desired RPM", 0);
+    Hardware.limelight.setLED(LED_MODE.OFF);
     flywheel.setFlywheelState(FlywheelState.OFF);
     CameraServer.getInstance().startAutomaticCapture();
-  //  Hardware.elevatorServo.set(0.1);
-  Hardware.elevatorServo.set(0.3);
 
-    
+    autonSelector = new SendableChooser<>();
+
+    autonSelector.setDefaultOption("Basic Shoot", new AutonRoutine3());
+    autonSelector.addOption("Trench Run", new AutonRoutine());
+    autonSelector.addOption("Rendezvous Run", new AutonRoutine2());
+    autonSelector.addOption("Rendezvous Run Small", new RendezvousAuton2());
+    autonSelector.addOption("Shoot then Back", new BasicAuto());
+    SmartDashboard.putData(autonSelector);
+
   }
 
   /**
@@ -111,14 +122,15 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     setRobotState(RobotState.DISABLED);
+    Hardware.limelight.setLED(LED_MODE.OFF);
     led.setColor(LEDColor.MVRT); 
     drivetrain.configNeutralMode(NeutralMode.Brake);
     startDisabledTime = Timer.getFPGATimestamp();
-  
   }
 
   @Override
   public void disabledPeriodic() {
+    Hardware.limelight.setLED(LED_MODE.OFF);
     if(Timer.getFPGATimestamp() - startDisabledTime > 2)
       drivetrain.configNeutralMode(NeutralMode.Coast);
   }
@@ -146,7 +158,7 @@ public class Robot extends TimedRobot {
 
     hopper.setBalls(3);
     
-    m_autonomousCommand = new AutonRoutine2();
+    m_autonomousCommand = autonSelector.getSelected();
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
@@ -162,7 +174,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    Hardware.elevatorServo.set(0.1);
     led.setColor(LEDColor.BLUE);
 
         // This makes sure that the autonomous stops running when
@@ -175,7 +186,6 @@ public class Robot extends TimedRobot {
     setRobotState(RobotState.TELEOP);
     climber.setElevatorState(ElevatorState.ZEROED);
     drivetrain.configNeutralMode(NeutralMode.Coast, NeutralMode.Coast);
-    Hardware.elevatorServo.set(0.3);
 
   }
 
