@@ -80,7 +80,8 @@ public class Limelight {
 
 
     public double getRPMFromDistance(double distance){
-        return 74.451 * (distance) + 4518.7;
+        return 74.451 * (distance) + 4700;
+                                // Subtract 4500
     }
 
 }

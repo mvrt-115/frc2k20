@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Hardware;
+import frc.robot.Robot;
 
 public class Intake extends SubsystemBase {
 
@@ -52,7 +53,7 @@ public class Intake extends SubsystemBase {
     Hardware.intakePivot.configFactoryDefault();
     Hardware.intakeFunnel.configFactoryDefault();
 
-    Hardware.intakeRoller.setInverted(!Constants.kCompBot);
+    Hardware.intakeRoller.setInverted(true);
     Hardware.intakePivot.setInverted(false);
     Hardware.intakeFunnel.setInverted(false);
 
@@ -82,12 +83,19 @@ public class Intake extends SubsystemBase {
 
   public void runIntake() {
     Hardware.intakeFunnel.set(ControlMode.PercentOutput, 0.5);
-    Hardware.intakeRoller.set(ControlMode.PercentOutput, 0.6);
+    Hardware.intakeRoller.set(ControlMode.PercentOutput, 0.73);
   }
 
   public void periodic() {
     double feedForward = Constants.kIntakeFF * Math.cos(Math.toRadians(getIntakePivotAngle()));
 
+/*    Hardware.intakePivot.set(ControlMode.PercentOutput, Robot.oi.operatorJoystick.getRawAxis(5));
+    if(getIntakeLimitSwitch() != defaultLimitSwitch){
+       runIntake(); 
+    }else{
+      stopRoller();
+    }
+*/
     switch (currState) {
 
     case STOWED:
@@ -141,8 +149,8 @@ public class Intake extends SubsystemBase {
 
   public void log() {
      SmartDashboard.putNumber("Intake Encoder", Hardware.intakePivot.getSelectedSensorPosition());
-     SmartDashboard.putNumber("Intake Supply Current Draw", Hardware.intakeRoller.getSupplyCurrent());
-     SmartDashboard.putNumber("Intake Stator Current Draw ",Hardware.intakeRoller.getStatorCurrent());
+ //    SmartDashboard.putNumber("Intake Supply Current Draw", Hardware.intakeRoller.getSupplyCurrent());
+  //   SmartDashboard.putNumber("Intake Stator Current Draw ",Hardware.intakeRoller.getStatorCurrent());
     // SmartDashboard.putBoolean("intake Limit Switch",
     // Hardware.intakeBottomlimitSwitch.get());
     SmartDashboard.putNumber("Angle", getIntakePivotAngle());
@@ -160,7 +168,7 @@ public class Intake extends SubsystemBase {
   }
 
   public double getIntakePivotAngle() {
-    return 80 + (Hardware.intakePivot.getSelectedSensorPosition() / Constants.kIntakeMaxTicks * 100);
+    return 90 + (Hardware.intakePivot.getSelectedSensorPosition() / Constants.kIntakeMaxTicks * 100);
   }
 
   public boolean getBottomLimitSwitch() {

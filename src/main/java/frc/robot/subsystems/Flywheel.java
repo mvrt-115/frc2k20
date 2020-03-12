@@ -83,9 +83,9 @@ public class Flywheel extends SubsystemBase {
   }
 
   public void log() {
-     SmartDashboard.putNumber("Flywheel Output",
-     Hardware.flywheelMaster.getMotorOutputPercent());
-    // SmartDashboard.putNumber("Current Draw",
+     SmartDashboard.putNumber("Flywheel Output",Hardware.flywheelMaster.getMotorOutputPercent());
+     SmartDashboard.putNumber("Flywheel Output Followe", Hardware.flywheelFollower.getMotorOutputPercent());
+     // SmartDashboard.putNumber("Current Draw",
     // Hardware.flywheelMaster.getStatorCurrent());
      SmartDashboard.putNumber("Wheel RPM Error", targetVelocity - getWheelRPM());
     // SmartDashboard.putNumber("Limelight Ty",

@@ -28,8 +28,8 @@ public final class Constants {
 
 	//Joystick
     public static final double kSensitivity = 0.90;
-	public static final double kWheelDeadband = 0.04;
-	public static final double kThrottleDeadband = 0.04;
+	public static final double kWheelDeadband = 0.02;
+	public static final double kThrottleDeadband = 0.02;
 
 	//Drivetrain
 	public static final double kLimelightFF = 0.042;
@@ -55,8 +55,8 @@ public final class Constants {
 
 	//Intake
 	public static final double kIntakeD = 0;
-	public static final double kIntakeP = 0.496;
-	public static final double kIntakeFF = .22;
+	public static final double kIntakeP = 0.536;
+	public static final double kIntakeFF = .33;
 	public static final double kIntakeStowedTicks =80;
 	public static final double kIntakeDeployTicks = 1000;
 	public static final double kIntakeMaxTicks = 1000;
@@ -66,11 +66,14 @@ public final class Constants {
 	public static final double kElevatorI = 0;
 	public static final double kElevatorD = 0;
 	public static final double kElevatorHoldOutput = -.2;
-    public static final double kElevatorClimbOutput = -.45;
+    public static final double kElevatorClimbOutput = -.58;
     
-	public static final double kClimbHeight = 300000;
+	public static final double kClimbHeight = 370000;
 	public static final double kElevatorZero = 1000;
 	public static final int kClimbTicks = 80000;
+
+	public static final double kServoRatchet = 0;
+	public static final double kServoUnRatchet = 0.4;
 
 	//Misc.	
 	public static final int kPIDIdx = 0;

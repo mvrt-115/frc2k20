@@ -42,15 +42,15 @@ public class AutoHopper extends CommandBase {
 
     SmartDashboard.putNumber("test", 12);
     if(balls == 0 && Robot.intake.getIntakeState() == IntakeState.INTAKING){
-      Robot.hopper.runHopper(0,0.85);
+      Robot.hopper.runHopper(0,0.8);
       SmartDashboard.putNumber("test", 19);
     }else if(balls ==1 ){
       Robot.hopper.runHopper(0,0.87);
     }else if( balls == 2){
       if(!Robot.hopper.getTopBreakbeam())
-        Robot.hopper.runHopper( 0.3, 0.8);
+        Robot.hopper.runHopper( 0.26, 0.9);
       else
-        Robot.hopper.runHopper(0, 0.8);
+        Robot.hopper.runHopper(0, 0.7);
     }else if(balls ==3){
 
 /*      if(lastBall == 2 && balls == 3){
@@ -59,15 +59,15 @@ public class AutoHopper extends CommandBase {
       if(!Robot.hopper.getTopBreakbeam()){
         Robot.hopper.runHopper(0.3, 0.7);
       }else if(Timer.getFPGATimestamp() - startTime < 2.5){
-        Robot.hopper.runHopper(0, 0.45);
+        Robot.hopper.runHopper(0, 0.45); 
       }else {
         Robot.hopper.runHopper(0, 0);
       }
   */
     if(!Robot.hopper.getTopBreakbeam()){
-      Robot.hopper.runHopper(0.3, 0.7);
+      Robot.hopper.runHopper(0.2, 0.6);
     }else{
-      Robot.hopper.runHopper(0, 0.45);
+      Robot.hopper.runHopper(0, 0.6);
     }
       
     }else if(balls ==4){
