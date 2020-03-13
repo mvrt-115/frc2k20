@@ -12,7 +12,6 @@ import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -77,6 +76,7 @@ public class Climber extends SubsystemBase {
     case ZEROED:     
      if(Robot.drivetrain.handleDeadband(Robot.oi.operatorJoystick.getRawAxis(5), .1) != 0){
       Robot.intake.setIntakeState(IntakeState.DEPLOYING);
+      Robot.led.setColor(LEDColor.BLUE);
      // Hardware.elevatorServo.set(Constants.kServoUnRatchet);
      }
      
@@ -85,7 +85,7 @@ public class Climber extends SubsystemBase {
 
       break;
     case SETPOINT:
-    Robot.led.setColor(LEDColor.RAINBOW);
+    Robot.led.setColor(LEDColor.BLUE);
   //  Hardware.elevatorServo.set(Constants.kServoUnRatchet);
     Robot.intake.setIntakeState(IntakeState.DEPLOYING);
     
@@ -97,7 +97,8 @@ public class Climber extends SubsystemBase {
 
      
     case CLIMBING:
-    Hardware.elevatorServo.set(Constants.kServoRatchet);
+      Robot.led.setColor(LEDColor.ORANGE);
+      Hardware.elevatorServo.set(Constants.kServoRatchet);
       Hardware.elevatorMaster.set(ControlMode.PercentOutput, Constants.kElevatorClimbOutput);
 
       if (Hardware.elevatorMaster.getSelectedSensorPosition() < Constants.kClimbTicks) {
@@ -107,6 +108,7 @@ public class Climber extends SubsystemBase {
       SmartDashboard.putString("Climber State", "CLIMBING");
       break;
     case HOLD:
+      Robot.led.setColor(LEDColor.WHITE);
       Hardware.elevatorServo.set(Constants.kServoRatchet);
       Hardware.elevatorMaster.set(ControlMode.PercentOutput, 0);
 

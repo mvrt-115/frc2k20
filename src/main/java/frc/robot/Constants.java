@@ -20,7 +20,7 @@ public final class Constants {
 	public static final boolean kCompBot = true;
 
 	//Flywheel 
-    public static final double kFlywheelP = 0.15;  // 0.75
+    public static final double kFlywheelP = 0.19;  // 0.15
     public static final double kFlywheelD = 7;
     public static final double kFlywheelFF = .058;
     public static final double kFlywheelGearRatio = 20.0/34;

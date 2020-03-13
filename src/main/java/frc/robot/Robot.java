@@ -13,17 +13,21 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Flywheel;
 import frc.robot.subsystems.Hopper;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
-import frc.robot.commands.AutonRoutine;
-import frc.robot.commands.AutonRoutine2;
 import frc.robot.commands.AutonRoutine3;
 import frc.robot.commands.BasicAuto;
+import frc.robot.commands.OppTrench;
 import frc.robot.commands.RamseteCommand;
 import frc.robot.commands.RendezvousAuton2;
+import frc.robot.commands.TrenchAuto6;
+import frc.robot.commands.TrenchAutoRun8;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.util.Limelight;
@@ -86,11 +90,12 @@ public class Robot extends TimedRobot {
 
     autonSelector = new SendableChooser<>();
 
-    autonSelector.setDefaultOption("Basic Shoot", new AutonRoutine3());
-    autonSelector.addOption("Trench Run", new AutonRoutine());
-    autonSelector.addOption("Rendezvous Run", new AutonRoutine2());
-    autonSelector.addOption("Rendezvous Run Small", new RendezvousAuton2());
-    autonSelector.addOption("Shoot then Back", new BasicAuto());
+    autonSelector.setDefaultOption("Basic Shoot (3)", new AutonRoutine3());
+    autonSelector.addOption("Trench Run (6)", new TrenchAuto6());
+    autonSelector.addOption("Trench Run (8)", new TrenchAutoRun8());
+    autonSelector.addOption("Opposite Trench(8)", new OppTrench());
+    autonSelector.addOption("Rendezvous Run (5) ", new RendezvousAuton2());
+    autonSelector.addOption("Shoot then Back(3)", new BasicAuto());
     SmartDashboard.putData(autonSelector);
 
   }
@@ -151,15 +156,20 @@ public class Robot extends TimedRobot {
     
     flywheel.setFlywheelState(FlywheelState.OFF);
 
-    drivetrain.resetOdometry();
+    if(autonSelector.getSelected().toString().equals("TrenchAutoRun8")){
+      drivetrain.setOdometry(new Pose2d(12.946, -6.747, new Rotation2d()) );
+    }else if(autonSelector.getSelected().toString().equals("OppTrench")){
+      drivetrain.setOdometry(new Pose2d(12.9,-.712, new Rotation2d()));
+    }else{
+      drivetrain.resetOdometry();
+    }
+
     drivetrain.configNeutralMode(NeutralMode.Brake, NeutralMode.Brake);
-
     led.setColor(LEDColor.RAINBOW);
-
     hopper.setBalls(3);
-    
-    m_autonomousCommand = autonSelector.getSelected();
 
+    m_autonomousCommand = autonSelector.getSelected();
+    
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
@@ -174,7 +184,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    led.setColor(LEDColor.BLUE);
+    led.setColor(LEDColor.PURPLE);
 
         // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to

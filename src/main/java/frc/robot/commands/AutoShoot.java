@@ -70,11 +70,11 @@ public class AutoShoot extends CommandBase {
     }
 
     if ((Hardware.limelight.hasTarget() && horizontalOffset.allWithinError(0, 2.6) && Robot.flywheel.getFlywheelState() == FlywheelState.ATSPEED) || Robot.oi.getShooterOverrideButton()) {
-      Robot.hopper.runHopper(0.54, .54);
-      Robot.led.setColor(LEDColor.PURPLE);
+      Robot.hopper.runHopper(0.94, .94);    //54
+      Robot.led.setColor(LEDColor.GREEN);
     }else{
       if(!Robot.hopper.getTopBreakbeam()){
-          Robot.hopper.runHopper(.4, .4);
+          Robot.hopper.runHopper(.52, .52);
       }
       Robot.led.setColor(LEDColor.YELLOW);
     }

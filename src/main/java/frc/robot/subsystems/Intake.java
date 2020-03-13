@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Hardware;
-import frc.robot.Robot;
 
 public class Intake extends SubsystemBase {
 
@@ -100,7 +99,11 @@ public class Intake extends SubsystemBase {
 
     case STOWED:
       SmartDashboard.putString("INTAKE STATE", "Stowed");
-      Hardware.intakePivot.set(ControlMode.PercentOutput, -1.0 / 12);
+      Hardware.intakePivot.set(ControlMode.PercentOutput, -1.3 / 12);
+
+
+      if(Hardware.intakePivot.getSelectedSensorPosition() > 200)
+        Hardware.intakePivot.set(ControlMode.PercentOutput, -3.0/12);
 
       break;
     case DEPLOYED:

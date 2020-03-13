@@ -19,7 +19,7 @@ public class LEDStrip extends SubsystemBase
   private AddressableLED m_led;
   private AddressableLEDBuffer m_ledBuffer;
   private int m_rainbowFirstPixelHue;
-  private Color purple, gold;
+  private Color purple, gold, white, green, red, orange;
   private long lastTime;
   private int redValue;
   private int changeValue;
@@ -27,7 +27,7 @@ public class LEDStrip extends SubsystemBase
   private LEDColor currColor;
 
   public enum LEDColor {
-    RAINBOW, MVRT, PURPLE, BLUE, YELLOW, COUNTER, RED
+    RAINBOW, MVRT, COUNTER, PURPLE, BLUE, RED,YELLOW, GREEN, WHITE, ORANGE
   } 
 
   /**
@@ -48,12 +48,16 @@ public class LEDStrip extends SubsystemBase
 
     purple = new Color(84, 0, 84);
     gold = new Color(240, 100, 0);
+    red = new Color(150,0,0);
+    green = new Color(25, 220, 0);
+    orange = new Color(252, 56, 0);
+
 
     colors = new Color[m_ledBuffer.getLength()];
 
     lastTime = 0;
     redValue = 150;
-    changeValue = -10;
+    changeValue = -5;
   }
 
 
@@ -112,7 +116,27 @@ public class LEDStrip extends SubsystemBase
   {
     for(var i = 0; i < m_ledBuffer.getLength(); i++)
     {
-      m_ledBuffer.setRGB(i, 84, 0, 84);
+      m_ledBuffer.setRGB(i, purple.getRed(), purple.getGreen(), purple.getBlue());
+    }
+   
+    m_led.setData(m_ledBuffer);
+  }
+
+  public void orange()
+  {
+    for(var i = 0; i < m_ledBuffer.getLength(); i++)
+    {
+      m_ledBuffer.setRGB(i, orange.getRed(), orange.getGreen(), orange.getBlue());
+    }
+   
+    m_led.setData(m_ledBuffer);
+  }
+ 
+  public void white()
+  {
+    for(var i = 0; i < m_ledBuffer.getLength(); i++)
+    {
+      m_ledBuffer.setRGB(i, 245, 130, 32);
     }
    
     m_led.setData(m_ledBuffer);
@@ -138,6 +162,16 @@ public class LEDStrip extends SubsystemBase
     m_led.setData(m_ledBuffer);
   }
  
+  public void green()
+  {
+    for(var i = 0; i < m_ledBuffer.getLength(); i++)
+    {
+      m_ledBuffer.setRGB(i, 25, 220, 0);
+    }
+   
+    m_led.setData(m_ledBuffer);
+  }
+
   public void updateHopperStrip()
   {
     int balls = Robot.hopper.getBalls();
@@ -145,13 +179,13 @@ public class LEDStrip extends SubsystemBase
     {
       for(int i = 0; i < m_ledBuffer.getLength() * balls / 5; i++)
       {
-        m_ledBuffer.setRGB(i, 204, 39, 136);
+        m_ledBuffer.setRGB(i, 255, 20, 147);
         // (98,174,197)
       }
 
       for(int i = m_ledBuffer.getLength() * balls / 5; i < m_ledBuffer.getLength(); i++)
       {
-        m_ledBuffer.setRGB(i, 14, 19, 151);
+        m_ledBuffer.setRGB(i, 30, 144, 255);
         //(230,64,114)
       }
     }
@@ -168,7 +202,7 @@ public class LEDStrip extends SubsystemBase
       m_ledBuffer.setHSV(i, hue, 255, 128);
     }
     // Increase by to make the rainbow "move"
-    m_rainbowFirstPixelHue += 3;
+    m_rainbowFirstPixelHue += 1;
     // Check bounds
     m_rainbowFirstPixelHue %= 180;
   }
@@ -180,7 +214,6 @@ public class LEDStrip extends SubsystemBase
 
       case RAINBOW:
         rainbow();
-
         break;
       case MVRT:
         if(System.currentTimeMillis() - lastTime >= 50) 
@@ -188,33 +221,41 @@ public class LEDStrip extends SubsystemBase
           rotate();
           lastTime = System.currentTimeMillis();
         }
-
         break;
       case PURPLE:
         purple();
-
-        break;
-      case YELLOW:
-        yellow();
-
-        break;
-      case BLUE:
         if(Robot.hopper.getBalls() != 0 ){
           setColor(LEDColor.COUNTER);
         }
+        break;
+      case YELLOW:
+        yellow();
+        break;
+      case BLUE:
         blue();
         break;
-
+      case WHITE:
+        white();
+        break;
+      case GREEN:
+        green();
+        break;
+      case ORANGE:
+        orange();
+        break;
       case COUNTER:
-        if(Robot.hopper.getBalls() == 0){
-          setColor(LEDColor.BLUE);
+      
+        if(Robot.hopper.getBalls() <0 || Robot.hopper.getBalls() > 4){
+          Robot.led.setColor(LEDColor.RED);
+        } else if(Robot.hopper.getBalls() == 0){
+          setColor(LEDColor.PURPLE);
         }else{
           updateHopperStrip();
         }
         break;
 
       case RED:
-        if(Robot.hopper.getBalls() >= 0 && Robot.hopper.getBalls() <= 5){
+        if(Robot.hopper.getBalls() >= 0 && Robot.hopper.getBalls() <= 4){
           setColor(LEDColor.COUNTER);
         }
         red();

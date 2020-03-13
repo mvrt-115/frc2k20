@@ -6,9 +6,7 @@
 /*----------------------------------------------------------------------------*/
 
 package frc.robot.commands;
-
 import java.util.List;
-
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
@@ -22,73 +20,64 @@ import frc.robot.Robot;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/latest/docs/software/commandbased/convenience-features.html
-public class AutonRoutine2 extends SequentialCommandGroup {
+public class TrenchAuto6 extends SequentialCommandGroup {
   /**
-   * Rendezvous Auton Routine
+   * Right Side Trench Auton
    */
-  public AutonRoutine2() {
-
+  public TrenchAuto6() {
+    
     addCommands(
-        new ParallelRaceGroup(    
-            new SequentialCommandGroup(
-              new ParallelCommandGroup(
-                getTrajectory1(),
-                new IntakeCommand().withTimeout(3)
-              ),
-              new ParallelRaceGroup(
-                getTrajectory2(),
-                new IntakeCommand()
-            )
+        
+    
+      new AutoShoot(6800).withTimeout(4),
+        new ParallelRaceGroup(
+          new ParallelCommandGroup(
+            getTrajectory1(),
+            new IntakeCommand().withTimeout(5.5)
           ),
-          new AutoHopper().withTimeout(15)
+          new AutoHopper().withTimeout(10)
         ),
-        new AutoShoot(5000).withTimeout(4),
-        new ParallelRaceGroup(  
-            new ParallelCommandGroup(
-              getTrajectory3(),
-              new IntakeCommand().withTimeout(4.5)
-            ),
-            new AutoHopper()
+        new ParallelRaceGroup(
+          new SequentialCommandGroup(
+            getTrajectory2(),
+            new AutoShoot(6200).withTimeout(5)
+          ),  
+          new IntakeCommand().withTimeout(7)
         )
-      );
+    );
+  }
+
+  public Command getTrajectory2(){
+    
+    Robot.drivetrain.invertPathDirection(false);
+
+    Trajectory traj1 = TrajectoryGenerator.generateTrajectory(List.of(
+      new Pose2d(-4, -1.55, new Rotation2d()),  
+      new Pose2d(-1.25,0, new Rotation2d().fromDegrees(8))
+
+    ), Robot.drivetrain.getTrajectoryConfig());
+
+    
+    // String trajectoryJSON = "paths/Right-Path2.wpilib.json";
+    // Path trajectoryPath;
+    // try {
+    //   trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
+    //   Trajectory trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+    //   TrajectoryUtil.toPathweaverJson(traj1, trajectoryPath);
+    // } catch (IOException ex) {
+    //   DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
+ //   }
+ 
+    return Robot.generatePath(traj1);
   }
 
   public Command getTrajectory1(){
     Robot.drivetrain.invertPathDirection(true);
 
     Trajectory traj1 = TrajectoryGenerator.generateTrajectory(List.of(
-      new Pose2d(),
-      new Pose2d(-2.05, -.2, new Rotation2d(.4,.161))
-     // new Pose2d(-2, -.2, new Rotation2d(1.52, .62))
-    ), Robot.drivetrain.getTrajectoryConfig());
-
-    
-    return Robot.generatePath(traj1);
-  }
-
-  public Command getTrajectory2(){
-    Robot.drivetrain.invertPathDirection(false);
-
-    Trajectory traj1 = TrajectoryGenerator.generateTrajectory(List.of(
-
-      // new Pose2d(-2, -.2, new Rotation2d(2.99, 1.4)),
-      // new Pose2d(-.4, -1.8, new Rotation2d(2.2,0))
-
-      new Pose2d(-2, -.2, new Rotation2d(.4,.161)),
-      new Pose2d(-.9, -.6, new Rotation2d(0,-.1)),
-      new Pose2d(-.4,-2, new Rotation2d().fromDegrees(-10))
-
-    ), Robot.drivetrain.getTrajectoryConfigSlow());
-
-    return Robot.generatePath(traj1);
-  }
-
-  public Command getTrajectory3(){
-    Robot.drivetrain.invertPathDirection(true);
-
-    Trajectory traj1 = TrajectoryGenerator.generateTrajectory(List.of(
-      new Pose2d(-.4,-2, new Rotation2d().fromDegrees(0)),
-      new Pose2d(-2.4, -1.6, new Rotation2d(.374, -.55))
+      new Pose2d(0, 0, new Rotation2d()),  
+      new Pose2d(-2.2,-1.55, new Rotation2d().fromDegrees(8)),
+      new Pose2d(-4, -1.55, new Rotation2d())
 
     ), Robot.drivetrain.getTrajectoryConfig());
 

@@ -35,9 +35,9 @@ public class Hopper extends SubsystemBase {
   private double lastTimeTop;
   private int topTicks;
   private int botTicks;
-  private static int kdebounce_max = 10;
-  private static int kdebounce_trigger_top = 7;
-  private static int kdebounce_trigger_bot = 4;
+  private static int kdebounce_max = 8;
+  private static int kdebounce_trigger_top = 6;
+  private static int kdebounce_trigger_bot = 3;
 
 
   public Hopper() {
@@ -149,14 +149,11 @@ public class Hopper extends SubsystemBase {
       }
     }
 
-    if(balls <0 || balls > 5){
-      Robot.led.setColor(LEDColor.RED);
-    }
     lastTop = currTop;
     lastBottom = currBottom;
 
-     if(balls > 6){
-        setBalls(5);
+     if(balls > 5){
+        setBalls(4);
      } 
 
      if(balls < 0){
